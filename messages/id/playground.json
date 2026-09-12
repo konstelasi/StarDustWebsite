@@ -421,7 +421,7 @@
   "queryBuilder": {
     "eyebrow": "bagian e",
     "heading": "Query itu",
-    "lede": "Bangun sebuah filter terhadap skema yang Anda definisikan, di atas baris yang Anda tulis, memakai indeks yang dibangun para daemon. Lalu dengan sengaja rusakkan: filter field yang tidak pernah dipromosikan siapa pun, atau berikan decoder JSON yang tidak akan diterimanya, dan baca apa yang kembali sebagai ganti baris.",
+    "lede": "Bangun sebuah filter terhadap skema yang Anda definisikan, di atas baris yang Anda tulis, memakai indeks yang dibangun para daemon. Lalu dengan sengaja rusakkan itu: filter field yang tidak pernah dipromosikan siapa pun, atau berikan decoder JSON yang tidak akan diterimanya, dan baca apa yang kembali, bukan baris.",
     "beat1Title": "Dua query, berapa pun jumlah kondisinya",
     "beat1Body1": "Satu probe terbatas di atas page yang di-join mengembalikan ",
     "beat1Body2": " id; satu fetch memateriialisasikannya. Tumpuk lima kondisi di tiga page dan itu tetap dua query dan tetap satu baris per entry per page — tidak ada fan-out, karena nilainya hidup di kolom, bukan di baris.",
