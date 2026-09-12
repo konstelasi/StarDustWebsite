@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { clearFlights, fly } from '@/lib/fly';
 import { useReducedMotion } from '@/lib/useReducedMotion';
+import { useTranslations } from '@/lib/i18n';
 import styles from './SlotMirror.module.css';
 
 type FieldType = 'string' | 'int';
@@ -53,6 +54,7 @@ function assignSlots(fields: Field[]): Map<string, SlotColumn> {
 }
 
 export default function SlotMirror() {
+  const t = useTranslations('landing');
   const [fields, setFields] = useState<Field[]>(INITIAL);
   const [phase, setPhase] = useState<Phase>('clean');
   const [stored, setStored] = useState<Field[]>([]);
@@ -169,14 +171,15 @@ export default function SlotMirror() {
         {/* ---------- what your application hands the engine ---------- */}
         <div className={`panel ${styles.col}`}>
           <div className="panel-head">
-            <span>your write</span>
+            <span>{t('slotMirror.yourWriteHead')}</span>
             <span className="tag tag-accent">EntryPayload</span>
           </div>
 
           <div className={styles.body}>
             <p className={styles.note}>
-              Fields are defined by your tenants at runtime — no migration, no
-              <code> ALTER TABLE</code>. Flip a field to filterable and watch where it lands.
+              {t('slotMirror.noteBefore')}
+              <code>ALTER TABLE</code>
+              {t('slotMirror.noteAfter')}
             </p>
 
             <div className={styles.fieldList} ref={setNode('payload')}>
@@ -191,7 +194,7 @@ export default function SlotMirror() {
                     className={styles.input}
                     value={f.value}
                     inputMode={f.type === 'int' ? 'numeric' : 'text'}
-                    aria-label={`value of ${f.name}`}
+                    aria-label={t('slotMirror.valueAriaLabel', { name: f.name })}
                     onChange={e =>
                       patch(f.name, {
                         value:
@@ -211,12 +214,14 @@ export default function SlotMirror() {
                   >
                     <span className={styles.knob} />
                     <span className={styles.toggleLabel}>
-                      {f.filterable ? 'filterable' : 'JSON only'}
+                      {f.filterable ? t('slotMirror.filterableToggle') : t('slotMirror.jsonOnlyToggle')}
                     </span>
                   </button>
 
                   {f.filterable && !pendingSlots.has(f.name) && (
-                    <span className="tag tag-pending">no free {f.type} slot — queued for backfill</span>
+                    <span className="tag tag-pending">
+                      {t('slotMirror.noFreeSlotTag', { type: f.type })}
+                    </span>
                   )}
                 </div>
               ))}
@@ -229,10 +234,10 @@ export default function SlotMirror() {
                 onClick={runWrite}
                 disabled={phase === 'writing'}
               >
-                {phase === 'writing' ? 'writing…' : 'write()'}
+                {phase === 'writing' ? t('slotMirror.writing') : 'write()'}
               </button>
               <button type="button" className="btn" onClick={reset} disabled={phase === 'writing'}>
-                reset
+                {t('slotMirror.resetButton')}
               </button>
             </div>
           </div>
@@ -243,7 +248,7 @@ export default function SlotMirror() {
           <div className={`panel ${styles.table}`}>
             <div className="panel-head">
               <span>entry_data</span>
-              <span className="tag tag-json">system of record · always complete</span>
+              <span className="tag tag-json">{t('slotMirror.sorText')}</span>
             </div>
 
             <div className={styles.tableBody}>
@@ -251,7 +256,7 @@ export default function SlotMirror() {
                 <span>id</span>
                 <span>tenant_id</span>
                 <span>model_id</span>
-                <span className={styles.grow}>fields (JSON)</span>
+                <span className={styles.grow}>{t('slotMirror.fieldsJsonHead')}</span>
               </div>
 
               <div
@@ -263,7 +268,7 @@ export default function SlotMirror() {
                 <span>{phase === 'clean' ? '—' : '42'}</span>
                 <span className={`${styles.grow} ${styles.json}`}>
                   {phase === 'clean' ? (
-                    <em className={styles.dim}>no row yet</em>
+                    <em className={styles.dim}>{t('slotMirror.noRowYet')}</em>
                   ) : (
                     <>
                       {'{ '}
@@ -287,14 +292,14 @@ export default function SlotMirror() {
 
           <div className={styles.mirrorArrow} ref={setNode('slot_wall')}>
             <span className={styles.arrowLine} />
-            <span className={styles.arrowLabel}>mirror the filterable fields</span>
+            <span className={styles.arrowLabel}>{t('slotMirror.mirrorArrowLabel')}</span>
             <span className={styles.arrowLine} />
           </div>
 
           <div className={`panel ${styles.table}`}>
             <div className="panel-head">
               <span>entry_slots_page_1</span>
-              <span className="tag tag-indexed">1:1 extension page · 16 typed slots</span>
+              <span className="tag tag-indexed">{t('slotMirror.extensionPageTag')}</span>
             </div>
 
             <div className={styles.tableBody}>
@@ -303,7 +308,7 @@ export default function SlotMirror() {
                 {SLOT_COLUMNS.map(c => (
                   <span key={c}>{c}</span>
                 ))}
-                <span className={styles.dim}>…56 more</span>
+                <span className={styles.dim}>{t('slotMirror.moreSlots')}</span>
               </div>
 
               <div className={`${styles.row} ${styles.slotRow} ${phase === 'clean' ? styles.rowEmpty : ''}`}>
@@ -333,7 +338,8 @@ export default function SlotMirror() {
 
               <div className={styles.indexNote}>
                 <span className="dot" style={{ color: 'var(--indexed)' }} />
-                composite index on <code>(tenant_id, i_str_01)</code>, <code>(tenant_id, i_int_01)</code>, …
+                {t('slotMirror.indexNotePrefix')}
+                <code>(tenant_id, i_str_01)</code>, <code>(tenant_id, i_int_01)</code>, …
               </div>
             </div>
           </div>
@@ -343,13 +349,13 @@ export default function SlotMirror() {
       {/* ---------- the payoff: what a filter on each field costs ---------- */}
       <div className={`panel ${styles.query}`}>
         <div className="panel-head">
-          <span>so what does a filter cost?</span>
-          {dirty && <span className="tag tag-pending">payload edited — write() again</span>}
+          <span>{t('slotMirror.queryCostHead')}</span>
+          {dirty && <span className="tag tag-pending">{t('slotMirror.payloadEditedTag')}</span>}
         </div>
 
         <div className={styles.queryBody}>
           <div className={styles.queryPicker}>
-            <span className={styles.queryLabel}>filter on</span>
+            <span className={styles.queryLabel}>{t('slotMirror.filterOnLabel')}</span>
             {fields.map(f => (
               <button
                 key={f.name}
@@ -364,16 +370,22 @@ export default function SlotMirror() {
 
           <div className={styles.verdict}>
             {phase !== 'stored' || !target ? (
-              <p className={styles.dim}>Run <code>write()</code> to see the query plan.</p>
+              <p className={styles.dim}>
+                {t('slotMirror.runWritePrefix')}
+                <code>write()</code>
+                {t('slotMirror.runWriteSuffix')}
+              </p>
             ) : targetSlot ? (
               <>
                 <div className={styles.verdictHead}>
                   <span className="tag tag-indexed">
                     <span className="dot" />
-                    index scan
+                    {t('slotMirror.indexScanTag')}
                   </span>
                   <span className={styles.verdictText}>
-                    resolved to <code>{targetSlot}</code> — two bounded queries, no JSON scan
+                    {t('slotMirror.resolvedPrefix')}
+                    <code>{targetSlot}</code>
+                    {t('slotMirror.resolvedSuffix')}
                   </span>
                 </div>
                 <pre className={styles.sql}>
@@ -398,12 +410,9 @@ SELECT id, tenant_id, model_id, created_at, fields
                 <div className={styles.verdictHead}>
                   <span className="tag tag-pending">
                     <span className="dot" />
-                    queued
+                    {t('slotMirror.queuedTag')}
                   </span>
-                  <span className={styles.verdictText}>
-                    filterable, but no slot was free — the value is safe in JSON and the
-                    Reconciler will backfill it. The write never failed.
-                  </span>
+                  <span className={styles.verdictText}>{t('slotMirror.queuedText')}</span>
                 </div>
               </>
             ) : (
@@ -411,10 +420,11 @@ SELECT id, tenant_id, model_id, created_at, fields
                 <div className={styles.verdictHead}>
                   <span className="tag tag-error">
                     <span className="dot" />
-                    rejected at pre-flight
+                    {t('slotMirror.rejectedTag')}
                   </span>
                   <span className={styles.verdictText}>
-                    <code>{target.name}</code> occupies no slot column.
+                    <code>{target.name}</code>
+                    {t('slotMirror.rejectedSuffix')}
                   </span>
                 </div>
                 <pre className={styles.sqlError}>

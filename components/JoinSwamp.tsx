@@ -5,6 +5,7 @@ import AnimatedNumber from './AnimatedNumber';
 import { useInView } from '@/lib/useInView';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import { useTicker } from '@/lib/useTicker';
+import { useLocale, useTranslations } from '@/lib/i18n';
 import styles from './JoinSwamp.module.css';
 
 const ENTRIES = 100_000;
@@ -76,6 +77,8 @@ export default function JoinSwamp() {
   const [n, setN] = useState(1);
   const [autoplay, setAutoplay] = useState(true);
   const reduced = useReducedMotion();
+  const locale = useLocale();
+  const t = useTranslations('landing');
 
   // Walk 1 → 6 once on first view, then stop and hand control over. The
   // growth is the whole point, and a static slider hides it.
@@ -102,7 +105,7 @@ export default function JoinSwamp() {
     <div className={styles.demo} ref={ref}>
       <div className={styles.control}>
         <label className={styles.sliderLabel} htmlFor="conditions">
-          filter conditions
+          {t('joinSwamp.sliderLabel')}
           <strong>{n}</strong>
         </label>
         <input
@@ -118,15 +121,19 @@ export default function JoinSwamp() {
           }}
         />
         <span className={styles.corpus}>
-          over {ENTRIES.toLocaleString('en-US')} entries
+          {t('joinSwamp.entriesNote', {
+            count: ENTRIES.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US'),
+          })}
         </span>
       </div>
 
       <div className={styles.grid}>
         <div className={`panel ${styles.side} ${styles.bad}`}>
           <div className="panel-head">
-            <span>EAV — one self-join per condition</span>
-            <span className="tag tag-error">{n} join{n > 1 ? 's' : ''}</span>
+            <span>{t('joinSwamp.eavHead')}</span>
+            <span className="tag tag-error">
+              {n > 1 ? t('joinSwamp.joinsMany', { count: n }) : t('joinSwamp.joinsOne', { count: n })}
+            </span>
           </div>
 
           <div className={styles.sideBody}>
@@ -134,25 +141,21 @@ export default function JoinSwamp() {
 
             <div className={styles.metrics}>
               <div className={styles.metric}>
-                <span className={styles.metricLabel}>rows examined · log scale</span>
+                <span className={styles.metricLabel}>{t('joinSwamp.rowsExaminedLabel')}</span>
                 <span className={`${styles.metricValue} ${styles.valueBad}`}>
                   <AnimatedNumber value={eav} />
                 </span>
               </div>
               <Bar value={eav} max={scale} tone="bad" />
-              <p className={styles.metricNote}>
-                Each condition adds a join, and the intermediate result has to be
-                carried through all of them — so asking a <em>narrower</em> question
-                costs strictly more.
-              </p>
+              <p className={styles.metricNote}>{t('joinSwamp.eavNote')}</p>
             </div>
           </div>
         </div>
 
         <div className={`panel ${styles.side} ${styles.good}`}>
           <div className="panel-head">
-            <span>StarDust — one page join, always</span>
-            <span className="tag tag-indexed">1 join · 2 queries</span>
+            <span>{t('joinSwamp.sdHead')}</span>
+            <span className="tag tag-indexed">{t('joinSwamp.sdTag')}</span>
           </div>
 
           <div className={styles.sideBody}>
@@ -160,17 +163,13 @@ export default function JoinSwamp() {
 
             <div className={styles.metrics}>
               <div className={styles.metric}>
-                <span className={styles.metricLabel}>rows examined · log scale</span>
+                <span className={styles.metricLabel}>{t('joinSwamp.rowsExaminedLabel')}</span>
                 <span className={`${styles.metricValue} ${styles.valueGood}`}>
                   <AnimatedNumber value={sd} />
                 </span>
               </div>
               <Bar value={sd} max={scale} tone="good" />
-              <p className={styles.metricNote}>
-                Every condition is another predicate on the same indexed row of the
-                same extension page. Narrower question, less work — the way an index
-                is supposed to behave.
-              </p>
+              <p className={styles.metricNote}>{t('joinSwamp.sdNote')}</p>
             </div>
           </div>
         </div>
@@ -181,13 +180,11 @@ export default function JoinSwamp() {
           <strong>
             ~<AnimatedNumber value={factor} />×
           </strong>
-          <span>more rows touched by EAV at {n} condition{n > 1 ? 's' : ''}</span>
+          <span>
+            {n > 1 ? t('joinSwamp.factorMany', { count: n }) : t('joinSwamp.factorOne', { count: n })}
+          </span>
         </div>
-        <p className={styles.disclaimer}>
-          An illustrative cost model of join fan-out — not a benchmark. The shape is
-          what matters: EAV grows with the number of conditions, StarDust does not.
-          Measure your own workload before quoting a number.
-        </p>
+        <p className={styles.disclaimer}>{t('joinSwamp.disclaimer')}</p>
       </div>
     </div>
   );

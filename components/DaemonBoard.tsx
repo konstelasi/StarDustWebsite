@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { useInView } from '@/lib/useInView';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import { useTicker } from '@/lib/useTicker';
+import { useTranslations } from '@/lib/i18n';
 import styles from './DaemonBoard.module.css';
 
 /**
@@ -168,6 +169,7 @@ function Daemon({
 export default function DaemonBoard() {
   const [ref, visible] = useInView<HTMLDivElement>();
   const reduced = useReducedMotion();
+  const t = useTranslations('landing');
   const [board, setBoard] = useState<Board>(INITIAL);
   const [paused, setPaused] = useState(false);
 
@@ -184,25 +186,23 @@ export default function DaemonBoard() {
     <div className={styles.board} ref={ref}>
       <div className={styles.controls}>
         <button type="button" className="btn" onClick={() => setPaused(p => !p)} disabled={reduced}>
-          {paused ? 'resume' : 'pause'}
+          {paused ? t('daemonBoard.resume') : t('daemonBoard.pause')}
         </button>
-        <span className={styles.tickLabel}>tick {board.tick}</span>
-        <span className={styles.legend}>
-          Nothing here is a message queue. Every arrow is a connection to MySQL.
-        </span>
+        <span className={styles.tickLabel}>{t('daemonBoard.tickLabel', { count: board.tick })}</span>
+        <span className={styles.legend}>{t('daemonBoard.legend')}</span>
       </div>
 
       <div className={styles.row}>
         <Daemon
           name="Watcher"
           kind="singleton"
-          role="Provisions indexed pages before capacity runs out."
+          role={t('daemonBoard.watcherRole')}
           live={isLive('watcher')}
           side="top"
         >
           <div className={styles.gauge}>
             <div className={styles.gaugeTop}>
-              <span>free slots</span>
+              <span>{t('daemonBoard.freeSlotsLabel')}</span>
               <strong className={board.freeSlots <= LOW_CAPACITY ? styles.low : undefined}>
                 {board.freeSlots}
               </strong>
@@ -214,7 +214,9 @@ export default function DaemonBoard() {
               />
             </div>
             <span className={styles.sub}>
-              {board.pages} page{board.pages > 1 ? 's' : ''} provisioned
+              {board.pages > 1
+                ? t('daemonBoard.pagesProvisionedMany', { count: board.pages })
+                : t('daemonBoard.pagesProvisionedOne', { count: board.pages })}
             </span>
           </div>
         </Daemon>
@@ -222,12 +224,14 @@ export default function DaemonBoard() {
         <Daemon
           name="Reconciler"
           kind="multi-worker"
-          role="Drains six work sources under SKIP LOCKED."
+          role={t('daemonBoard.reconcilerRole')}
           live={isLive('reconciler')}
           side="top"
         >
           <div className={styles.queue}>
-            <span className={styles.sub}>stardust_sync_queue · {board.queue.length} pending</span>
+            <span className={styles.sub}>
+              {t('daemonBoard.syncQueuePending', { count: board.queue.length })}
+            </span>
             <div className={styles.queueChips}>
               {board.queue.slice(0, 7).map(id => (
                 <span key={id} className={styles.qchip}>
@@ -235,18 +239,24 @@ export default function DaemonBoard() {
                 </span>
               ))}
               {board.queue.length > 7 && <span className={styles.qmore}>+{board.queue.length - 7}</span>}
-              {board.queue.length === 0 && <span className={styles.qempty}>empty</span>}
+              {board.queue.length === 0 && <span className={styles.qempty}>{t('daemonBoard.empty')}</span>}
             </div>
 
             <div className={styles.workers}>
               {Array.from({ length: WORKERS }, (_, i) => (
                 <span key={i} className={`${styles.worker} ${board.claims[i] !== null ? styles.workerBusy : ''}`}>
                   w{i + 1}
-                  <em>{board.claims[i] !== null ? `claimed ${board.claims[i]}` : 'idle'}</em>
+                  <em>
+                    {board.claims[i] !== null
+                      ? t('daemonBoard.workerClaimed', { id: board.claims[i] as number })
+                      : t('daemonBoard.workerIdle')}
+                  </em>
                 </span>
               ))}
             </div>
-            <span className={styles.sub}>{board.drained.toLocaleString('en-US')} rows drained</span>
+            <span className={styles.sub}>
+              {t('daemonBoard.rowsDrained', { count: board.drained.toLocaleString('en-US') })}
+            </span>
           </div>
         </Daemon>
       </div>
@@ -255,28 +265,28 @@ export default function DaemonBoard() {
       <div className={styles.core}>
         <div className={styles.coreHead}>
           <span className={styles.coreTitle}>MySQL 8.0.13+</span>
-          <span className={styles.coreSub}>sole coordination point — no broker, no daemon-to-daemon RPC</span>
+          <span className={styles.coreSub}>{t('daemonBoard.coreSub')}</span>
         </div>
         <div className={styles.coreTables}>
           <span className={styles.coreTable}>
             entry_data
-            <em>{board.entries.toLocaleString('en-US')} rows</em>
+            <em>{t('daemonBoard.entriesRows', { count: board.entries.toLocaleString('en-US') })}</em>
           </span>
           <span className={styles.coreTable}>
             entry_slots_page_1…{board.pages}
-            <em>{board.freeSlots} free slots</em>
+            <em>{t('daemonBoard.freeSlotsCount', { count: board.freeSlots })}</em>
           </span>
           <span className={styles.coreTable}>
             stardust_sync_queue
-            <em>{board.queue.length} pending</em>
+            <em>{t('daemonBoard.syncQueueCount', { count: board.queue.length })}</em>
           </span>
           <span className={styles.coreTable}>
             stardust_slot_assignments
-            <em>{board.tombstones.length} tombstoned</em>
+            <em>{t('daemonBoard.tombstonedCount', { count: board.tombstones.length })}</em>
           </span>
           <span className={styles.coreTable}>
             stardust_export_jobs
-            <em>{board.artifacts} complete</em>
+            <em>{t('daemonBoard.artifactsComplete', { count: board.artifacts })}</em>
           </span>
         </div>
       </div>
@@ -285,32 +295,34 @@ export default function DaemonBoard() {
         <Daemon
           name="Liberator"
           kind="singleton"
-          role="Sweeps tombstoned slots back to free, so capacity is reused."
+          role={t('daemonBoard.liberatorRole')}
           live={isLive('liberator')}
           side="bottom"
         >
           <div className={styles.sweep}>
             {board.tombstones.length === 0 ? (
-              <span className={styles.qempty}>nothing tombstoned</span>
+              <span className={styles.qempty}>{t('daemonBoard.nothingTombstoned')}</span>
             ) : (
-              board.tombstones.slice(0, 3).map(t => (
-                <div key={t.id} className={styles.sweepRow}>
-                  <span className={styles.sweepCol}>{t.column}</span>
+              board.tombstones.slice(0, 3).map(ts => (
+                <div key={ts.id} className={styles.sweepRow}>
+                  <span className={styles.sweepCol}>{ts.column}</span>
                   <div className={styles.sweepTrack}>
-                    <div className={styles.sweepFill} style={{ width: `${t.swept}%` }} />
+                    <div className={styles.sweepFill} style={{ width: `${ts.swept}%` }} />
                   </div>
-                  <span className={styles.sweepPct}>{t.swept}%</span>
+                  <span className={styles.sweepPct}>{ts.swept}%</span>
                 </div>
               ))
             )}
-            <span className={styles.sub}>{board.reclaimed} slots returned to free</span>
+            <span className={styles.sub}>
+              {t('daemonBoard.slotsReturned', { count: board.reclaimed })}
+            </span>
           </div>
         </Daemon>
 
         <Daemon
           name="Chronicler"
           kind="multi-worker"
-          role="Streams CSV/JSON export artifacts straight to disk."
+          role={t('daemonBoard.chroniclerRole')}
           live={isLive('chronicler')}
           side="bottom"
         >
@@ -323,7 +335,9 @@ export default function DaemonBoard() {
               <div className={styles.exportFill} style={{ width: `${board.exportPct}%` }} />
             </div>
             <span className={styles.sub}>
-              {board.artifacts} artifact{board.artifacts === 1 ? '' : 's'} written · cursor-paginated, never buffered
+              {board.artifacts === 1
+                ? t('daemonBoard.artifactsWrittenOne', { count: board.artifacts })
+                : t('daemonBoard.artifactsWrittenMany', { count: board.artifacts })}
             </span>
           </div>
         </Daemon>

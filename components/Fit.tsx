@@ -9,6 +9,8 @@ export default function Fit() {
     fit?: {
       good?: { heading?: string; items?: string[] };
       bad?: { heading?: string; items?: string[] };
+      yes?: string;
+      no?: string;
     };
   };
   const good = landing.fit?.good?.items ?? [];
@@ -21,7 +23,7 @@ export default function Fit() {
           <span>{landing.fit?.good?.heading}</span>
           <span className="tag tag-indexed">
             <span className="dot" />
-            yes
+            {landing.fit?.yes}
           </span>
         </div>
         <ul className={styles.list}>
@@ -36,7 +38,7 @@ export default function Fit() {
           <span>{landing.fit?.bad?.heading}</span>
           <span className="tag tag-error">
             <span className="dot" />
-            no
+            {landing.fit?.no}
           </span>
         </div>
         <ul className={styles.list}>

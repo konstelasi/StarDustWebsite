@@ -4,39 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useInView } from '@/lib/useInView';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import { useTicker } from '@/lib/useTicker';
+import { useTranslations } from '@/lib/i18n';
 import styles from './FieldLifecycle.module.css';
 
 const TOTAL_ROWS = 4000;
 const CHUNK = 200;
 
 type Act = 0 | 1 | 2 | 3;
-
-const ACTS: { title: string; actor: string; blurb: string }[] = [
-  {
-    title: 'promoteFieldToFilterable() returns',
-    actor: 'your request',
-    blurb:
-      'The call recorded an intention and came back immediately. Nothing has been indexed. This is the state people file bugs about.',
-  },
-  {
-    title: 'the Watcher provisions a page',
-    actor: 'Watcher · singleton',
-    blurb:
-      'No page had a free indexed int slot, so the Watcher provisions one. A page carries exactly the columns it indexes, four of every type family, so the three spare int columns are what let the next few promotions skip this step. It provisions capacity and nothing else — claiming a slot is not its job, so the field is still unmapped when this tick ends.',
-  },
-  {
-    title: 'the Reconciler claims the slot and backfills',
-    actor: 'Reconciler · multi-worker',
-    blurb:
-      'The Reconciler reserves the slot as backfilling, then copies every existing entry\u2019s value out of JSON into the slot column in chunks, checkpointing after each one.',
-  },
-  {
-    title: 'the slot flips to ready',
-    actor: 'Reconciler · final chunk',
-    blurb:
-      'The last chunk promotes the slot and bumps the schema version. The identical read() call that was throwing a minute ago now returns rows.',
-  },
-];
 
 type LogLine = { id: number; event: string; detail: string };
 
@@ -46,6 +20,33 @@ const line = (event: string, detail: string): LogLine => ({ id: lineId++, event,
 export default function FieldLifecycle() {
   const [ref, visible] = useInView<HTMLDivElement>();
   const reduced = useReducedMotion();
+  const t = useTranslations('landing');
+
+  const acts = useMemo(
+    () => [
+      {
+        title: t('fieldLifecycle.acts.act0Title'),
+        actor: t('fieldLifecycle.acts.act0Actor'),
+        blurb: t('fieldLifecycle.acts.act0Blurb'),
+      },
+      {
+        title: t('fieldLifecycle.acts.act1Title'),
+        actor: t('fieldLifecycle.acts.act1Actor'),
+        blurb: t('fieldLifecycle.acts.act1Blurb'),
+      },
+      {
+        title: t('fieldLifecycle.acts.act2Title'),
+        actor: t('fieldLifecycle.acts.act2Actor'),
+        blurb: t('fieldLifecycle.acts.act2Blurb'),
+      },
+      {
+        title: t('fieldLifecycle.acts.act3Title'),
+        actor: t('fieldLifecycle.acts.act3Actor'),
+        blurb: t('fieldLifecycle.acts.act3Blurb'),
+      },
+    ],
+    [t],
+  );
 
   const [act, setAct] = useState<Act>(0);
   const [cursor, setCursor] = useState(0);
@@ -108,20 +109,20 @@ export default function FieldLifecycle() {
       setCursor(TOTAL_ROWS);
       return;
     }
-    const t = setTimeout(start, 400);
-    return () => clearTimeout(t);
+    const timer = setTimeout(start, 400);
+    return () => clearTimeout(timer);
   }, [visible, reduced, start]);
 
   // Act 1 and 2 are held long enough to read; act 3 is paced by the chunks.
   useEffect(() => {
     if (!running || reduced) return;
     if (act === 0) {
-      const t = setTimeout(() => goto(1), 2800);
-      return () => clearTimeout(t);
+      const timer = setTimeout(() => goto(1), 2800);
+      return () => clearTimeout(timer);
     }
     if (act === 1) {
-      const t = setTimeout(() => goto(2), 2200);
-      return () => clearTimeout(t);
+      const timer = setTimeout(() => goto(2), 2200);
+      return () => clearTimeout(timer);
     }
     if (act === 3) setRunning(false);
   }, [act, running, reduced, goto]);
@@ -156,21 +157,28 @@ export default function FieldLifecycle() {
 
   const readout = useMemo(
     () => [
-      { label: 'isFilterable', value: 'true', tone: 'accent' as const, note: 'registry intent — set the moment the call returned' },
+      {
+        label: 'isFilterable',
+        value: 'true',
+        tone: 'accent' as const,
+        note: t('fieldLifecycle.readout.filterableNote'),
+      },
       {
         label: 'isIndexed',
         value: indexed ? 'true' : 'false',
         tone: indexed ? ('indexed' as const) : ('pending' as const),
-        note: indexed ? 'a filter works right now' : 'no live slot a filter could use yet',
+        note: indexed
+          ? t('fieldLifecycle.readout.indexedNoteTrue')
+          : t('fieldLifecycle.readout.indexedNoteFalse'),
       },
     ],
-    [indexed],
+    [indexed, t],
   );
 
   return (
     <div className={styles.demo} ref={ref}>
       <div className={styles.timeline}>
-        {ACTS.map((a, i) => (
+        {acts.map((a, i) => (
           <button
             key={a.title}
             type="button"
@@ -190,15 +198,16 @@ export default function FieldLifecycle() {
         ))}
       </div>
 
-      <p className={styles.blurb}>{ACTS[act].blurb}</p>
+      <p className={styles.blurb}>{acts[act].blurb}</p>
 
       <p className={styles.caveat}>
-        This is the cold-start path, where no page yet has a free indexed slot of the
-        right type. When capacity already exists, the slot is reserved inside the
-        transaction that <code>promoteFieldToFilterable()</code> itself runs — acts 1
-        and 2 collapse, the Watcher never gets involved, and the field goes straight to{' '}
-        <code>backfilling</code>. Either way the window below is real: a{' '}
-        <code>backfilling</code> slot is not queryable.
+        {t('fieldLifecycle.caveat1')}
+        <code>promoteFieldToFilterable()</code>
+        {t('fieldLifecycle.caveat2')}
+        <code>backfilling</code>
+        {t('fieldLifecycle.caveat3')}
+        <code>backfilling</code>
+        {t('fieldLifecycle.caveat4')}
       </p>
 
       <div className={styles.grid}>
@@ -222,7 +231,7 @@ export default function FieldLifecycle() {
             <div className={styles.divider} />
 
             <div className={styles.readRow}>
-              <span className={styles.readLabel}>slot</span>
+              <span className={styles.readLabel}>{t('fieldLifecycle.readout.slotLabel')}</span>
               {slotStatus ? (
                 <span className={`tag ${slotStatus === 'ready' ? 'tag-indexed' : 'tag-pending'}`}>
                   <span className="dot" />
@@ -231,17 +240,17 @@ export default function FieldLifecycle() {
               ) : (
                 <span className="tag tag-error">
                   <span className="dot" />
-                  none reserved
+                  {t('fieldLifecycle.readout.noneReserved')}
                 </span>
               )}
               <span className={styles.readNote}>
                 {slotStatus === 'ready'
-                  ? 'live and queryable'
+                  ? t('fieldLifecycle.readout.noteReady')
                   : slotStatus
-                    ? 'reserved, but pre-flight still rejects backfilling'
+                    ? t('fieldLifecycle.readout.noteReserved')
                     : act === 1
-                      ? 'capacity exists now — but nothing has claimed it yet'
-                      : 'no page had a free indexed int slot'}
+                      ? t('fieldLifecycle.readout.noteCapacityExists')
+                      : t('fieldLifecycle.readout.noteNoSlot')}
               </span>
             </div>
 
@@ -259,7 +268,7 @@ export default function FieldLifecycle() {
                 />
               </div>
               <span className={styles.progressNote}>
-                every entry&apos;s value copied out of JSON into the slot column, {CHUNK} at a time
+                {t('fieldLifecycle.readout.progressNote', { chunk: CHUNK })}
               </span>
             </div>
           </div>
@@ -267,7 +276,7 @@ export default function FieldLifecycle() {
 
         <div className={`panel ${styles.logPanel}`}>
           <div className="panel-head">
-            <span>daemon event stream · NDJSON</span>
+            <span>{t('fieldLifecycle.logHead')}</span>
             <span className="tag tag-json">stdout</span>
           </div>
           <div className={styles.log} ref={logRef}>
@@ -288,7 +297,7 @@ export default function FieldLifecycle() {
 
       <div className={`panel ${styles.callPanel} ${indexed ? styles.callOk : styles.callBad}`}>
         <div className="panel-head">
-          <span>the same read() call, throughout</span>
+          <span>{t('fieldLifecycle.callHead')}</span>
           <button
             type="button"
             className="btn"
@@ -297,7 +306,7 @@ export default function FieldLifecycle() {
               start();
             }}
           >
-            replay
+            {t('fieldLifecycle.replayButton')}
           </button>
         </div>
 
@@ -314,22 +323,17 @@ export default function FieldLifecycle() {
               <>
                 <span className="tag tag-indexed">
                   <span className="dot" />
-                  EntryPage · 128 rows
+                  {t('fieldLifecycle.resultOkTag')}
                 </span>
-                <p>
-                  Nothing about the call changed. The engine caught up underneath it.
-                </p>
+                <p>{t('fieldLifecycle.resultOkBody')}</p>
               </>
             ) : (
               <>
                 <span className="tag tag-error">
                   <span className="dot" />
-                  FieldNotFilterableException
+                  {t('fieldLifecycle.resultErrTag')}
                 </span>
-                <p>
-                  Rejected at pre-flight rather than silently returning an empty page —
-                  so a half-built index can never look like &quot;no matches&quot;.
-                </p>
+                <p>{t('fieldLifecycle.resultErrBody')}</p>
               </>
             )}
           </div>
