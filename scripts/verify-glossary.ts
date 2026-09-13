@@ -6,16 +6,24 @@
  * satisfied by any string; a build sees a component that falls back to the
  * raw key on a miss (`lib/i18n/resolve.ts`) and renders it anyway — a typo'd
  * id ships as visible mojibake rather than a build failure. The failure this
- * exists to catch: a `<Term id="...">` added to a landing page with no
- * matching entry in `messages/{en,id}/glossary.json`, the two locale catalogs
- * drifting apart (a term added to one and not the other), or a "short"
- * definition that grew past the one sentence the popup and the page both
- * assume.
+ * exists to catch: a `<Term id="...">` added to a page with no matching entry
+ * in `messages/{en,id}/glossary.json`, the two locale catalogs drifting apart
+ * (a term added to one and not the other), or a "short" definition that grew
+ * past the one sentence the popup and the page both assume.
+ *
+ * **The page list is a directory walk, not a hardcoded array.** It used to be
+ * `['app/(en)/page.tsx', 'app/id/page.tsx']` — correct when `<Term>` had
+ * exactly two call sites, and silently blind the moment a third page started
+ * using it, on the same shape of trap the engine's own `EventVocabularyTest`
+ * documents: a scan that only covers the directories someone remembered to
+ * list stays green while a new one goes unchecked. Every `.tsx` under `app/`
+ * and `components/` is scanned instead, so a new page or component that marks
+ * a term is covered for free.
  *
  * Run with `npm run verify:glossary`.
  */
 
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 let failed = false;
@@ -42,10 +50,34 @@ function readGlossary(locale: string): GlossaryCatalog {
   return JSON.parse(raw) as GlossaryCatalog;
 }
 
-/** Every `<Term id="...">` occurrence in one landing page. */
+/** Every `<Term id="...">` occurrence in one file, in appearance order. */
 function termIdsIn(relativePath: string): string[] {
   const source = readFileSync(join(ROOT, relativePath), 'utf8');
   return Array.from(source.matchAll(/<Term id="([a-z0-9-]+)"/g), m => m[1]);
+}
+
+/**
+ * Every `.tsx` file under `app/` and `components/`, relative to `ROOT`.
+ *
+ * `node_modules` and Next's `.next`/`out` build directories are skipped on
+ * general principle, though neither ever appears under these two roots.
+ */
+function listTsxFiles(relativeDir: string): string[] {
+  const dir = join(ROOT, relativeDir);
+  const out: string[] = [];
+
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    const rel = join(relativeDir, entry);
+    if (statSync(full).isDirectory()) {
+      if (entry === 'node_modules' || entry === '.next' || entry === 'out') continue;
+      out.push(...listTsxFiles(rel));
+    } else if (entry.endsWith('.tsx')) {
+      out.push(rel);
+    }
+  }
+
+  return out;
 }
 
 /** A definition is meant to be one sentence — no internal sentence break before the final punctuation mark. */
@@ -56,27 +88,63 @@ function isOneSentence(text: string): boolean {
   return !/[.!?]\s/.test(body);
 }
 
-console.log('landing-page term ids resolve');
+console.log('marked pages still carry <Term>');
 
-const LANDING_PAGES = ['app/(en)/page.tsx', 'app/id/page.tsx'];
+// Pages known to lean on the glossary for their prose. Unlike the walk below,
+// a page landing here with zero markers is worth failing loudly over — it
+// means the marking was lost, not merely that this particular file has none.
+const EXPECTED_TERM_PAGES = [
+  'app/(en)/page.tsx',
+  'app/id/page.tsx',
+  'app/(en)/custom-fields/page.tsx',
+  'app/id/custom-fields/page.tsx',
+];
 const catalogs: Record<string, GlossaryCatalog> = { en: readGlossary('en'), id: readGlossary('id') };
 
-for (const page of LANDING_PAGES) {
+for (const page of EXPECTED_TERM_PAGES) {
   const ids = termIdsIn(page);
   if (ids.length === 0) {
     fail(`✗ ${page}: no <Term> markers found — is the marking still there?`);
-    continue;
+  } else {
+    pass(`✓ ${page}: carries ${ids.length} marked term(s)`);
   }
+}
+
+console.log('\nevery marked term id resolves');
+
+// Every .tsx under app/ and components/, not just the pages above — a term
+// marked in a new file is checked automatically instead of escaping until
+// someone remembers to add it to a list.
+const ALL_TSX_FILES = [...listTsxFiles('app'), ...listTsxFiles('components')];
+
+for (const file of ALL_TSX_FILES) {
+  const ids = termIdsIn(file);
+  if (ids.length === 0) continue;
+
   let allResolved = true;
   for (const [locale, catalog] of Object.entries(catalogs)) {
     for (const id of ids) {
       if (!(id in catalog.terms)) {
-        fail(`✗ ${page}: <Term id="${id}"> has no entry in messages/${locale}/glossary.json`);
+        fail(`✗ ${file}: <Term id="${id}"> has no entry in messages/${locale}/glossary.json`);
         allResolved = false;
       }
     }
   }
-  if (allResolved) pass(`✓ ${page}: all ${ids.length} marked term(s) resolve in both locales`);
+
+  // A term marked more than twice in one file reads as clutter rather than
+  // help — `Term`'s own popup keeps only one open at a time, so a paragraph
+  // dense with dotted underlines is worse UX than marking the word once on
+  // first use and leaving the rest of the page plain.
+  const counts = new Map<string, number>();
+  for (const id of ids) counts.set(id, (counts.get(id) ?? 0) + 1);
+  for (const [id, count] of counts) {
+    if (count > 2) {
+      fail(`✗ ${file}: <Term id="${id}"> appears ${count} times — mark it once, on first use`);
+      allResolved = false;
+    }
+  }
+
+  if (allResolved) pass(`✓ ${file}: all ${ids.length} marked term(s) resolve in both locales`);
 }
 
 console.log('\nlocale catalogs match');
