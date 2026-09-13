@@ -303,6 +303,44 @@ export function searchSnippet(
 }
 
 /**
+ * `$stardust->promoteFieldToFilterable()` — the comment carries the timing.
+ *
+ * The call itself is a one-liner; what it does not tell you is the whole
+ * lesson. It records intent and returns immediately, and the field is not
+ * genuinely filterable until a running Watcher and Reconciler have given it a
+ * slot and backfilled it — which is why the comment, not the code, is what a
+ * reader actually needs here.
+ */
+export function promoteFieldSnippet(tenantId: number, fieldId: number, name: string): string {
+  return [
+    `// make ${name} filterable`,
+    `$stardust->promoteFieldToFilterable(${tenantId}, ${fieldId});`,
+    '',
+    '// Returns void, before any slot exists. A filter on this field is',
+    '// refused until the Watcher provisions capacity and the Reconciler',
+    '// backfills every existing row — with no daemon running, that moment',
+    '// never arrives, and the refusal has no obvious cause.',
+  ].join('\n');
+}
+
+/**
+ * `$stardust->demoteFieldFromFilterable()` — the immediate half of the pair.
+ *
+ * Shown beside `promoteFieldSnippet()` because the asymmetry is the lesson:
+ * promotion is a backfill window and demotion is not one at all.
+ */
+export function demoteFieldSnippet(tenantId: number, fieldId: number, name: string): string {
+  return [
+    `// stop filtering on ${name}`,
+    `$stardust->demoteFieldFromFilterable(${tenantId}, ${fieldId});`,
+    '',
+    '// Takes effect immediately — no window, no Reconciler needed. The',
+    '// stored values are untouched; only the slot is later reclaimed by',
+    '// the Liberator, once nothing still holds it live.',
+  ].join('\n');
+}
+
+/**
  * `$stardust->renameField()` — and the comment is most of the point.
  *
  * The call returns as soon as the registry commits, which is the thing a

@@ -1,0 +1,37 @@
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  /* Lede-to-first-child spacing — see FieldRequestDemo.module.css. */
+  margin-top: 40px;
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.field {
+  color: var(--text);
+  min-width: 70px;
+}
+
+.arrow {
+  color: var(--text-faint);
+}

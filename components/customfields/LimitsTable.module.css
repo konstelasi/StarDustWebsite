@@ -1,0 +1,32 @@
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  /* Lede-to-first-child spacing — see FieldRequestDemo.module.css. */
+  margin-top: 40px;
+}
+
+@media (max-width: 720px) {
+  .list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.item {
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.title {
+  font-size: 15px;
+  margin: 0 0 8px;
+}
+
+.body {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 13.5px;
+  line-height: 1.6;
+}

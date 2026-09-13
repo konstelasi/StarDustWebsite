@@ -44,6 +44,7 @@ export default function Nav() {
 
   const primaryLinks: { href: string; label: string; keep?: boolean }[] = [
     { href: withLocale(locale, '/playground/'), label: t('nav.links.playground'), keep: true },
+    { href: withLocale(locale, '/custom-fields/'), label: t('nav.links.customFields'), keep: true },
     { href: withLocale(locale, '/glossary/'), label: t('nav.links.glossary'), keep: true },
     { href: withLocale(locale, '/#start'), label: t('nav.links.getStarted') },
   ];

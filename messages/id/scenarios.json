@@ -37,6 +37,20 @@
         "unknown": "filter di nama lama ditolak, dan tidak dijembatani",
         "landed": "melanjutkan Reconciler menulis ulang seratus terakhir dan mengakhiri jembatan itu"
       }
+    },
+    "tenantFieldRequest": {
+      "title": "Tenant meminta field baru yang dapat difilter",
+      "blurb": "Field ditandai dapat difilter saat Watcher dihentikan, dan 600 kontak menunggu di belakangnya.",
+      "parked": "600 kontak ditulis · plan dapat difilter tetapi tidak memiliki slot · Watcher dihentikan · filter di plan ditolak pada pre-flight. Reconciler sudah mencoba sekali dan mencatat capacity_wait, itulah sebabnya tidak ada yang bergerak.",
+      "nextStep": "Mulai Watcher, kemudian tekan jalankan. Tick berikutnya menyediakan page, memesan slot dan mengalirkan 500 baris pertama; dua tick kemudian 100 terakhir mendarat dan slot bergerak ke siap.",
+      "nextStepReduced": "Mulai Watcher, kemudian tekan maju. Tick berikutnya menyediakan page, memesan slot dan mengalirkan 500 baris pertama; dua langkah kemudian 100 terakhir mendarat dan slot bergerak ke siap.",
+      "anchorLabel": "ruang kontrol daemon",
+      "stages": {
+        "refused": "filter di plan ditolak pada pre-flight",
+        "provision": "Watcher yang mulai berjalan menyediakan, memesan, dan mengalirkan satu chunk",
+        "ready": "dua tick lagi menyelesaikannya dan slot bergerak ke siap",
+        "answered": "filter yang identik sekarang mengembalikan baris"
+      }
     }
   }
 }

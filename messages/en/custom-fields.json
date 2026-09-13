@@ -1,0 +1,34 @@
+{
+  "evolve": {
+    "statusLabels": {
+      "none": "Refused",
+      "building": "Backfilling",
+      "live": "Indexed"
+    },
+    "steps": {
+      "0": {
+        "button": "Try filtering contacts by plan",
+        "body": "plan was just marked filterable. The registry says so — but no slot has been reserved for it yet, so a filter naming it is refused before the database is even touched."
+      },
+      "1": {
+        "button": "Start the Watcher",
+        "body": "The Watcher was stopped, so nothing was provisioning capacity. Starting it lets the next tick provision a page, reserve a slot, and write the first 500 of 600 contacts into it."
+      },
+      "2": {
+        "button": "Let it finish",
+        "body": "Two more ticks drain the last 100 contacts and flip the slot from backfilling to ready."
+      },
+      "3": {
+        "button": "Try the same filter again",
+        "body": "Same filter, same field, no code change on your side — it now reads a real index."
+      }
+    },
+    "done": "That is the whole backfill window: intent recorded immediately, capability arriving once the daemons catch up.",
+    "playgroundLink": "Replay this in the full playground →",
+    "codeTitle": "the call that started this",
+    "resultRefused": "rejected — {code}",
+    "resultMatched": "{count} row matched",
+    "eventLogTitle": "what the daemons logged",
+    "eventLogEmpty": "Nothing yet — press the button above."
+  }
+}

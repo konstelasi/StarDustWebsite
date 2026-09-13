@@ -99,14 +99,37 @@ restore:
 
 Build sequencing lives in [`PLAYGROUND_ROADMAP.md`](PLAYGROUND_ROADMAP.md).
 
+## The custom-fields walkthrough
+
+`/custom-fields` ([`app/(en)/custom-fields/`](<app/(en)/custom-fields/>),
+[`components/customfields/`](components/customfields/)) sits between the
+landing page and the playground on purpose: the landing page explains the
+mechanism and the playground hands over every control, and neither ever shows
+an application. This page walks one worked example — a multi-tenant SaaS
+tenant's `contact` record — from defining the model through a customer asking
+for a new filterable field after launch, ending on an honest list of what the
+engine will not do for you.
+
+Six of its seven sections are static: prose, real PHP, and a couple of small
+CSS illustrations (`TenantColumns`, `PayloadMirror`). **Section 05 is the one
+exception, and it runs the real reducer.** `FieldRequestDemo.tsx` seeds
+`lib/sim/`'s `tenant-field-request` scenario and lets a visitor step through
+its `payoff` stages one press at a time — the same registry `npm run
+verify:scenarios` folds and asserts on every run, so this section is checked
+by the scenario picker's own test rather than by a second script. It never
+calls `persist.save()` (which would silently overwrite whatever the visitor
+already built at `/playground/`) and never starts a ticker — every press folds
+its own `clock/tick`s, the same discipline `tour.ts` holds, so the section
+behaves identically under `prefers-reduced-motion`.
+
 ## Glossary
 
 `/glossary` ([`app/(en)/glossary/`](<app/(en)/glossary/>),
 [`components/Glossary.tsx`](components/Glossary.tsx)) lists all 44 StarDust
 terms in plain language. [`components/Term.tsx`](components/Term.tsx) marks a
-handful of them inline in the landing page's own prose — a dotted underline,
-revealed on hover, focus, or tap — each deep-linking to its full entry on the
-page.
+handful of them inline in the landing page's own prose, and more densely in
+`/custom-fields`'s — a dotted underline, revealed on hover, focus, or tap —
+each deep-linking to its full entry on the page.
 
 **The definitions are a manual mirror of the engine's own
 [`GLOSSARY.md`](https://github.com/damarbob/StarDust/blob/main/GLOSSARY.md),
@@ -119,8 +142,10 @@ sentence per term, deliberately shorter than the engine's own glossary entries
 (that file is contributor-facing and cites internal detail — ADR numbers,
 table and column names — the site must not repeat).
 [`scripts/verify-glossary.ts`](scripts/verify-glossary.ts) is what catches
-drift automatically: every `<Term id>` used on the landing page must resolve
-in both locale catalogs, the two catalogs must carry identical keys, and every
+drift automatically: it walks every `.tsx` file under `app/` and
+`components/`, so a `<Term id>` used anywhere — not only on a hardcoded list of
+pages remembered at the time — must resolve in both locale catalogs, the two
+catalogs must carry identical keys, and every
 definition must stay a single sentence — run with `npm run verify:glossary`.
 
 ## Develop

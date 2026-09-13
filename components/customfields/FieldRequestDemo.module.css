@@ -1,0 +1,76 @@
+.demo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* Lede-to-first-child spacing, matching `SlotMirror`/`JoinSwamp`/`Fit` and
+     every other section on the site — deliberately wider than the 16-20px
+     gap used between two components already inside one section. */
+  margin-top: 40px;
+}
+
+.stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-bright);
+  background: var(--panel-2);
+  color: var(--text-faint);
+  transition: border-color 160ms var(--ease), color 160ms var(--ease), background 160ms var(--ease);
+}
+
+.pillActive[data-status='none'] {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.pillActive[data-status='building'] {
+  color: var(--pending);
+  border-color: var(--pending);
+  background: var(--pending-soft);
+}
+
+.pillActive[data-status='live'] {
+  color: var(--indexed);
+  border-color: var(--indexed);
+  background: var(--indexed-soft);
+}
+
+.narration {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 62ch;
+}
+
+.narration p {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 15px;
+}
+
+.result {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text) !important;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

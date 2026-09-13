@@ -117,3 +117,71 @@ export function filterCityIs(value: string): SimAction[] {
     { type: 'query/run' },
   ];
 }
+
+/**
+ * A second scripted model, for the `/custom-fields/` use-case page.
+ *
+ * Deliberately a *different* model from `placesModel()` rather than a fourth
+ * field on it: the page's whole narrative is "a tenant already has a working
+ * model, and asks for one more filterable field on it later", and `plan`
+ * needs to still be non-filterable — mid-story — when the scenario built from
+ * this parks. Reusing `places` would mean the two consumers of this file
+ * fighting over one draft.
+ *
+ * Same three-field, 600-row shape as `placesModel()`, and for the same
+ * reasons: id determinism from a reset world, and a row count that straddles
+ * the 500-row chunk so the promotion window is visible rather than traversed
+ * in one fold.
+ */
+export const CONTACT_MODEL = 1;
+export const COMPANY = 1;
+export const PLAN = 2;
+export const SEATS = 3;
+
+export function draftContact(): SimAction[] {
+  return [
+    { type: 'draft/setName', name: 'contact' },
+    { type: 'draft/addField', declaredType: 'string' },
+    { type: 'draft/patchField', key: 'd1', patch: { name: 'company' } },
+    { type: 'draft/addField', declaredType: 'string' },
+    { type: 'draft/patchField', key: 'd2', patch: { name: 'plan' } },
+    { type: 'draft/addField', declaredType: 'int' },
+    { type: 'draft/patchField', key: 'd3', patch: { name: 'seats' } },
+  ];
+}
+
+/** Commit the draft. Fields commit in draft order, so company = 1, plan = 2, seats = 3. */
+export function commitContact(): SimAction[] {
+  return [{ type: 'registry/createModel' }];
+}
+
+export function seedContact(): SimAction[] {
+  return [{ type: 'payload/selectModel', modelId: CONTACT_MODEL }, { type: 'entry/seed' }];
+}
+
+/**
+ * The shared prefix: a three-field `contact` model and 600 rows, nothing
+ * indexed — every field, including `company`, is still JSON-only. The page's
+ * story starts here rather than with `company` already promoted, because a
+ * second promotion onto the same page would reuse index headroom and reserve
+ * warm (see `warm-path` above) — which would quietly retire the very
+ * capacity-wait window this page exists to show.
+ */
+export function contactModel(): SimAction[] {
+  return [
+    { type: 'world/reset' },
+    ...draftContact(),
+    ...commitContact(),
+    ...seedContact(),
+  ];
+}
+
+/** One leaf, one value, at the root — the filter the scenario runs on `plan`. */
+export function filterPlanIs(value: string): SimAction[] {
+  return [
+    { type: 'query/selectModel', modelId: CONTACT_MODEL },
+    { type: 'query/addCondition', fieldName: 'plan' },
+    { type: 'query/setValue', path: [], text: value },
+    { type: 'query/run' },
+  ];
+}

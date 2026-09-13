@@ -1,0 +1,25 @@
+/* Lede-to-first-child spacing throughout this file is 40px, matching every
+   other section on the site (`SlotMirror`, `JoinSwamp`, `Fit`, the home
+   page's own `.startGrid`) — deliberately wider than the ~16-20px gap used
+   between two components already inside one section. `CodeBlock` itself
+   carries no external margin, since it is a leaf reused inside grids whose
+   own `gap` already spaces it — so a bare `<CodeBlock>` as a section's only
+   child needs `.codeBlock` below rather than relying on the component. */
+
+.codeBlock {
+  margin-top: 40px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.nextGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 40px;
+}

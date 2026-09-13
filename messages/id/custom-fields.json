@@ -1,0 +1,34 @@
+{
+  "evolve": {
+    "statusLabels": {
+      "none": "Ditolak",
+      "building": "Sedang di-backfill",
+      "live": "Terindeks"
+    },
+    "steps": {
+      "0": {
+        "button": "Coba filter kontak berdasarkan plan",
+        "body": "plan baru saja ditandai dapat difilter. Registry sudah mencatatnya — tetapi belum ada slot yang dipesan untuknya, jadi filter yang menyebutnya ditolak sebelum database sempat disentuh."
+      },
+      "1": {
+        "button": "Jalankan Watcher",
+        "body": "Watcher sedang dihentikan, jadi tidak ada yang menyediakan kapasitas. Menjalankannya membuat tick berikutnya menyediakan page, memesan slot, dan menulis 500 dari 600 kontak pertama ke dalamnya."
+      },
+      "2": {
+        "button": "Biarkan selesai",
+        "body": "Dua tick lagi mengalirkan 100 kontak terakhir dan mengubah status slot dari sedang di-backfill menjadi siap."
+      },
+      "3": {
+        "button": "Coba filter yang sama lagi",
+        "body": "Filter yang sama, field yang sama, tanpa perubahan kode di sisi Anda — sekarang filter ini membaca indeks sungguhan."
+      }
+    },
+    "done": "Itulah seluruh backfill window: niat tercatat seketika, kemampuannya baru hadir setelah daemon menyelesaikan pekerjaannya.",
+    "playgroundLink": "Ulangi ini di playground lengkap →",
+    "codeTitle": "pemanggilan yang memulai semua ini",
+    "resultRefused": "ditolak — {code}",
+    "resultMatched": "{count} baris cocok",
+    "eventLogTitle": "yang dicatat oleh daemon",
+    "eventLogEmpty": "Belum ada apa-apa — tekan tombol di atas."
+  }
+}

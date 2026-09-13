@@ -45,10 +45,23 @@ import type { MilestoneKind } from './notify';
 import { isIndexedSlot } from './reserve';
 import { runningCheckpointForField } from './retype';
 import type { SimAction } from './reduce';
-import { CITY, COUNTRY, filterCityIs, placesModel, ticks } from './script';
+import {
+  CITY,
+  COUNTRY,
+  contactModel,
+  filterCityIs,
+  filterPlanIs,
+  placesModel,
+  PLAN,
+  ticks,
+} from './script';
 import { fieldIndexState, fieldsOf, type SimWorld } from './world';
 
-export type ScenarioId = 'promotion-window' | 'warm-path' | 'half-migrated';
+export type ScenarioId =
+  | 'promotion-window'
+  | 'warm-path'
+  | 'half-migrated'
+  | 'tenant-field-request';
 
 export interface Scenario {
   id: ScenarioId;
@@ -578,7 +591,146 @@ const HALF_MIGRATED: Scenario = {
   ],
 };
 
-export const SCENARIOS: readonly Scenario[] = [PROMOTION_WINDOW, WARM_PATH, HALF_MIGRATED];
+/**
+ * A cold-start promotion window on a purpose-built two-string-field model,
+ * for the `/custom-fields/` use-case page.
+ *
+ * Structurally identical to `PROMOTION_WINDOW` above — same tick counts, same
+ * shape of park and payoff — because it is the same engine behaviour under a
+ * different name: `plan` stands in for the field a tenant asks to filter on
+ * after the fact, and `contactModel()` starts cold (no field promoted yet) so
+ * the reservation genuinely waits on the Watcher rather than reusing another
+ * field's index headroom, which `warm-path` above demonstrates is the
+ * opposite case.
+ */
+const TENANT_FIELD_REQUEST: Scenario = {
+  id: 'tenant-field-request',
+  title: 'A tenant asks for a new filterable field',
+  blurb: 'A field marked filterable with the Watcher stopped, and 600 contacts waiting behind it.',
+  parked:
+    '600 contacts written · plan is filterable but holds no slot · the Watcher is stopped · a filter on plan is refused at pre-flight. The Reconciler has already tried once and logged capacity_wait, which is why nothing is moving.',
+  nextStep:
+    'Start the Watcher, then press run. The next tick provisions the page, reserves the slot and drains the first 500 rows; two ticks later the last 100 land and the slot flips to ready.',
+  nextStepReduced:
+    'Start the Watcher, then press step. The next tick provisions the page, reserves the slot and drains the first 500 rows; two steps later the last 100 land and the slot flips to ready.',
+  // Same anchor as `PROMOTION_WINDOW` and `WARM_PATH`, and for the same
+  // reason: this scenario's payoff is watched from the daemon control room,
+  // not from wherever a visitor happened to press promote. `SchemaEvolver`'s
+  // `#evolve` section exists in the playground too, but `HALF_MIGRATED`
+  // — a rename scenario, and the one case that *does* originate there —
+  // anchors to `#query` instead, because that is where its payoff is legible.
+  // The anchor names where to look, never where the trigger lives.
+  anchor: '#daemons',
+  anchorLabel: 'the daemon control room',
+  actions: [
+    ...contactModel(),
+    { type: 'daemon/togglePaused', daemon: 'watcher' },
+    // No page exists yet, so there is nothing to reserve from and the
+    // initiator defers the assignment — same reasoning as `PROMOTION_WINDOW`.
+    { type: 'field/promote', fieldId: PLAN },
+    // Park at tick 3, not 0: the Reconciler is due at 2, fails to reserve and
+    // logs `capacity_wait`, so the parked world explains itself.
+    ...ticks(3),
+  ],
+  assertParked(world) {
+    const bad: string[] = [];
+    const say = (ok: boolean, msg: string) => {
+      if (!ok) bad.push(msg);
+    };
+
+    say(world.clock.tick === 3, `expected to park at tick 3, got ${world.clock.tick}`);
+    say(world.clock.paused.watcher, 'expected the Watcher to be stopped');
+    say(world.models.length === 1, `expected 1 model, got ${world.models.length}`);
+    say(world.entries.length === 600, `expected 600 entries, got ${world.entries.length}`);
+    say(world.pages.length === 0, `expected no page, got ${world.pages.length}`);
+    say(world.slots.length === 0, `expected no slot rows, got ${world.slots.length}`);
+    say(
+      world.syncQueue.length === 0,
+      `expected an empty sync queue, got ${world.syncQueue.length} rows`,
+    );
+    say(
+      fieldIndexState(world, PLAN) === 'none',
+      `expected plan to have no index, got '${fieldIndexState(world, PLAN)}'`,
+    );
+    say(
+      runningCheckpointForField(world, PLAN) !== undefined,
+      'expected a running retype checkpoint for plan',
+    );
+    say(
+      world.events.some(e => e.event === 'capacity_wait'),
+      'expected a capacity_wait line in the log',
+    );
+    return bad;
+  },
+  payoff: [
+    {
+      label: 'a filter on plan is refused at pre-flight',
+      actions: filterPlanIs('aurora-1'),
+      narrates: ['filter-refused'],
+      assert(world) {
+        const run = world.queryDraft.lastRun;
+        const code = run?.rejection?.errorCode;
+        return code === 'field_not_filterable'
+          ? []
+          : [`expected field_not_filterable, got '${code ?? 'no rejection'}'`];
+      },
+    },
+    {
+      label: 'starting the Watcher provisions, reserves and drains one chunk',
+      actions: [{ type: 'daemon/togglePaused', daemon: 'watcher' }, { type: 'clock/tick' }],
+      narrates: ['page-provisioned', 'slot-reserved'],
+      assert(world) {
+        const bad: string[] = [];
+        if (fieldIndexState(world, PLAN) !== 'building') {
+          bad.push(`expected plan mid-backfill, got '${fieldIndexState(world, PLAN)}'`);
+        }
+        if (world.pages.length !== 1) bad.push(`expected 1 page, got ${world.pages.length}`);
+        const checkpoint = runningCheckpointForField(world, PLAN);
+        if (checkpoint?.lastProcessedId !== 500) {
+          bad.push(`expected a 500-row first chunk, got ${checkpoint?.lastProcessedId ?? 'none'}`);
+        }
+        return bad;
+      },
+    },
+    {
+      label: 'two more ticks finish it and the slot flips to ready',
+      actions: ticks(2),
+      narrates: ['field-indexed'],
+      assert(world) {
+        const bad: string[] = [];
+        if (fieldIndexState(world, PLAN) !== 'live') {
+          bad.push(`expected plan indexed, got '${fieldIndexState(world, PLAN)}'`);
+        }
+        if (!world.events.some(e => e.event === 'promote_to_ready')) {
+          bad.push('expected a promote_to_ready line in the log');
+        }
+        return bad;
+      },
+    },
+    {
+      label: 'the identical filter now returns its row',
+      actions: [{ type: 'query/run' }],
+      assert(world) {
+        const run = world.queryDraft.lastRun;
+        const bad: string[] = [];
+        if (run?.rejection != null) {
+          bad.push(`expected no rejection, got '${run.rejection.errorCode}'`);
+        }
+        if (run?.outcome?.matchedCount !== 1) {
+          bad.push(`expected 1 matched row, got ${run?.outcome?.matchedCount ?? 'none'}`);
+        }
+        return bad;
+      },
+    },
+  ],
+};
+
+export const SCENARIOS: readonly Scenario[] = [
+  PROMOTION_WINDOW,
+  WARM_PATH,
+  HALF_MIGRATED,
+  TENANT_FIELD_REQUEST,
+];
 
 export function scenarioById(id: ScenarioId): Scenario | undefined {
   return SCENARIOS.find(s => s.id === id);
