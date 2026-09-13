@@ -6,6 +6,7 @@ import { REPO } from '@/lib/links';
 import { withLocale, useLocale, useTranslations } from '@/lib/i18n';
 import BrandMark from './BrandMark';
 import LanguageSwitcher from './LanguageSwitcher';
+import SectionsMenu from './SectionsMenu';
 import styles from './Nav.module.css';
 
 /** Matches the `max-width: 900px` breakpoint in Nav.module.css. */
@@ -26,17 +27,28 @@ export default function Nav() {
   // you are not — which is what both callers need. `withLocale` re-roots
   // both onto the current locale's tree (`/id/#mirror`, `/id/playground/`).
   //
-  // The playground href keeps its trailing slash: `trailingSlash: true`
-  // emits the route as `playground/index.html`, and the bare path only
-  // reaches it through a redirect.
-  const LINKS: { href: string; label: string; keep?: boolean }[] = [
-    { href: withLocale(locale, '/#mirror'), label: t('nav.links.howItWorks') },
+  // The playground and glossary hrefs keep their trailing slash:
+  // `trailingSlash: true` emits the route as `<name>/index.html`, and the
+  // bare path only reaches it through a redirect.
+  //
+  // Split in two because the desktop bar ran out of room at seven top-level
+  // items: `sectionLinks` collapse into the `SectionsMenu` dropdown there,
+  // while the mobile hamburger panel has room to list everything flat, so
+  // `LINKS` below concatenates both for that one consumer.
+  const sectionLinks = [
+    { href: withLocale(locale, '/#mirror'), label: t('nav.links.overview') },
     { href: withLocale(locale, '/#joins'), label: t('nav.links.vsEav') },
     { href: withLocale(locale, '/#lifecycle'), label: t('nav.links.fieldLifecycle') },
     { href: withLocale(locale, '/#daemons'), label: t('nav.links.daemons') },
+  ];
+
+  const primaryLinks: { href: string; label: string; keep?: boolean }[] = [
     { href: withLocale(locale, '/playground/'), label: t('nav.links.playground'), keep: true },
+    { href: withLocale(locale, '/glossary/'), label: t('nav.links.glossary'), keep: true },
     { href: withLocale(locale, '/#start'), label: t('nav.links.getStarted') },
   ];
+
+  const LINKS: { href: string; label: string; keep?: boolean }[] = [...sectionLinks, ...primaryLinks];
 
   // Strip locale prefix from pathname for linking
   const basePath = pathname.startsWith('/id') ? pathname.slice(3) || '/' : pathname;
@@ -99,7 +111,8 @@ export default function Nav() {
           </a>
 
           <nav className={styles.links}>
-            {LINKS.map(l => (
+            <SectionsMenu label={t('nav.links.howItWorks')} links={sectionLinks} />
+            {primaryLinks.map(l => (
               <a key={l.href} href={l.href} className={l.keep ? styles.keep : undefined}>
                 {l.label}
               </a>

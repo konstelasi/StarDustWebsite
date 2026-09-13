@@ -5,10 +5,12 @@
     "closeMenu": "Tutup menu",
     "links": {
       "howItWorks": "Cara kerja",
+      "overview": "Ringkasan",
       "vsEav": "vs. EAV",
       "fieldLifecycle": "Siklus hidup field",
       "daemons": "Daemon",
       "playground": "Playground",
+      "glossary": "Glosarium",
       "getStarted": "Memulai"
     }
   },

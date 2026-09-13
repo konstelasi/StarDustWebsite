@@ -1,0 +1,72 @@
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--text-dim);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 140ms var(--ease);
+}
+.trigger:hover {
+  color: var(--text);
+}
+
+.chevron {
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 140ms var(--ease);
+  flex: none;
+}
+.chevronOpen {
+  transform: rotate(225deg);
+}
+
+/* `top` clears the rest of the 60px header bar below this trigger's own
+   line-box, which is shorter than the bar and vertically centered in it —
+   see Nav.module.css `.inner { height: 60px; align-items: center }`. */
+.menu {
+  position: absolute;
+  top: calc(100% + 26px);
+  left: 0;
+  z-index: 50;
+  min-width: 176px;
+  padding: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.95);
+}
+/* An unconditional `display: flex` here would beat the UA's
+   `[hidden] { display: none }` rule — author styles win regardless of
+   specificity against a same-origin UA declaration — so the flex layout
+   is scoped to the visible state instead of sitting on `.menu` itself. */
+.menu:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  padding: 8px 9px;
+  border-radius: calc(var(--radius-sm) - 3px);
+  font-size: 13.5px;
+  color: var(--text-dim);
+  text-decoration: none;
+}
+.item:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+  text-decoration: none;
+}

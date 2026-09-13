@@ -5,10 +5,12 @@
     "closeMenu": "Close menu",
     "links": {
       "howItWorks": "How it works",
+      "overview": "Overview",
       "vsEav": "vs. EAV",
       "fieldLifecycle": "Field lifecycle",
       "daemons": "Daemons",
       "playground": "Playground",
+      "glossary": "Glossary",
       "getStarted": "Get started"
     }
   },

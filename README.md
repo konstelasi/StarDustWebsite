@@ -99,6 +99,30 @@ restore:
 
 Build sequencing lives in [`PLAYGROUND_ROADMAP.md`](PLAYGROUND_ROADMAP.md).
 
+## Glossary
+
+`/glossary` ([`app/(en)/glossary/`](<app/(en)/glossary/>),
+[`components/Glossary.tsx`](components/Glossary.tsx)) lists all 44 StarDust
+terms in plain language. [`components/Term.tsx`](components/Term.tsx) marks a
+handful of them inline in the landing page's own prose — a dotted underline,
+revealed on hover, focus, or tap — each deep-linking to its full entry on the
+page.
+
+**The definitions are a manual mirror of the engine's own
+[`GLOSSARY.md`](https://github.com/damarbob/StarDust/blob/main/GLOSSARY.md),
+not machine-synced.** Unlike [`lib/sim/ddl.ts`](lib/sim/ddl.ts)'s verbatim
+quoting of the engine's `CREATE TABLE` statements described above, these are
+condensed by hand into one sentence each rather than copied literally — and,
+same duty as `ddl.ts`, updated by hand when the source changes.
+[`messages/{en,id}/glossary.json`](messages/en/glossary.json) carries one
+sentence per term, deliberately shorter than the engine's own glossary entries
+(that file is contributor-facing and cites internal detail — ADR numbers,
+table and column names — the site must not repeat).
+[`scripts/verify-glossary.ts`](scripts/verify-glossary.ts) is what catches
+drift automatically: every `<Term id>` used on the landing page must resolve
+in both locale catalogs, the two catalogs must carry identical keys, and every
+definition must stay a single sentence — run with `npm run verify:glossary`.
+
 ## Develop
 
 ```bash
