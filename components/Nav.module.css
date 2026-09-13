@@ -141,6 +141,7 @@
   .inner { gap: 14px; }
   .links { display: none; }
   .gh { display: none; }
+  .langBar { display: none; }
   .menuBtn { display: inline-flex; margin-left: auto; }
 }
 

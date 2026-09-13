@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { REPO } from '@/lib/links';
 import { withLocale, useLocale, useTranslations } from '@/lib/i18n';
 import BrandMark from './BrandMark';
+import LanguageSwitcher from './LanguageSwitcher';
 import styles from './Nav.module.css';
 
 /** Matches the `max-width: 900px` breakpoint in Nav.module.css. */
@@ -39,8 +40,10 @@ export default function Nav() {
 
   // Strip locale prefix from pathname for linking
   const basePath = pathname.startsWith('/id') ? pathname.slice(3) || '/' : pathname;
-  const otherLocaleLink = locale === 'en' ? withLocale('id', basePath) : withLocale('en', basePath);
-  const otherLocaleLabel = locale === 'en' ? t('languageSwitch.indonesian') : t('languageSwitch.english');
+  const LANGUAGES = [
+    { code: 'en', flag: '/flags/us.svg', label: t('languageSwitch.english'), href: withLocale('en', basePath) },
+    { code: 'id', flag: '/flags/id.svg', label: t('languageSwitch.indonesian'), href: withLocale('id', basePath) },
+  ];
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -107,14 +110,12 @@ export default function Nav() {
             GitHub ↗
           </a>
 
-          <a
-            className={styles.gh}
-            href={otherLocaleLink}
-            title={`Switch to ${otherLocaleLabel}`}
-            onClick={close}
-          >
-            {otherLocaleLabel}
-          </a>
+          <LanguageSwitcher
+            languages={LANGUAGES}
+            current={locale}
+            ariaLabel={t('languageSwitch.label')}
+            className={styles.langBar}
+          />
 
           <button
             type="button"
@@ -150,6 +151,13 @@ export default function Nav() {
             <a href={REPO} target="_blank" rel="noreferrer" onClick={close}>
               GitHub ↗
             </a>
+            <LanguageSwitcher
+              languages={LANGUAGES}
+              current={locale}
+              ariaLabel={t('languageSwitch.label')}
+              onNavigate={close}
+              variant="block"
+            />
           </div>
         </div>
       </header>
