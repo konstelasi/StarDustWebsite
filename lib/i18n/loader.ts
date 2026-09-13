@@ -11,7 +11,7 @@ export async function loadMessages(locale: Locale): Promise<Messages> {
   const messages: Messages = {};
 
   // Dynamically import all message files for the locale
-  const domains = ['common', 'landing', 'metadata', 'playground', 'tour', 'notify', 'scenarios'];
+  const domains = ['common', 'landing', 'metadata', 'playground', 'tour', 'notify', 'scenarios', 'glossary'];
 
   for (const domain of domains) {
     try {

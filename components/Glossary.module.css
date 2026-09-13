@@ -1,0 +1,45 @@
+.heading {
+  font-size: clamp(20px, 2.4vw, 26px);
+  margin-bottom: 20px;
+}
+
+.orientation {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 72ch;
+  color: var(--text-dim);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.list {
+  margin: 0;
+  display: grid;
+  gap: 28px;
+}
+
+.entry {
+  /* Clears the sticky nav (60px bar) when a deep link jumps straight here. */
+  scroll-margin-top: 88px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.entry:last-child {
+  border-bottom: none;
+}
+
+.term {
+  font-weight: 620;
+  font-size: 17px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.short {
+  margin: 0;
+  max-width: 68ch;
+  color: var(--text-dim);
+  font-size: 15px;
+  line-height: 1.6;
+}

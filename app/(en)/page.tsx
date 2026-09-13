@@ -7,6 +7,7 @@ import Hero from '@/components/Hero';
 import JoinSwamp from '@/components/JoinSwamp';
 import Nav from '@/components/Nav';
 import Section from '@/components/Section';
+import Term from '@/components/Term';
 import { DOCS } from '@/lib/links';
 import SlotMirror from '@/components/SlotMirror';
 import styles from './page.module.css';
@@ -51,10 +52,12 @@ export default function Home() {
           title="One row of truth, mirrored into an index."
           lede={
             <>
-              The complete JSON payload is always the system of record. Fields you mark
-              filterable are <em>additionally</em> mirrored into typed, indexed slot
-              columns on a 1:1 extension page — so a filter reads a real index instead of
-              scanning JSON. Edit the payload below and write it.
+              The complete JSON <Term id="payload">payload</Term> is always the{' '}
+              <Term id="system-of-record">system of record</Term>. Fields you mark{' '}
+              <Term id="filterable">filterable</Term> are <em>additionally</em> mirrored into
+              typed, indexed <Term id="slot">slot</Term> columns on a 1:1{' '}
+              <Term id="extension-page">extension page</Term> — so a filter reads a real index
+              instead of scanning JSON. Edit the payload below and write it.
             </>
           }
         >
@@ -69,8 +72,9 @@ export default function Home() {
             <>
               The classic attribute table makes a narrower question cost more, because each
               filtered attribute needs its own join and the intermediate result has to be
-              carried through all of them. StarDust joins one page, once, no matter how many
-              conditions you stack on it.
+              carried through all of them. StarDust joins one{' '}
+              <Term id="extension-page">page</Term>, once, no matter how many conditions you
+              stack on it.
             </>
           }
         >
@@ -84,9 +88,10 @@ export default function Home() {
           lede={
             <>
               This is the behaviour that trips up nearly everyone, so it gets its own section
-              rather than a footnote. Marking a field filterable records an intention and
-              returns immediately — two background daemons then do the work that makes
-              filtering actually possible.
+              rather than a footnote. Marking a field <Term id="filterable">filterable</Term>{' '}
+              records an intention and returns immediately — two background{' '}
+              <Term id="daemon">daemons</Term> then do the work that makes filtering actually
+              possible.
             </>
           }
         >
@@ -101,8 +106,10 @@ export default function Home() {
             <>
               They never talk to each other directly — MySQL is the only coordination point,
               with claims taken under <code>FOR UPDATE SKIP LOCKED</code> and singletons held
-              by advisory lock. Run more Reconcilers and Chroniclers for throughput; the
-              Watcher and Liberator stay one apiece.
+              by advisory lock. Run more <Term id="reconciler">Reconcilers</Term> and{' '}
+              <Term id="chronicler">Chroniclers</Term> for throughput; the{' '}
+              <Term id="watcher">Watcher</Term> and <Term id="liberator">Liberator</Term> stay
+              one apiece.
             </>
           }
         >
@@ -156,7 +163,13 @@ export default function Home() {
           id="start"
           eyebrow="06 · get started"
           title="Five minutes, one command."
-          lede="Brings up MySQL, bootstraps the schema, seeds a sample model, runs a filtered query, and starts all four daemons."
+          lede={
+            <>
+              Brings up MySQL, bootstraps the schema, seeds a sample{' '}
+              <Term id="model">model</Term>, runs a filtered query, and starts all four{' '}
+              <Term id="daemon">daemons</Term>.
+            </>
+          }
         >
           <div className={styles.startGrid}>
             <CodeBlock code={QUICKSTART} lang="bash" title="try it" copyable />
@@ -168,8 +181,9 @@ export default function Home() {
               <h3>Filters arrive as JSON, too.</h3>
               <p>
                 HTTP gateways rarely hold a PHP AST. The wire format decodes into the same
-                closed filter tree — twelve operators, full AND/OR/NOT, a thirteen-code error
-                taxonomy, and every rejection carries a JSON Pointer to the offending node.
+                closed <Term id="filter-tree">filter tree</Term> — twelve operators, full
+                AND/OR/NOT, a thirteen-code error taxonomy, and every rejection carries a JSON
+                Pointer to the offending node.
                 It ships as a normative JSON Schema so your clients can validate in any
                 language.
               </p>

@@ -7,6 +7,7 @@ import Hero from '@/components/Hero';
 import JoinSwamp from '@/components/JoinSwamp';
 import Nav from '@/components/Nav';
 import Section from '@/components/Section';
+import Term from '@/components/Term';
 import { DOCS } from '@/lib/links';
 import SlotMirror from '@/components/SlotMirror';
 import styles from './page.module.css';
@@ -51,10 +52,12 @@ export default function IdHome() {
           title="Satu baris sumber utama, dicerminkan ke dalam indeks."
           lede={
             <>
-              Payload JSON lengkap selalu merupakan sistem catatan sumber. Field yang Anda tandai
-              sebagai dapat difilter secara tambahan dicerminkan ke kolom slot bertipe dan terindeks
-              pada extension page 1:1 — jadi filter membaca indeks asli, bukan memindai JSON. Edit
-              payload di bawah, lalu write.
+              <Term id="payload">Payload</Term> JSON lengkap selalu merupakan{' '}
+              <Term id="system-of-record">sistem catatan sumber</Term>. Field yang Anda tandai
+              sebagai <Term id="filterable">dapat difilter</Term> secara tambahan dicerminkan ke
+              kolom <Term id="slot">slot</Term> bertipe dan terindeks pada{' '}
+              <Term id="extension-page">extension page</Term> 1:1 — jadi filter membaca indeks
+              asli, bukan memindai JSON. Edit payload di bawah, lalu write.
             </>
           }
         >
@@ -69,8 +72,9 @@ export default function IdHome() {
             <>
               Tabel atribut klasik membuat pertanyaan yang lebih spesifik menjadi lebih mahal, karena
               setiap atribut yang difilter memerlukan join-nya sendiri dan hasil antaranya harus
-              dibawa melalui semuanya. StarDust cukup join satu page, sekali, tidak peduli berapa
-              banyak kondisi yang Anda tumpuk di atasnya.
+              dibawa melalui semuanya. StarDust cukup join satu{' '}
+              <Term id="extension-page">page</Term>, sekali, tidak peduli berapa banyak kondisi
+              yang Anda tumpuk di atasnya.
             </>
           }
         >
@@ -84,10 +88,11 @@ export default function IdHome() {
           lede={
             <>
               Ini adalah perilaku yang membingungkan hampir semua orang, jadi mendapat bagiannya
-              sendiri, bukan sekadar catatan kaki. Menandai field sebagai dapat difilter itu instan
-              — cuma mencatat permintaan itu dan langsung kembali. Pekerjaan yang sebenarnya, yang
-              membuat penyaringan itu benar-benar berfungsi, dikerjakan setelahnya oleh dua daemon
-              latar belakang.
+              sendiri, bukan sekadar catatan kaki. Menandai field sebagai{' '}
+              <Term id="filterable">dapat difilter</Term> itu instan — cuma mencatat permintaan
+              itu dan langsung kembali. Pekerjaan yang sebenarnya, yang membuat penyaringan itu
+              benar-benar berfungsi, dikerjakan setelahnya oleh dua{' '}
+              <Term id="daemon">daemon</Term> latar belakang.
             </>
           }
         >
@@ -102,8 +107,10 @@ export default function IdHome() {
             <>
               Mereka tidak pernah berbicara langsung satu sama lain — MySQL adalah satu-satunya titik
               koordinasi, dengan klaim diambil melalui <code>FOR UPDATE SKIP LOCKED</code> dan
-              singleton dipegang oleh advisory lock. Jalankan lebih banyak Reconciler dan Chronicler
-              untuk throughput; Watcher dan Liberator tetap masing-masing satu.
+              singleton dipegang oleh advisory lock. Jalankan lebih banyak{' '}
+              <Term id="reconciler">Reconciler</Term> dan <Term id="chronicler">Chronicler</Term>{' '}
+              untuk throughput; <Term id="watcher">Watcher</Term> dan{' '}
+              <Term id="liberator">Liberator</Term> tetap masing-masing satu.
             </>
           }
         >
@@ -157,7 +164,13 @@ export default function IdHome() {
           id="start"
           eyebrow="06 · mulai sekarang"
           title="Lima menit, satu perintah."
-          lede="Menyalakan MySQL, mem-bootstrap skema, menyemai model contoh, menjalankan query yang difilter, dan memulai keempat daemon."
+          lede={
+            <>
+              Menyalakan MySQL, mem-bootstrap skema, menyemai <Term id="model">model</Term>{' '}
+              contoh, menjalankan query yang difilter, dan memulai keempat{' '}
+              <Term id="daemon">daemon</Term>.
+            </>
+          }
         >
           <div className={styles.startGrid}>
             <CodeBlock code={QUICKSTART} lang="bash" title="coba" copyable />
@@ -168,9 +181,10 @@ export default function IdHome() {
             <div className={styles.wireText}>
               <h3>Filter juga datang sebagai JSON.</h3>
               <p>
-                Gateway HTTP jarang menyimpan AST PHP. Wire format ini di-decode menjadi filter tree
-                tertutup yang sama — dua belas operator, AND/OR/NOT penuh, taksonomi error dengan
-                tiga belas kode, dan setiap penolakan membawa JSON Pointer ke node yang bermasalah.
+                Gateway HTTP jarang menyimpan AST PHP. Wire format ini di-decode menjadi{' '}
+                <Term id="filter-tree">filter tree</Term> tertutup yang sama — dua belas
+                operator, AND/OR/NOT penuh, taksonomi error dengan tiga belas kode, dan setiap
+                penolakan membawa JSON Pointer ke node yang bermasalah.
                 Ini disediakan sebagai JSON Schema normatif sehingga klien Anda dapat memvalidasi
                 dalam bahasa apa pun.
               </p>
