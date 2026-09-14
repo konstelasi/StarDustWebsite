@@ -98,6 +98,13 @@ const EXPECTED_TERM_PAGES = [
   'app/id/page.tsx',
   'app/(en)/custom-fields/page.tsx',
   'app/id/custom-fields/page.tsx',
+  'components/playground/Playground.tsx',
+  'components/playground/ModelBuilder.tsx',
+  'components/playground/TableInspector.tsx',
+  'components/playground/EntryWriter.tsx',
+  'components/playground/DaemonRoom.tsx',
+  'components/playground/QueryBuilder.tsx',
+  'components/playground/SchemaEvolver.tsx',
 ];
 const catalogs: Record<string, GlossaryCatalog> = { en: readGlossary('en'), id: readGlossary('id') };
 

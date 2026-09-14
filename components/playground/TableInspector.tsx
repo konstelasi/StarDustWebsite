@@ -1,5 +1,6 @@
 'use client';
 
+import Term from '@/components/Term';
 import { useTranslations } from '@/lib/i18n';
 import WorldInspector from './WorldInspector';
 import styles from './TableInspector.module.css';
@@ -34,7 +35,9 @@ export default function TableInspector() {
         <code>bootstrap()</code>
         {t('tableInspector.lede2')}
         <code>DDL</code>
-        {t('tableInspector.lede3')}
+        {t('tableInspector.lede3a')}
+        <Term id="schema-registry">{t('tableInspector.registryLabel')}</Term>
+        {t('tableInspector.lede3b')}
       </p>
 
       <div className={styles.beats}>

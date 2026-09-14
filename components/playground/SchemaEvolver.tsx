@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import CodeBlock from '@/components/CodeBlock';
+import Term from '@/components/Term';
 import { useTranslations } from '@/lib/i18n';
 import { isCategoricallyRejected } from '@/lib/sim/backfill';
 import { checkpointFor } from '@/lib/sim/checkpoints';
@@ -66,7 +67,13 @@ export default function SchemaEvolver() {
       <h2 id="evolve-title" className={styles.title}>
         {t('schemaEvolver.heading')}
       </h2>
-      <p className="section-lede">{t('schemaEvolver.lede')}</p>
+      <p className="section-lede">
+        {t('schemaEvolver.lede1')}
+        <Term id="payload">{t('schemaEvolver.payloadLabel')}</Term>
+        {t('schemaEvolver.lede2')}
+        <Term id="reconciler">{t('schemaEvolver.reconcilerLabel')}</Term>
+        {t('schemaEvolver.lede3')}
+      </p>
 
       <div className={styles.beats}>
         <div className={styles.beat}>

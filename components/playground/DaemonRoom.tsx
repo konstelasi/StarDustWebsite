@@ -1,5 +1,6 @@
 'use client';
 
+import Term from '@/components/Term';
 import { useTranslations } from '@/lib/i18n';
 import { readPendingDemand, reportCapacity } from '@/lib/sim/capacity';
 import { RECONCILER_WORKERS } from '@/lib/sim/daemons/reconciler';
@@ -37,7 +38,13 @@ export default function DaemonRoom() {
       <h2 id="daemons-title" className={styles.title}>
         {t('daemonRoom.heading')}
       </h2>
-      <p className="section-lede">{t('daemonRoom.lede')}</p>
+      <p className="section-lede">
+        {t('daemonRoom.lede1')}
+        <Term id="watcher">{t('daemonRoom.watcherLabel')}</Term>
+        {t('daemonRoom.lede2')}
+        <Term id="schema-registry">{t('daemonRoom.registryLabel')}</Term>
+        {t('daemonRoom.lede3')}
+      </p>
 
       <div className={styles.beats}>
         <div className={styles.beat}>

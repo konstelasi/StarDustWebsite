@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CodeBlock from '@/components/CodeBlock';
+import Term from '@/components/Term';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import { clearFlights, fly, type FlyOptions } from '@/lib/fly';
 import { defaultPageColumns } from '@/lib/sim/capacity';
@@ -307,7 +308,9 @@ export default function EntryWriter() {
         {t('entryWriter.title')}
       </h2>
       <p className="section-lede">
-        {t('entryWriter.lede1')}
+        {t('entryWriter.lede1a')}
+        <Term id="payload">{t('entryWriter.payloadLabel')}</Term>
+        {t('entryWriter.lede1b')}
         <code>entry_data</code>
         {t('entryWriter.lede2')}
       </p>

@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import CodeBlock from '@/components/CodeBlock';
+import Term from '@/components/Term';
 import { useTranslations } from '@/lib/i18n';
 import { usePointerDrag } from '@/lib/usePointerDrag';
 import { slotSqlType } from '@/lib/sim/ddl';
@@ -136,7 +137,9 @@ export default function ModelBuilder() {
       <p className="section-lede">
         {t('modelBuilder.lede1')}
         <code>ALTER TABLE</code>
-        {t('modelBuilder.lede2')}
+        {t('modelBuilder.lede2a')}
+        <Term id="field">{t('modelBuilder.fieldLabel')}</Term>
+        {t('modelBuilder.lede2b')}
         <code>stardust_fields</code>
         {t('modelBuilder.lede3')}
       </p>

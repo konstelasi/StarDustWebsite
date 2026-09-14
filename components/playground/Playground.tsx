@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import Footer from '@/components/Footer';
 import Nav from '@/components/Nav';
+import Term from '@/components/Term';
 import { useTranslations } from '@/lib/i18n';
 import { tickMs } from '@/lib/sim/clock';
 import { fromQuery, type LinkRecipe } from '@/lib/sim/link';
@@ -276,7 +277,11 @@ export default function Playground() {
           <header className={styles.head}>
             <p className="eyebrow">{t('header.eyebrow')}</p>
             <h1 className={styles.title}>{t('header.title')}</h1>
-            <p className="section-lede">{t('header.lede')}</p>
+            <p className="section-lede">
+              {t('header.lede1')}
+              <Term id="daemon">{t('header.daemonLabel')}</Term>
+              {t('header.lede2')}
+            </p>
             {/* The mode switch, in the slot stage 5.5 left uncommitted when it
                 put the scenario picker on the clock bar instead.
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Term from '@/components/Term';
 import { useTranslations } from '@/lib/i18n';
 import type { SortDirection, SortTarget } from '@/lib/sim/search/sort';
 import { fieldIndexState, fieldsOf } from '@/lib/sim/world';
@@ -50,7 +51,13 @@ export default function QueryBuilder() {
       <h2 id="query-title" className={styles.title}>
         {t('queryBuilder.heading')}
       </h2>
-      <p className="section-lede">{t('queryBuilder.lede')}</p>
+      <p className="section-lede">
+        {t('queryBuilder.lede1')}
+        <Term id="daemon">{t('queryBuilder.daemonLabel')}</Term>
+        {t('queryBuilder.lede2')}
+        <Term id="promotion">{t('queryBuilder.promotedLabel')}</Term>
+        {t('queryBuilder.lede3')}
+      </p>
 
       <div className={styles.beats}>
         <div className={styles.beat}>
