@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     locale: 'id_ID',
     images: [
       {
-        url: '/icon.svg',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Studi Kasus Custom Field StarDust',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Studi Kasus Custom Field StarDust',
     description,
-    images: ['/icon.svg'],
+    images: ['/og-image.png'],
   },
 };
 
@@ -96,6 +96,7 @@ export default function IdCustomFields() {
           id="problem"
           eyebrow="01 · masalahnya"
           title="Dua tenant, satu jenis record, dua bentuk berbeda."
+          titleAs="h1"
           lede={
             <>
               Acme ingin mencatat <code>plan</code> dan <code>seats</code> di setiap kontak.

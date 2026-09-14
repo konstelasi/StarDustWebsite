@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     images: [
       {
-        url: '/icon.svg',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'StarDust Custom Fields Walkthrough',
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'StarDust Custom Fields Walkthrough',
     description,
-    images: ['/icon.svg'],
+    images: ['/og-image.png'],
   },
 };
 
@@ -102,6 +102,7 @@ export default function CustomFields() {
           id="problem"
           eyebrow="01 · the problem"
           title="Two tenants, one record, two different shapes."
+          titleAs="h1"
           lede={
             <>
               Acme wants to track <code>plan</code> and <code>seats</code> on a contact. Globex

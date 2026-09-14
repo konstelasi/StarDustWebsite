@@ -20,8 +20,25 @@ export const metadata: Metadata = {
     title: 'Playground | StarDust',
     description:
       'Playground interaktif untuk StarDust — jelajahi field dinamis, siklus hidup field, dan pencerminan database dengan simulasi langsung.',
+    type: 'website',
     url: '/id/playground/',
+    siteName: 'StarDust',
     locale: 'id_ID',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Playground Interaktif StarDust',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Playground | StarDust',
+    description:
+      'Playground interaktif untuk StarDust — jelajahi field dinamis, siklus hidup field, dan pencerminan database dengan simulasi langsung.',
+    images: ['/og-image.png'],
   },
 };
 

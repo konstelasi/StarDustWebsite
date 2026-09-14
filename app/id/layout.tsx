@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     locale: 'id_ID',
     images: [
       {
-        url: '/icon.svg',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'StarDust Logo',
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title,
     description,
-    images: ['/icon.svg'],
+    images: ['/og-image.png'],
   },
 };
 

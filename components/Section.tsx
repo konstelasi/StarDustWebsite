@@ -2,12 +2,14 @@ export default function Section({
   id,
   eyebrow,
   title,
+  titleAs: TitleTag = 'h2',
   lede,
   children,
 }: {
   id: string;
   eyebrow: string;
   title: React.ReactNode;
+  titleAs?: 'h1' | 'h2';
   lede?: React.ReactNode;
   children: React.ReactNode;
 }) {
@@ -15,7 +17,7 @@ export default function Section({
     <section className="section" id={id}>
       <div className="shell">
         <p className="eyebrow">{eyebrow}</p>
-        <h2 className="section-title">{title}</h2>
+        <TitleTag className="section-title">{title}</TitleTag>
         {lede && <p className="section-lede">{lede}</p>}
         {children}
       </div>

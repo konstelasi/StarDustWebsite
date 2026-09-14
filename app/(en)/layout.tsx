@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     images: [
       {
-        url: '/icon.svg',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'StarDust Logo',
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'StarDust — dynamic fields at native SQL index speed',
     description,
-    images: ['/icon.svg'],
+    images: ['/og-image.png'],
   },
 };
 

@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     images: [
       {
-        url: '/icon.svg',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'StarDust Glossary',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'StarDust Glossary',
     description,
-    images: ['/icon.svg'],
+    images: ['/og-image.png'],
   },
 };
 
