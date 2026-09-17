@@ -55,7 +55,6 @@
     "bad": {
       "heading": "mungkin tidak cocok jika",
       "items": [
-        "Hosting bersama yang hanya cron atau tanpa shell. Perintah tick yang terbatas kini menuntaskan seluruh pekerjaan daemon dari satu kali eksekusi terjadwal, sehingga ini bukan lagi penghalang di MySQL 8.0.13+.",
         "MariaDB, atau MySQL 5.7 dan lebih lama. Keduanya secara aktif ditolak saat boot — CI menyimpan pekerjaan yang mengharapkan suite gagal di MariaDB.",
         "Konsistensi read-after-write yang kuat pada filter segera setelah retype atau promosi. Field-nya dilayani dari JSON sampai backfill-nya mendarat.",
         "Pencarian teks penuh, fuzzy, atau substring. Driver default menyediakan kecocokan eksak, perbandingan, rentang, keanggotaan set, dan anchored prefix — tidak ada yang lain.",

@@ -55,7 +55,6 @@
     "bad": {
       "heading": "probably not a fit if",
       "items": [
-        "Cron-only or shell-less shared hosting. The bounded tick command now drains every daemon's work from one scheduled invocation, so this is no longer a blocker on MySQL 8.0.13+.",
         "MariaDB, or MySQL 5.7 and older. Both are actively rejected at boot — CI keeps a job that expects the suite to fail on MariaDB.",
         "Strong read-after-write consistency on filters immediately after a retype or promotion. The field serves from JSON until its backfill lands.",
         "Full-text, fuzzy, or substring search. The default driver ships exact match, comparison, range, set membership, and anchored prefix — nothing else.",
