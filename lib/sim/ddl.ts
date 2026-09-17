@@ -72,7 +72,14 @@ export const TABLE_DDL: Record<TableName, string> = {
 -- instead of 30 -- held for a whole chunk transaction, which would block the
 -- write path's own enqueue.
 CREATE INDEX ix_sync_queue_entry
-    ON stardust_sync_queue (entry_id)`,
+    ON stardust_sync_queue (entry_id)
+
+-- The originating write's operation id. A chunk claims rows from N unrelated
+-- writes, so no chunk event can carry one write's id -- the reachable join is
+-- the failure path, and this is what a dead-lettered row copies it onto.
+-- Nullable: rows enqueued before this landed drain normally with it absent.
+ALTER TABLE stardust_sync_queue
+    ADD COLUMN origin_correlation_id VARCHAR(36) NULL DEFAULT NULL`,
 
   stardust_models: `CREATE TABLE IF NOT EXISTS stardust_models (
     id          INT          NOT NULL AUTO_INCREMENT,
@@ -209,7 +216,23 @@ ON DUPLICATE KEY UPDATE id = id`,
 -- There is no model_id column: the id is stamped into the top level of the
 -- filter JSON, alongside the consumer's own filter tree preserved verbatim.
 -- The (status, heartbeat_at) key is what lets a worker find a job whose
--- claimant stopped heartbeating and take it over.`,
+-- claimant stopped heartbeating and take it over.
+
+-- The cleanest of the three correlation-id columns: the Chronicler emits a
+-- genuine per-job pair (job_claimed -> job_complete / job_failed), so those
+-- take this id directly rather than through a companion field. Nullable for
+-- the same in-flight reason as the import-job column above.
+ALTER TABLE stardust_export_jobs
+    ADD COLUMN correlation_id VARCHAR(36) NULL DEFAULT NULL
+
+-- ADR 0047: the export resume anchor is the artifact file's verified byte
+-- count, not last_cursor alone. Written on every chunk commit, not only the
+-- final one, so an abandoned re-claim can adopt the prior worker's partial
+-- file in place instead of deleting it and restarting from zero. Nullable: a
+-- job already processing when the ALTER lands has no anchor and simply fails
+-- closed on its next resume attempt, the same as a fresh pending claim.
+ALTER TABLE stardust_export_jobs
+    ADD COLUMN artifact_bytes BIGINT NULL DEFAULT NULL`,
 
   stardust_import_jobs: `CREATE TABLE IF NOT EXISTS stardust_import_jobs (
     id               BIGINT        NOT NULL AUTO_INCREMENT,
@@ -237,7 +260,15 @@ ON DUPLICATE KEY UPDATE id = id`,
 -- by a check-then-insert. MySQL lets a UNIQUE hold any number of NULLs, so
 -- submissions without a key never collide with each other.
 -- manifest is written chunk by chunk, not once at the end: it doubles as the
--- resume point when a worker picks the job back up.`,
+-- resume point when a worker picks the job back up.
+
+-- The submitting call's operation id, so bulk_accepted and the Reconciler
+-- chunks that drain the job join up. There is no per-job completion event
+-- here -- only chunk events, whose operation genuinely is the chunk -- so
+-- those keep their own correlation_id and name this one job_correlation_id
+-- alongside. Nullable: a job submitted before this landed drains normally.
+ALTER TABLE stardust_import_jobs
+    ADD COLUMN correlation_id VARCHAR(36) NULL DEFAULT NULL`,
 
   stardust_reconciler_dlq: `CREATE TABLE IF NOT EXISTS stardust_reconciler_dlq (
     id                    BIGINT        NOT NULL AUTO_INCREMENT,
@@ -258,7 +289,16 @@ ON DUPLICATE KEY UPDATE id = id`,
 -- No foreign key to entry_data, on purpose. One of the reasons above is
 -- missing_entry_data, which only means anything if a row here can outlive the
 -- row that produced it -- and that is also why tenant_id and model_id are
--- stored rather than joined for.`,
+-- stored rather than joined for.
+
+-- The provenance half of the pair above: which write produced the row that
+-- ended up quarantined, sitting beside chunk_correlation_id (still NOT NULL)
+-- rather than replacing it -- "which tick failed this" and "which write
+-- created it" are different questions an operator triaging a dead letter
+-- needs both answers to. Nullable: bulk_import has no single originating
+-- write, and a row from before this landed has nothing to copy.
+ALTER TABLE stardust_reconciler_dlq
+    ADD COLUMN origin_correlation_id VARCHAR(36) NULL DEFAULT NULL`,
 
   backfill_checkpoints: `CREATE TABLE IF NOT EXISTS backfill_checkpoints (
     id                  BIGINT       NOT NULL AUTO_INCREMENT,
@@ -282,7 +322,14 @@ ON DUPLICATE KEY UPDATE id = id`,
 -- declared_type, so the type its values are coercing FROM has nowhere else to
 -- live once the lifecycle has started.
 ALTER TABLE backfill_checkpoints
-    ADD COLUMN source_declared_type VARCHAR(16) NULL DEFAULT NULL`,
+    ADD COLUMN source_declared_type VARCHAR(16) NULL DEFAULT NULL
+
+-- The ADR 0020 operation id of the lifecycle this checkpoint belongs to, so
+-- its completion event joins the same id its start event carried. Nullable:
+-- a checkpoint already running when the ALTER lands has no id, and every
+-- reader falls back to the per-chunk correlation id instead.
+ALTER TABLE backfill_checkpoints
+    ADD COLUMN correlation_id VARCHAR(36) NULL DEFAULT NULL`,
 
   stardust_advisory_schedule: `CREATE TABLE IF NOT EXISTS stardust_advisory_schedule (
     id              TINYINT      NOT NULL,

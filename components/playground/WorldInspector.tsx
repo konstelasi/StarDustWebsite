@@ -17,6 +17,7 @@ import type {
   SimSyncRow,
 } from '@/lib/sim/types';
 import { defaultPageColumns } from '@/lib/sim/capacity';
+import { formatSimTime } from '@/lib/sim/world';
 import PageTable from './PageTable';
 import { usePlayground } from './PlaygroundContext';
 import TableView, { TABLE_ROW_LIMIT, type Column } from './TableView';
@@ -30,6 +31,14 @@ const dash = <span className={styles.null}>NULL</span>;
 
 /** A singleton table still has a row, so it still renders as one. */
 type VersionRow = { version: number; updatedAt: string };
+
+/**
+ * The engine's second singleton (ADR 0052). The simulation drives no
+ * advisory sampler, so `nextSampleAt` / `lastSampleAt` stay at the row's
+ * genuine bootstrap-seeded state — NULL, meaning "never scheduled" — rather
+ * than a value nothing here ever wrote.
+ */
+type AdvisoryRow = { nextSampleAt: string | null; lastSampleAt: string | null; updatedAt: string };
 
 /**
  * Every table the engine bootstraps, inspectable.
@@ -54,6 +63,14 @@ export default function WorldInspector() {
 
   const versionRows: VersionRow[] = [
     { version: world.schemaVersion, updatedAt: world.schemaVersionUpdatedAt },
+  ];
+
+  // The seed step's own timestamp, not `world.schemaVersionUpdatedAt` — that
+  // one moves on every schema bump, and nothing here ever writes this row, so
+  // reusing it would make the advisory row's `updated_at` appear to change
+  // for a reason that never touched it.
+  const advisoryRows: AdvisoryRow[] = [
+    { nextSampleAt: null, lastSampleAt: null, updatedAt: formatSimTime(0) },
   ];
 
   return (
@@ -208,6 +225,16 @@ export default function WorldInspector() {
               ddl={TABLE_DDL.stardust_schema_version}
               empty={t('worldInspector.version.empty')}
             />
+            <TableView<AdvisoryRow>
+              name="stardust_advisory_schedule"
+              note={t('worldInspector.advisory.note')}
+              about={t('worldInspector.advisory.about')}
+              rows={advisoryRows}
+              rowKey={() => 1}
+              columns={ADVISORY_COLUMNS}
+              ddl={TABLE_DDL.stardust_advisory_schedule}
+              empty={t('worldInspector.advisory.empty')}
+            />
             <TableView<SimSyncRow>
               name="stardust_sync_queue"
               note={
@@ -334,6 +361,13 @@ const VERSION_COLUMNS: Column<VersionRow>[] = [
   { key: 'id', width: '56px', render: () => 1 },
   { key: 'version', width: '90px', align: 'end', render: v => v.version },
   { key: 'updated_at', width: 'minmax(150px, 1fr)', render: v => v.updatedAt },
+];
+
+const ADVISORY_COLUMNS: Column<AdvisoryRow>[] = [
+  { key: 'id', width: '56px', render: () => 1 },
+  { key: 'next_sample_at', width: 'minmax(150px, 1fr)', render: r => r.nextSampleAt ?? dash },
+  { key: 'last_sample_at', width: 'minmax(150px, 1fr)', render: r => r.lastSampleAt ?? dash },
+  { key: 'updated_at', width: 'minmax(150px, 1fr)', render: r => r.updatedAt },
 ];
 
 const SYNC_COLUMNS: Column<SimSyncRow>[] = [

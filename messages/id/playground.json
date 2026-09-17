@@ -152,6 +152,11 @@
       "about": "Satu baris, selamanya. Perubahan metadata field menaikkan versi, sehingga snapshot skema yang di-cache bisa tahu dalam satu pembacaan murah bahwa dirinya sudah usang, alih-alih membaca ulang registry pada setiap request.",
       "empty": "Tidak terjangkau — singleton ini di-seed saat bootstrap."
     },
+    "advisory": {
+      "note": "singleton · id = 1",
+      "about": "Singleton kedua: satu waktu jatuh tempo sampling advisory untuk seluruh deployment, bukan satu per proses. NULL berarti belum pernah dijadwalkan — daemon pertama yang melihatnya akan memilih waktu acak dalam rentang interval, sehingga sebuah fleet yang start bersamaan tidak sampling serentak.",
+      "empty": "Tidak terjangkau — singleton ini di-seed saat bootstrap."
+    },
     "syncQueue": {
       "noteEmpty": "utang backfill",
       "noteCount": "{count} baris utang",

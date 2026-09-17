@@ -152,6 +152,11 @@
       "about": "One row, forever. Field metadata changes bump the version, so a cached schema snapshot can tell in one cheap read that it is stale instead of re-reading the registry on every request.",
       "empty": "Unreachable — the singleton is seeded at bootstrap."
     },
+    "advisory": {
+      "note": "singleton · id = 1",
+      "about": "A second singleton, one advisory-sample due time for the whole deployment rather than one per process. NULL means never scheduled — the first daemon to see it picks a random moment inside the interval, so a fleet started in lockstep does not sample in a stampede.",
+      "empty": "Unreachable — the singleton is seeded at bootstrap."
+    },
     "syncQueue": {
       "noteEmpty": "backfill debt",
       "noteCount": "{count} rows of debt",

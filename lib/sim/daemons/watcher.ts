@@ -14,12 +14,21 @@
  * ## What is deliberately not here
  *
  * The engine's Watcher also drives two 24-hour advisory samplers — a
- * cardinality scan and a slot-spread scan, sharing one jittered timer so a
- * fleet started in lockstep does not stampede. Neither is simulated. A daily
- * cadence has nothing to show on a clock whose ticks are a second apart, and
- * firing them on some invented shorter period would put a number on screen that
- * means nothing. They are advisories: purely observational, never blocking,
- * never remediating, so leaving them out changes no behaviour anywhere else.
+ * cardinality scan and a slot-spread scan — sharing one due time read from the
+ * persisted `stardust_advisory_schedule` singleton (ADR 0052), not a
+ * per-process jittered field: the schedule is fleet-wide, one sample per
+ * interval across the whole deployment, claimed by a conditional UPDATE whose
+ * affected-row count is the claim itself. `next_sample_at IS NULL` means
+ * "never scheduled", and is what preserves first-sample phase randomisation —
+ * the first daemon anywhere to observe it picks a random moment inside the
+ * interval. Neither sampler is simulated. A daily cadence has nothing to show
+ * on a clock whose ticks are a second apart, and firing them on some invented
+ * shorter period would put a number on screen that means nothing. They are
+ * advisories: purely observational, never blocking, never remediating, so
+ * leaving them out changes no behaviour anywhere else. `lib/sim/ddl.ts`
+ * mirrors `stardust_advisory_schedule` regardless, since Section B's
+ * DDL-matches-the-engine claim covers every bootstrapped table whether or not
+ * this file drives it.
  */
 
 import { correlationId, emit } from '../emit';

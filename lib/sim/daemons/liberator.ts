@@ -60,16 +60,7 @@ export function liberatorTick(world: SimWorld): SimWorld {
 
   const corrId = correlationId('liberator', world.clock.tick);
 
-  let next = emit(world, (nextSeq, tick): SimEvent[] => [
-    line(
-      nextSeq(),
-      tick,
-      'liberator',
-      'sweep_started',
-      { correlation_id: corrId, batch_size: batch.length },
-    ),
-  ]);
-
+  let next = world;
   let reclaimed = 0;
   let nullified = 0;
 
@@ -79,6 +70,28 @@ export function liberatorTick(world: SimWorld): SimWorld {
     nullified += swept.rowsNullified;
     if (swept.reclaimed) reclaimed++;
   }
+
+  // `sweep_started` fires LAST, not first — the engine's Liberator::sweepBatch()
+  // does the same, because its tallies (`slots_claimed` / `slots_contended`)
+  // are not knowable until the whole batch has been walked slot by slot; this
+  // sim has no contention, so every claimable slot is claimed and the second
+  // number is always zero, but the shape — and the resulting event order,
+  // sweep_chunk(s) → sweep_complete → sweep_started — matches the engine's
+  // pinned sequence rather than the pre-ADR-0049 one.
+  next = emit(next, (nextSeq, tick): SimEvent[] => [
+    line(
+      nextSeq(),
+      tick,
+      'liberator',
+      'sweep_started',
+      {
+        correlation_id: corrId,
+        batch_size: batch.length,
+        slots_claimed: batch.length,
+        slots_contended: 0,
+      },
+    ),
+  ]);
 
   return {
     ...next,
@@ -132,7 +145,10 @@ export function sweepProgress(
  * `TombstonedSlotRepository::loadBatch()`.
  *
  * Oldest tombstone first, then page and column — a stable order with no `FOR
- * UPDATE`, because the singleton guarantee makes claim contention impossible.
+ * UPDATE`. The engine needs none even though the Liberator is multi-worker
+ * (ADR 0049): two workers loading the same batch is fine and costs one extra
+ * SELECT per cycle, because exclusion happens afterwards, at page-table
+ * granularity, via `SweepPageLock` — not here.
  */
 export function tombstonedBatch(world: SimWorld): SimSlot[] {
   return world.slots

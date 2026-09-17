@@ -330,7 +330,7 @@ export function simNow(world: SimWorld): string {
 }
 
 /** `Y-m-d H:i:s` in UTC, `tick` seconds after the world's epoch. */
-function formatSimTime(tick: number): string {
+export function formatSimTime(tick: number): string {
   const ms = Date.UTC(2026, 0, 1) + tick * 1000;
   return new Date(ms).toISOString().slice(0, 19).replace('T', ' ');
 }

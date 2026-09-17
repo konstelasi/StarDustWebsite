@@ -3,13 +3,16 @@
  *
  * **This tick is a no-op, and that is the honest state rather than a stub.**
  *
- * The Chronicler claims rows from `stardust_export_jobs`, paginates
- * `entry_data` with a cursor, and streams a CSV or JSON artifact straight to
- * disk without ever buffering it. There is nothing here for it to claim,
- * because nothing in the playground submits an export yet — that is the
- * operations section, alongside bulk import, the dead-letter replay and
- * compaction. A real Chronicler with an empty job table does exactly this:
- * claims nothing, writes nothing, and emits nothing.
+ * The Chronicler write-probes the artifact disk before claiming a job (ADR
+ * 0051), claims rows from `stardust_export_jobs`, paginates `entry_data` with
+ * a cursor, streams a CSV or JSON artifact straight to disk without ever
+ * buffering it, and — since ADR 0050 — can cooperatively yield a job back to
+ * `pending` at a committed chunk boundary rather than running past a time
+ * budget. There is nothing here for it to claim, because nothing in the
+ * playground submits an export yet — that is the operations section,
+ * alongside bulk import, the dead-letter replay and compaction. A real
+ * Chronicler with an empty job table does exactly this: claims nothing,
+ * writes nothing, and emits nothing.
  *
  * So the card is wired like the other three — its poll period is real, its
  * pause toggle works, and it is genuinely being asked to run on schedule. What
@@ -17,8 +20,9 @@
  * against an export nobody submitted would be the one thing the fidelity rules
  * forbid outright: a beautiful panel teaching something untrue.
  *
- * When the operations section lands, this file grows a claim, a page loop and
- * an artifact writer, and nothing about the clock or the card has to change.
+ * When the operations section lands, this file grows a claim, a disk probe, a
+ * page loop, an artifact writer and the yield check, and nothing about the
+ * clock or the card has to change.
  */
 
 import type { SimWorld } from '../world';

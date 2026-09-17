@@ -9,7 +9,7 @@
  * plausible-looking string in a log panel.
  *
  * PROVENANCE — this list is every `'event' => '...'` literal emitted from the
- * engine's `src/` as of 2026-09-01. It is a checked-in *mirror*: the engine is
+ * engine's `src/` as of 2026-09-17. It is a checked-in *mirror*: the engine is
  * a separate repository, so nothing in this repo can prove it still matches.
  * When the engine adds an event, add it here in the same change.
  *
@@ -22,6 +22,7 @@
 
 export const EVENT_NAMES = [
   'artifact_oversized',
+  'artifact_resumed',
   'bulk_accepted',
   'bulk_chunk_committed',
   'bulk_chunk_rolled_back',
@@ -51,6 +52,7 @@ export const EVENT_NAMES = [
   'job_claimed',
   'job_complete',
   'job_failed',
+  'job_yielded',
   'lease_lost',
   'lock_contention',
   'lock_wait',
@@ -80,6 +82,9 @@ export const EVENT_NAMES = [
   'sweep_complete',
   'sweep_gap_flagged',
   'sweep_started',
+  'tick_complete',
+  'tick_skipped',
+  'tick_started',
 ] as const;
 
 export type EventName = (typeof EVENT_NAMES)[number];
@@ -97,6 +102,7 @@ export const EVENT_SOURCES = [
   'liberator',
   'reconciler',
   'registry',
+  'tick',
   'watcher',
 ] as const;
 
