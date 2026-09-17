@@ -199,7 +199,7 @@
 
 .sweepRow {
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr) auto;
+  grid-template-columns: 104px minmax(0, 1fr) auto;
   align-items: center;
   gap: 9px;
   font-family: var(--mono);
@@ -208,6 +208,7 @@
 }
 
 .sweepCol { color: var(--text); }
+.sweepPage { color: var(--text-faint); margin-right: 5px; }
 .sweepCursor { color: var(--text-faint); }
 
 @media (prefers-reduced-motion: reduce) {

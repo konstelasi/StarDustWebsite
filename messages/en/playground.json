@@ -340,6 +340,7 @@
     "liberatorEmpty": "nothing tombstoned — demote a field below and a column full of values nobody will read again appears here",
     "liberatorFootnote1": "The sweep never joins ",
     "liberatorFootnote2": ". It keys on the page, the column and a cursor, which is what lets it reclaim a slot whose field row is already gone.",
+    "liberatorFootnote3": "Several Liberators can run at once, each excluded only from the one page table another is already sweeping — so throughput scales with how many pages hold tombstones, not with how many workers are running.",
     "exportJobsCount": "stardust_export_jobs · {count} rows",
     "chroniclerEmpty": "no jobs to claim",
     "chroniclerFootnote": "Its poll period and stop button are real and it is genuinely being asked to run — there is simply nothing submitting exports yet. A Chronicler with an empty job table claims nothing and emits nothing, which is exactly what this card is showing. Submitting one is the operations section, alongside bulk import and dead-letter replay.",

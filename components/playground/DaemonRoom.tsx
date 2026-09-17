@@ -257,7 +257,10 @@ function LiberatorBody() {
           const pct = total === 0 ? 100 : Math.min(100, (swept / total) * 100);
           return (
             <div key={slot.id} className={styles.sweepRow}>
-              <span className={styles.sweepCol}>{slot.slotColumn}</span>
+              <span className={styles.sweepCol}>
+                <span className={styles.sweepPage}>p{slot.pageId}</span>
+                {slot.slotColumn}
+              </span>
               <div className={styles.track}>
                 <div className={styles.sweepFill} style={{ width: `${pct}%` }} />
               </div>
@@ -272,6 +275,8 @@ function LiberatorBody() {
         {t('daemonRoom.liberatorFootnote1')}
         <code>stardust_fields</code>
         {t('daemonRoom.liberatorFootnote2')}
+        {' '}
+        {t('daemonRoom.liberatorFootnote3')}
       </p>
     </div>
   );

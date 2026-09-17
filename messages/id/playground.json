@@ -340,6 +340,7 @@
     "liberatorEmpty": "tidak ada yang di-tombstone — turunkan sebuah field di bawah dan sebuah kolom penuh nilai yang tidak akan pernah dibaca lagi akan muncul di sini",
     "liberatorFootnote1": "Sweep tidak pernah melakukan join ke ",
     "liberatorFootnote2": ". Ia mengunci pada page, kolom, dan sebuah cursor, itulah yang membuatnya bisa mengklaim kembali slot yang baris field-nya sudah hilang.",
+    "liberatorFootnote3": "Beberapa Liberator bisa berjalan bersamaan — masing-masing hanya terhalang dari satu page table yang sedang disapu proses lain, jadi throughput-nya mengikuti jumlah page yang menyimpan tombstone, bukan jumlah worker yang berjalan.",
     "exportJobsCount": "stardust_export_jobs · {count} baris",
     "chroniclerEmpty": "tidak ada job untuk diklaim",
     "chroniclerFootnote": "Periode poll dan tombol berhentinya sungguhan, dan Chronicler ini benar-benar diminta untuk berjalan — hanya saja belum ada yang mensubmit export. Chronicler dengan tabel job kosong tidak mengklaim apa pun dan tidak mengeluarkan apa pun, itulah persis yang ditunjukkan kartu ini. Mensubmit ekspor adalah bagian operasional, bersama bulk import dan dead-letter replay.",
