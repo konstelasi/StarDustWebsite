@@ -29,7 +29,7 @@
     "daemons": {
       "eyebrow": "04 · the moving parts",
       "title": "Four daemons. No broker between them.",
-      "lede": "They never talk to each other directly — MySQL is the only coordination point, with claims taken under FOR UPDATE SKIP LOCKED and singletons held by advisory lock. Run more Reconcilers and Chroniclers for throughput; the Watcher and Liberator stay one apiece."
+      "lede": "They never talk to each other directly — MySQL is the only coordination point, with claims taken under FOR UPDATE SKIP LOCKED and the Watcher's singleton held by advisory lock. Run more Reconcilers, Liberators, and Chroniclers for throughput — only the Watcher stays one apiece."
     },
     "status": {
       "eyebrow": "05 · straight answers",
@@ -47,7 +47,7 @@
       "heading": "a good fit if",
       "items": [
         "You need user-defined or per-tenant dynamic fields that are still filterable at native index speed, without standing up a search cluster.",
-        "You already run MySQL 8.0.13+ or Percona, and can keep background processes alive — systemd, supervisor, or containers.",
+        "You already run MySQL 8.0.13+ or Percona — either deployment mode works, persistent daemons or a scheduled tick.",
         "You want a framework-neutral engine you drop in via Composer. No ORM, no query builder, nothing pulled into your app.",
         "You can tolerate a newly filterable field becoming queryable shortly after the fact rather than instantly."
       ]
@@ -55,7 +55,7 @@
     "bad": {
       "heading": "probably not a fit if",
       "items": [
-        "Cron-only or shell-less shared hosting. Without a running Watcher, slot capacity is never replenished and new filterable writes fall back to unindexed JSON.",
+        "Cron-only or shell-less shared hosting. The bounded tick command now drains every daemon's work from one scheduled invocation, so this is no longer a blocker on MySQL 8.0.13+.",
         "MariaDB, or MySQL 5.7 and older. Both are actively rejected at boot — CI keeps a job that expects the suite to fail on MariaDB.",
         "Strong read-after-write consistency on filters immediately after a retype or promotion. The field serves from JSON until its backfill lands.",
         "Full-text, fuzzy, or substring search. The default driver ships exact match, comparison, range, set membership, and anchored prefix — nothing else.",

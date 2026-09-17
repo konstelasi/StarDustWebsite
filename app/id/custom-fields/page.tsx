@@ -273,7 +273,7 @@ export default function IdCustomFields() {
               },
               {
                 title: 'Filterable butuh waktu',
-                body: 'Persis seperti yang baru saja ditunjukkan bagian 05: field yang baru ditandai filterable baru benar-benar berfungsi setelah daemon menyelesaikan pekerjaannya — dan daemon itu harus berjalan agar momen itu pernah tiba.',
+                body: 'Persis seperti yang baru saja ditunjukkan bagian 05: field yang baru ditandai filterable baru benar-benar berfungsi setelah daemon menyelesaikan pekerjaannya — baik lewat proses yang hidup terus-menerus maupun lewat tick terjadwal.',
               },
             ]}
           />

@@ -106,11 +106,12 @@ export default function IdHome() {
           lede={
             <>
               Mereka tidak pernah berbicara langsung satu sama lain — MySQL adalah satu-satunya titik
-              koordinasi, dengan klaim diambil melalui <code>FOR UPDATE SKIP LOCKED</code> dan
-              singleton dipegang oleh advisory lock. Jalankan lebih banyak{' '}
-              <Term id="reconciler">Reconciler</Term> dan <Term id="chronicler">Chronicler</Term>{' '}
-              untuk throughput; <Term id="watcher">Watcher</Term> dan{' '}
-              <Term id="liberator">Liberator</Term> tetap masing-masing satu.
+              koordinasi, dengan klaim diambil melalui <code>FOR UPDATE SKIP LOCKED</code>, dan{' '}
+              <Term id="watcher">Watcher</Term> adalah satu-satunya singleton, dipegang oleh
+              advisory lock. Jalankan lebih banyak{' '}
+              <Term id="reconciler">Reconciler</Term>, <Term id="liberator">Liberator</Term>, dan{' '}
+              <Term id="chronicler">Chronicler</Term> untuk throughput — hanya Watcher yang tetap
+              satu-satunya.
             </>
           }
         >

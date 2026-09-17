@@ -97,7 +97,7 @@ function step(b: Board): Board {
     next.active.watcher = tick;
   }
 
-  // Liberator — singleton, sweeps tombstoned slots back to free in chunks.
+  // Liberator — multi-worker, sweeps tombstoned slots back to free in chunks.
   if (tick % 2 === 1 && next.tombstones.length > 0) {
     next.tombstones = next.tombstones
       .map((t, i) => (i === 0 ? { ...t, swept: Math.min(100, t.swept + 34) } : t))
@@ -294,7 +294,7 @@ export default function DaemonBoard() {
       <div className={styles.row}>
         <Daemon
           name="Liberator"
-          kind="singleton"
+          kind="multi-worker"
           role={t('daemonBoard.liberatorRole')}
           live={isLive('liberator')}
           side="bottom"

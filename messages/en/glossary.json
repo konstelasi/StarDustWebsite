@@ -60,7 +60,7 @@
     },
     "daemon": {
       "term": "Daemon",
-      "short": "A long-lived background process you run alongside your app — StarDust ships four, coordinating only through the database."
+      "short": "Background work that keeps filtering caught up, run either as a long-lived process or in bounded bursts from a schedule — StarDust ships four, coordinating only through the database."
     },
     "declared-type": {
       "term": "Declared type",

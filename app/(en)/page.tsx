@@ -105,11 +105,12 @@ export default function Home() {
           lede={
             <>
               They never talk to each other directly — MySQL is the only coordination point,
-              with claims taken under <code>FOR UPDATE SKIP LOCKED</code> and singletons held
-              by advisory lock. Run more <Term id="reconciler">Reconcilers</Term> and{' '}
-              <Term id="chronicler">Chroniclers</Term> for throughput; the{' '}
-              <Term id="watcher">Watcher</Term> and <Term id="liberator">Liberator</Term> stay
-              one apiece.
+              with claims taken under <code>FOR UPDATE SKIP LOCKED</code>, and the{' '}
+              <Term id="watcher">Watcher</Term> is the one singleton, held by advisory lock.
+              Run more <Term id="reconciler">Reconcilers</Term>,{' '}
+              <Term id="liberator">Liberators</Term>, and{' '}
+              <Term id="chronicler">Chroniclers</Term> for throughput — the Watcher alone
+              stays one apiece.
             </>
           }
         >

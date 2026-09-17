@@ -60,7 +60,7 @@
     },
     "daemon": {
       "term": "Daemon",
-      "short": "Proses latar belakang yang berjalan lama, berdampingan dengan aplikasi Anda — StarDust menyediakan empat, yang berkoordinasi hanya lewat database."
+      "short": "Pekerjaan latar belakang yang membuat penyaringan tetap mengejar ketertinggalan, dijalankan baik sebagai proses yang berjalan terus-menerus maupun dalam putaran singkat terjadwal — StarDust menyediakan empat, yang berkoordinasi hanya lewat database."
     },
     "declared-type": {
       "term": "Declared type",

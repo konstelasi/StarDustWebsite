@@ -29,7 +29,7 @@
     "daemons": {
       "eyebrow": "04 · bagian yang bergerak",
       "title": "Empat daemon. Tidak ada broker di antara mereka.",
-      "lede": "Mereka tidak pernah berbicara langsung satu sama lain — MySQL adalah satu-satunya titik koordinasi, dengan klaim diambil melalui FOR UPDATE SKIP LOCKED dan singleton dipegang oleh advisory lock. Jalankan lebih banyak Reconciler dan Chronicler untuk throughput; Watcher dan Liberator tetap masing-masing satu."
+      "lede": "Mereka tidak pernah berbicara langsung satu sama lain — MySQL adalah satu-satunya titik koordinasi, dengan klaim diambil melalui FOR UPDATE SKIP LOCKED dan singleton Watcher dipegang oleh advisory lock. Jalankan lebih banyak Reconciler, Liberator, dan Chronicler untuk throughput — hanya Watcher yang tetap satu-satunya."
     },
     "status": {
       "eyebrow": "05 · jawaban langsung",
@@ -47,7 +47,7 @@
       "heading": "cocok jika",
       "items": [
         "Anda memerlukan field dinamis yang ditentukan pengguna atau per-tenant yang masih dapat difilter dengan kecepatan indeks asli, tanpa menyiapkan cluster pencarian terpisah.",
-        "Anda sudah menjalankan MySQL 8.0.13+ atau Percona, dan dapat menjaga proses latar belakang tetap hidup — systemd, supervisor, atau kontainer.",
+        "Anda sudah menjalankan MySQL 8.0.13+ atau Percona — kedua mode deployment sama-sama bisa dipakai: daemon yang berjalan terus-menerus, atau tick terjadwal.",
         "Anda ingin engine yang netral terhadap framework, yang Anda pasang melalui Composer. Tidak ada ORM, tidak ada pembuat query, tidak ada yang ditarik ke aplikasi Anda.",
         "Anda dapat mentoleransi field yang baru saja dapat difilter menjadi dapat di-query tidak lama setelahnya, bukan secara instan."
       ]
@@ -55,7 +55,7 @@
     "bad": {
       "heading": "mungkin tidak cocok jika",
       "items": [
-        "Hosting bersama yang hanya cron atau tanpa shell. Tanpa Watcher yang berjalan, kapasitas slot tidak pernah diisi ulang dan penulisan baru yang dapat difilter kembali ke JSON yang tidak diindeks.",
+        "Hosting bersama yang hanya cron atau tanpa shell. Perintah tick yang terbatas kini menuntaskan seluruh pekerjaan daemon dari satu kali eksekusi terjadwal, sehingga ini bukan lagi penghalang di MySQL 8.0.13+.",
         "MariaDB, atau MySQL 5.7 dan lebih lama. Keduanya secara aktif ditolak saat boot — CI menyimpan pekerjaan yang mengharapkan suite gagal di MariaDB.",
         "Konsistensi read-after-write yang kuat pada filter segera setelah retype atau promosi. Field-nya dilayani dari JSON sampai backfill-nya mendarat.",
         "Pencarian teks penuh, fuzzy, atau substring. Driver default menyediakan kecocokan eksak, perbandingan, rentang, keanggotaan set, dan anchored prefix — tidak ada yang lain.",

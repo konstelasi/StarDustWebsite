@@ -72,7 +72,7 @@ export default function DaemonRoom() {
           <ReconcilerBody />
         </DaemonCard>
 
-        <DaemonCard name="liberator" kind="singleton" role={t('daemonRoom.liberatorRole')}>
+        <DaemonCard name="liberator" kind="multi-worker" role={t('daemonRoom.liberatorRole')}>
           <LiberatorBody />
         </DaemonCard>
 

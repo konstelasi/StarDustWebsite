@@ -7,7 +7,7 @@
  * it one click from the rows.
  *
  * PROVENANCE — transcribed from the engine's `src/Bootstrap/Bootstrapper.php`
- * and `src/Page/PageProvisioner.php` as of 2026-09-01. Like
+ * and `src/Page/PageProvisioner.php` as of 2026-09-17. Like
  * {@link ./events.ts}, this is a checked-in *mirror*: the engine is a separate
  * repository, so nothing in this repo can prove it still matches. When the
  * engine changes its DDL, change this in the same commit — a stale copy turns
@@ -42,7 +42,8 @@ export type TableName =
   | 'stardust_export_jobs'
   | 'stardust_import_jobs'
   | 'stardust_reconciler_dlq'
-  | 'backfill_checkpoints';
+  | 'backfill_checkpoints'
+  | 'stardust_advisory_schedule';
 
 export const TABLE_DDL: Record<TableName, string> = {
   entry_data: `CREATE TABLE IF NOT EXISTS entry_data (
@@ -282,6 +283,21 @@ ON DUPLICATE KEY UPDATE id = id`,
 -- live once the lifecycle has started.
 ALTER TABLE backfill_checkpoints
     ADD COLUMN source_declared_type VARCHAR(16) NULL DEFAULT NULL`,
+
+  stardust_advisory_schedule: `CREATE TABLE IF NOT EXISTS stardust_advisory_schedule (
+    id              TINYINT      NOT NULL,
+    next_sample_at  DATETIME         NULL DEFAULT NULL,
+    last_sample_at  DATETIME         NULL DEFAULT NULL,
+    updated_at      DATETIME     NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT ck_advisory_schedule_singleton CHECK (id = 1)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+-- ADR 0052's second singleton, same shape as stardust_schema_version above but
+-- deliberately not a column on it: this row is the Watcher's fleet-wide
+-- advisory-sample due time, not "when the schema last changed". A NULL
+-- next_sample_at means never scheduled, which is what preserves the
+-- first-sample phase randomisation.`,
 };
 
 /** The MySQL type each slot family's columns are declared with. */

@@ -1,5 +1,5 @@
 /**
- * The Liberator — singleton slot reclamation.
+ * The Liberator — multi-worker slot reclamation.
  *
  * A demoted field leaves its column full of values nobody will ever read again,
  * and the slot marked `tombstoned` so nothing reserves it. The Liberator is what
@@ -8,6 +8,15 @@
  * Watcher would keep provisioning pages to replace capacity that was never
  * actually gone, and the two daemons would never once refer to each other — the
  * whole exchange happens through one row's `status`.
+ *
+ * **It has no PID guard.** ADR 0049 replaced the old process singleton with
+ * page-table-granularity `GET_LOCK` exclusion, taken inside the sweep itself —
+ * several Liberator processes can run at once, each excluded only from the one
+ * `entry_slots_page_N` another is already sweeping. One instance runs here
+ * because a single-threaded browser simulation has no second process to
+ * contend with; the lock is invisible for the same reason `LOCK_WAIT` is
+ * invisible in {@link ./reconciler.ts} — nothing here ever contends for
+ * anything.
  *
  * Four details are worth keeping straight:
  *

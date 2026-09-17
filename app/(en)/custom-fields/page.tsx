@@ -278,7 +278,7 @@ export default function CustomFields() {
               },
               {
                 title: 'Filterable takes a moment',
-                body: 'Exactly what section 05 just showed: a newly filterable field works only once the daemons have caught up, and needs them running to ever get there at all.',
+                body: 'Exactly what section 05 just showed: a newly filterable field works only once the daemons have caught up — either a long-lived process or a scheduled tick.',
               },
             ]}
           />
