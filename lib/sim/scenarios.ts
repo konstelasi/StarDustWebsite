@@ -2,14 +2,17 @@
  * Scenario presets — parked worlds, earned rather than staged.
  *
  * A sandbox where every control is unlocked is not the same thing as a sandbox
- * where every *behaviour* is reachable. Three of the things the sections are
+ * where every *behaviour* is reachable. Four of the things the sections are
  * built around cannot be produced by ordinary play: the promotion window needs
  * a backfill spanning more than one 500-row chunk; the reclaim needs a slot that
  * has been promoted, backfilled, demoted and swept before anything asks for it
  * again; `is_null` mid-backfill needs the Reconciler stopped inside a chunk
- * boundary. Each is a stated "done when" for its section, so a visitor who only
- * ever writes three rows by hand gets a playground where the section's own
- * claim never occurs.
+ * boundary; and the Liberator's multi-worker exclusion needs two pages holding
+ * tombstones *at once*, which needs five serial promotions and three demotions
+ * on a purpose-built six-field model — nothing a visitor clicking through the
+ * default three-field one would ever produce. Each is a stated "done when" for
+ * its section, so a visitor who only ever writes three rows by hand gets a
+ * playground where the section's own claim never occurs.
  *
  * The second of those used to be a stronger claim — that a *warm* reservation
  * was unreachable at all, because the Watcher indexed only as many columns as
@@ -41,18 +44,26 @@
  */
 
 import { checkpointFor } from './checkpoints';
+import { LIBERATOR_WORKERS } from './daemons/liberator';
 import type { MilestoneKind } from './notify';
 import { isIndexedSlot } from './reserve';
 import { runningCheckpointForField } from './retype';
 import type { SimAction } from './reduce';
 import {
+  BRAND,
+  CATALOG_MODEL,
+  catalogModel,
   CITY,
   COUNTRY,
   contactModel,
   filterCityIs,
   filterPlanIs,
+  FINISH,
+  MATERIAL,
+  ORIGIN,
   placesModel,
   PLAN,
+  SKU,
   ticks,
 } from './script';
 import { fieldIndexState, fieldsOf, type SimWorld } from './world';
@@ -61,7 +72,8 @@ export type ScenarioId =
   | 'promotion-window'
   | 'warm-path'
   | 'half-migrated'
-  | 'tenant-field-request';
+  | 'tenant-field-request'
+  | 'two-page-sweep';
 
 export interface Scenario {
   id: ScenarioId;
@@ -725,11 +737,242 @@ const TENANT_FIELD_REQUEST: Scenario = {
   ],
 };
 
+/**
+ * Two pages holding tombstones at once — the Liberator's multi-worker
+ * exclusion, made visible.
+ *
+ * ADR 0049 replaced the Liberator's process singleton with page-table-
+ * granularity `GET_LOCK` exclusion: several Liberator processes can run at
+ * once, each excluded only from the one page another is already sweeping, so
+ * throughput scales with how many *pages* hold tombstones rather than with how
+ * many workers are running — `daemonRoom.liberatorFootnote3` says exactly this
+ * on the page, and until this scenario nothing on it could demonstrate it. A
+ * single tombstoned page (`warm-path`, above) cannot: with one page, adding
+ * workers provably buys nothing, but "provably" needs a *second* page in the
+ * same batch to contrast against, or the claim is just prose.
+ *
+ * Getting there needs a model wider than the usual three fields. Promoting
+ * five string fields *together* does not produce two pages — `capacity.ts`'s
+ * `indexedColumnsFor()` sizes a page to `max(1, shortfall, headroom)`, and five
+ * simultaneous waiters make `shortfall` alone cover it, so one sixteen-column
+ * page holds all five. A second page needs the fifth promotion issued *after*
+ * the first four have already spent the page's four-column string headroom —
+ * sequential, not concurrent, which `daemonRoom.caveatBody2`'s "the fifth is
+ * slow again" already promises and this scenario is the receipt for.
+ *
+ * The park itself needs no tick-count guesswork checked in as a comment: every
+ * number below was traced against `capacity.ts`, `clock.ts`'s `advance()` and
+ * the Reconciler's round-robin, then confirmed by `verify:scenarios` actually
+ * running the script, which is what `assertParked` polices from here on.
+ */
+const TWO_PAGE_SWEEP: Scenario = {
+  id: 'two-page-sweep',
+  title: 'Two pages, three workers',
+  blurb: 'Three tombstones share one page while a fourth sits on a second — and only the second one buys a worker anything.',
+  parked:
+    '600 catalog rows · sku, brand and material were promoted, backfilled, then demoted — all three tombstoned on entry_slots_page_1, alongside finish, still live there. Page 1\'s string headroom filled with the first four promotions; origin, the fifth, forced entry_slots_page_2 into existence and is live there. Nothing has swept yet.',
+  nextStep:
+    'Press run for one tick. Three Liberators poll, and only one of them does anything: every tombstone is on page 1, so one worker takes that page and the other two find it already held. Then demote origin in the daemon control room and run again — its tombstone lands on page 2, so a second worker finally has a page of its own, and both sweep at once.',
+  nextStepReduced:
+    'Press step for one tick. Three Liberators poll, and only one of them does anything: every tombstone is on page 1, so one worker takes that page and the other two find it already held. Then demote origin in the daemon control room and step again — its tombstone lands on page 2, so a second worker finally has a page of its own, and both sweep at once.',
+  anchor: '#daemons',
+  anchorLabel: 'the daemon control room',
+  actions: [
+    ...catalogModel(),
+    // Four together. A cold start with four string waiters provisions ONE
+    // page whose string headroom is exactly four — every one of the four
+    // defers at first (there is no page yet, so all four race for the same
+    // three Reconciler workers across several ticks), but all four land on
+    // page 1's i_str_01..04 by the time this settles.
+    { type: 'field/promote', fieldId: SKU },
+    { type: 'field/promote', fieldId: BRAND },
+    { type: 'field/promote', fieldId: MATERIAL },
+    { type: 'field/promote', fieldId: FINISH },
+    ...ticks(10),
+    // The fifth, only now — with page 1's string headroom already spent by
+    // the four above. Deferred again, and this is the only thing in the
+    // playground that produces a SECOND page.
+    { type: 'field/promote', fieldId: ORIGIN },
+    ...ticks(4),
+    // Three tombstones, all on page 1. `finish` stays live there; `origin`
+    // stays live on page 2 — that asymmetry is the whole second payoff stage.
+    { type: 'field/demote', fieldId: SKU },
+    { type: 'field/demote', fieldId: BRAND },
+    { type: 'field/demote', fieldId: MATERIAL },
+  ],
+  assertParked(world) {
+    const bad: string[] = [];
+    const say = (ok: boolean, msg: string) => {
+      if (!ok) bad.push(msg);
+    };
+
+    say(world.clock.tick === 14, `expected to park at tick 14, got ${world.clock.tick}`);
+    say(world.entries.length === 600, `expected 600 entries, got ${world.entries.length}`);
+    say(world.pages.length === 2, `expected 2 pages, got ${world.pages.length}`);
+    say(
+      world.syncQueue.length === 0,
+      `expected an empty sync queue, got ${world.syncQueue.length} rows`,
+    );
+
+    const page1 = world.pages.find(p => p.id === 1);
+    const page2 = world.pages.find(p => p.id === 2);
+    say(
+      (page1?.indexedColumns ?? []).includes('i_str_04'),
+      "expected page 1's string headroom to be fully indexed",
+    );
+    say(
+      (page2?.indexedColumns ?? []).includes('i_str_01'),
+      'expected page 2 to carry the fifth string column',
+    );
+
+    const tombstoned = world.slots.filter(s => s.status === 'tombstoned');
+    say(
+      tombstoned.length === 3 && tombstoned.every(s => s.pageId === 1),
+      `expected 3 tombstoned slots, all on page 1, got ${tombstoned.length} across ${new Set(tombstoned.map(s => s.pageId)).size} page(s)`,
+    );
+    say(
+      tombstoned.every(s => s.sweepCursorId === null),
+      'expected every fresh tombstone to carry no sweep cursor yet',
+    );
+
+    say(
+      fieldIndexState(world, FINISH) === 'live',
+      `expected finish to still be indexed on page 1, got '${fieldIndexState(world, FINISH)}'`,
+    );
+    say(
+      fieldIndexState(world, ORIGIN) === 'live',
+      `expected origin to be indexed on page 2, got '${fieldIndexState(world, ORIGIN)}'`,
+    );
+    const originSlot = world.slots.find(s => s.fieldId === ORIGIN);
+    say(
+      originSlot?.pageId === 2,
+      `expected origin's live slot on page 2, got page ${originSlot?.pageId ?? 'none'}`,
+    );
+
+    const fields = fieldsOf(world, CATALOG_MODEL);
+    say(fields.length === 6, `expected 6 fields, got ${fields.length}`);
+    for (const [name, id] of [
+      ['sku', SKU],
+      ['brand', BRAND],
+      ['material', MATERIAL],
+    ] as const) {
+      say(
+        fields.find(f => f.id === id)?.isFilterable === false,
+        `expected ${name} to be non-filterable after the demotion`,
+      );
+      say(
+        runningCheckpointForField(world, id) === undefined,
+        `expected no running checkpoint left over for ${name}`,
+      );
+    }
+    for (const [name, id] of [
+      ['finish', FINISH],
+      ['origin', ORIGIN],
+    ] as const) {
+      say(
+        fields.find(f => f.id === id)?.isFilterable === true,
+        `expected ${name} to still be filterable`,
+      );
+    }
+
+    return bad;
+  },
+  payoff: [
+    {
+      label: 'one page, one busy worker — the other two find nothing to take',
+      actions: ticks(1),
+      // No milestone here: `column-reclaimed` fires on `sweep_complete`, and a
+      // 600-row slot's first 500-row chunk is never the final one. The strip
+      // being visibly lopsided IS the payoff, and nothing in `notify.ts` speaks
+      // to a worker finding a page already spoken for.
+      assert(world) {
+        const bad: string[] = [];
+        const started = world.events.filter(e => e.event === 'sweep_started' && e.tick === 15);
+        if (started.length !== 1) {
+          bad.push(`expected exactly 1 sweep_started at tick 15, got ${started.length}`);
+        }
+        const startedLine = started[0];
+        if (startedLine !== undefined) {
+          if (startedLine.fields.batch_size !== 3) {
+            bad.push(`expected batch_size 3, got ${startedLine.fields.batch_size}`);
+          }
+          if (startedLine.fields.slots_claimed !== 3) {
+            bad.push(`expected slots_claimed 3, got ${startedLine.fields.slots_claimed}`);
+          }
+          if (startedLine.fields.slots_contended !== 0) {
+            bad.push(
+              `expected slots_contended 0 — the whole batch is on one page, got ${startedLine.fields.slots_contended}`,
+            );
+          }
+        }
+
+        const workers = world.daemonActivity.liberator?.workers ?? [];
+        if (workers.length !== LIBERATOR_WORKERS) {
+          bad.push(`expected ${LIBERATOR_WORKERS} worker lines, got ${workers.length}`);
+        }
+        if (workers.filter(w => w.state === 'working').length !== 1) {
+          bad.push('expected exactly 1 working worker');
+        }
+        if (workers.filter(w => w.state === 'blocked').length !== 2) {
+          bad.push('expected exactly 2 blocked workers');
+        }
+
+        const stillTombstoned = world.slots.filter(s => s.status === 'tombstoned');
+        if (stillTombstoned.length !== 3) {
+          bad.push(`expected all 3 slots still tombstoned mid-sweep, got ${stillTombstoned.length}`);
+        }
+        if (!stillTombstoned.every(s => s.sweepCursorId === 500)) {
+          bad.push('expected every page-1 slot at a 500-row first chunk');
+        }
+        return bad;
+      },
+    },
+    {
+      label: 'a second page, a second worker — both sweep at once',
+      actions: [{ type: 'field/demote', fieldId: ORIGIN }, ...ticks(3)],
+      narrates: ['column-reclaimed'],
+      assert(world) {
+        const bad: string[] = [];
+        const started = world.events.filter(e => e.event === 'sweep_started' && e.tick === 18);
+        if (started.length !== 2) {
+          bad.push(`expected exactly 2 sweep_started at tick 18, got ${started.length}`);
+        }
+        // Both nonzero is the claim: page 1's worker is contended by page 2's
+        // tombstone and vice versa — a fact that could not exist with only one
+        // page in the batch, which is exactly what the first stage parked.
+        for (const startedLine of started) {
+          const contended = startedLine.fields.slots_contended;
+          if (!(typeof contended === 'number' && contended > 0)) {
+            bad.push(
+              `expected ${startedLine.fields.worker_identity} to report nonzero slots_contended, got ${contended}`,
+            );
+          }
+        }
+
+        const page1Slots = world.slots.filter(s => s.pageId === 1 && s.slotColumn !== 'i_str_04');
+        if (!page1Slots.every(s => s.status === 'free')) {
+          bad.push(
+            `expected page 1's three demoted slots back to free, got ${page1Slots.map(s => s.status).join(', ')}`,
+          );
+        }
+        const page2Origin = world.slots.find(s => s.pageId === 2 && s.slotColumn === 'i_str_01');
+        if (page2Origin?.status !== 'tombstoned' || page2Origin.sweepCursorId !== 500) {
+          bad.push(
+            `expected page 2's slot still mid-sweep at cursor 500, got status '${page2Origin?.status}' cursor ${page2Origin?.sweepCursorId ?? 'none'}`,
+          );
+        }
+        return bad;
+      },
+    },
+  ],
+};
+
 export const SCENARIOS: readonly Scenario[] = [
   PROMOTION_WINDOW,
   WARM_PATH,
   HALF_MIGRATED,
   TENANT_FIELD_REQUEST,
+  TWO_PAGE_SWEEP,
 ];
 
 export function scenarioById(id: ScenarioId): Scenario | undefined {

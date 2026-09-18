@@ -17,7 +17,6 @@ import type {
   SimSyncRow,
 } from '@/lib/sim/types';
 import { defaultPageColumns } from '@/lib/sim/capacity';
-import { formatSimTime } from '@/lib/sim/world';
 import PageTable from './PageTable';
 import { usePlayground } from './PlaygroundContext';
 import TableView, { TABLE_ROW_LIMIT, type Column } from './TableView';
@@ -33,10 +32,11 @@ const dash = <span className={styles.null}>NULL</span>;
 type VersionRow = { version: number; updatedAt: string };
 
 /**
- * The engine's second singleton (ADR 0052). The simulation drives no
- * advisory sampler, so `nextSampleAt` / `lastSampleAt` stay at the row's
- * genuine bootstrap-seeded state — NULL, meaning "never scheduled" — rather
- * than a value nothing here ever wrote.
+ * The engine's second singleton (ADR 0052), now real `SimWorld` state rather
+ * than a literal — the Watcher claims it (`advisoryNextSampleAt` goes from
+ * `null` to a due time on its first tick) but never fires a sample, which is
+ * why `lastSampleAt` stays NULL regardless: a 24-hour cadence has nothing to
+ * show on a one-second tick. See `daemons/watcher.ts` for the reasoning.
  */
 type AdvisoryRow = { nextSampleAt: string | null; lastSampleAt: string | null; updatedAt: string };
 
@@ -65,12 +65,12 @@ export default function WorldInspector() {
     { version: world.schemaVersion, updatedAt: world.schemaVersionUpdatedAt },
   ];
 
-  // The seed step's own timestamp, not `world.schemaVersionUpdatedAt` — that
-  // one moves on every schema bump, and nothing here ever writes this row, so
-  // reusing it would make the advisory row's `updated_at` appear to change
-  // for a reason that never touched it.
   const advisoryRows: AdvisoryRow[] = [
-    { nextSampleAt: null, lastSampleAt: null, updatedAt: formatSimTime(0) },
+    {
+      nextSampleAt: world.advisoryNextSampleAt,
+      lastSampleAt: world.advisoryLastSampleAt,
+      updatedAt: world.advisoryUpdatedAt,
+    },
   ];
 
   return (

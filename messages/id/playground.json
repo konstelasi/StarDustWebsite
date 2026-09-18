@@ -330,11 +330,8 @@
     "noDemand": "tidak ada — setiap field yang dapat difilter sudah memegang slot",
     "demandChip": "{waiting} menunggu · {claimable} bisa diklaim",
     "syncQueuePending": "stardust_sync_queue · {count} tertunda",
-    "workerIdle": "idle",
-    "claimCapacityWait": " · capacity_wait",
-    "claimRolledBack": " · mengklaim {claimed}, rollback, memesan sebuah slot",
-    "claimBare": " · {claimed}",
-    "claimRows": " · {claimed} baris, id {firstId}–{lastId}",
+    "reconcilerWorkersLabel": "Worker Reconciler",
+    "liberatorWorkersLabel": "Worker Liberator",
     "reconcilerFootnote1": "Tidak ada yang menugaskan pekerjaan ke sebuah worker. Masing-masing mengklaim baris berikutnya yang tidak sedang dipegang siapa pun — itulah satu-satunya yang dilakukan ",
     "reconcilerFootnote2": ", dan itu adalah seluruh mekanisme koordinasinya. Satu chunk berisi 500 baris, jadi satu seed 600-baris membuat dua worker sibuk dan meninggalkan yang ketiga tanpa apa pun untuk diambil.",
     "liberatorEmpty": "tidak ada yang di-tombstone — turunkan sebuah field di bawah dan sebuah kolom penuh nilai yang tidak akan pernah dibaca lagi akan muncul di sini",
@@ -353,7 +350,17 @@
       "liberatorSweptOne": "menullifikasi {nullified} di antara {batchSize} slot yang di-tombstone",
       "liberatorSweptMany": "menullifikasi {nullified} di antara {batchSize} slot yang di-tombstone",
       "reconcilerIdle": "tidak ada yang bisa diklaim",
-      "reconcilerBusy": "{busy} dari {total} worker mengklaim pekerjaan"
+      "reconcilerBusy": "{busy} dari {total} worker mengklaim pekerjaan",
+      "workerIdle": "idle",
+      "claimCapacityWait": "{source} · capacity_wait",
+      "claimRolledBack": "{source} · mengklaim {claimed}, rollback, memesan sebuah slot",
+      "claimBare": "{source} · {claimed}",
+      "claimRows": "{source} · {claimed} baris, id {firstId}–{lastId}",
+      "liberatorWorkerBlocked": "setiap page yang di-batch sedang dipegang worker lain",
+      "liberatorWorkerSweptOne": "page {pageId} · 1 slot, {nullified} baris di-nullifikasi",
+      "liberatorWorkerSweptMany": "page {pageId} · {slots} slot, {nullified} baris di-nullifikasi",
+      "liberatorWorkerReclaimedOne": "page {pageId} · {reclaimed} slot dikembalikan menjadi free ({nullified} di-nullifikasi)",
+      "liberatorWorkerReclaimedMany": "page {pageId} · {reclaimed} slot dikembalikan menjadi free ({nullified} di-nullifikasi)"
     }
   },
   "sharedState": {

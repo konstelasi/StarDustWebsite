@@ -51,6 +51,18 @@
         "ready": "two more ticks finish it and the slot flips to ready",
         "answered": "the identical filter now returns its row"
       }
+    },
+    "twoPageSweep": {
+      "title": "Two pages, three workers",
+      "blurb": "Three tombstones share one page while a fourth sits on a second — and only the second one buys a worker anything.",
+      "parked": "600 catalog rows · sku, brand and material were promoted, backfilled, then demoted — all three tombstoned on entry_slots_page_1, alongside finish, still live there. Page 1's string headroom filled with the first four promotions; origin, the fifth, forced entry_slots_page_2 into existence and is live there. Nothing has swept yet.",
+      "nextStep": "Press run for one tick. Three Liberators poll, and only one of them does anything: every tombstone is on page 1, so one worker takes that page and the other two find it already held. Then demote origin in the daemon control room and run again — its tombstone lands on page 2, so a second worker finally has a page of its own, and both sweep at once.",
+      "nextStepReduced": "Press step for one tick. Three Liberators poll, and only one of them does anything: every tombstone is on page 1, so one worker takes that page and the other two find it already held. Then demote origin in the daemon control room and step again — its tombstone lands on page 2, so a second worker finally has a page of its own, and both sweep at once.",
+      "anchorLabel": "the daemon control room",
+      "stages": {
+        "onePage": "one page, one busy worker — the other two find nothing to take",
+        "twoPages": "a second page, a second worker — both sweep at once"
+      }
     }
   }
 }

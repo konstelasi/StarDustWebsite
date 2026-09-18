@@ -168,33 +168,6 @@
 
 .chip em { font-style: normal; color: var(--text-dim); font-size: 10px; }
 
-/* ---------- reconciler workers ---------- */
-
-.workers {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.worker {
-  display: flex;
-  align-items: baseline;
-  gap: 9px;
-  flex-wrap: wrap;
-  font-family: var(--mono);
-  font-size: 11px;
-  padding: 7px 9px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--well);
-  color: var(--text-dim);
-}
-
-.workerBusy { border-color: #bebebe55; background: var(--accent-soft); }
-.workerName { color: var(--text); }
-.worker em { font-style: normal; }
-.waiting { color: var(--pending); }
-
 /* ---------- liberator sweep ---------- */
 
 .sweepRow {

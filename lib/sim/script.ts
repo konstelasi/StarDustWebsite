@@ -185,3 +185,68 @@ export function filterPlanIs(value: string): SimAction[] {
     { type: 'query/run' },
   ];
 }
+
+/**
+ * A third scripted model, for the `two-page-sweep` scenario.
+ *
+ * Six fields — five `string`, one trailing `int` — where the other two models
+ * need only three. The count is load-bearing: `PAGE_INDEX_HEADROOM` is 4, so a
+ * page's string headroom is spent by the fourth promoted string field, and the
+ * fifth is what forces a *second* page into existence (`capacity.ts`'s
+ * `indexedColumnsFor()` — with five simultaneous waiters `want = max(1, 5, 4)
+ * = 5` and everything fits on one page instead, so the fifth must be promoted
+ * only after the first four have already spent that headroom). `weight` is
+ * last for the same reason `population` is last in `draftPlaces()`:
+ * `seedPayloads` drops the *last* field on every seventh row, and putting a
+ * string field there would leave rows missing the value the scenario is about.
+ */
+export const CATALOG_MODEL = 1;
+export const SKU = 1;
+export const BRAND = 2;
+export const MATERIAL = 3;
+export const FINISH = 4;
+export const ORIGIN = 5;
+export const WEIGHT = 6;
+
+export function draftCatalog(): SimAction[] {
+  return [
+    { type: 'draft/setName', name: 'catalog' },
+    { type: 'draft/addField', declaredType: 'string' },
+    { type: 'draft/patchField', key: 'd1', patch: { name: 'sku' } },
+    { type: 'draft/addField', declaredType: 'string' },
+    { type: 'draft/patchField', key: 'd2', patch: { name: 'brand' } },
+    { type: 'draft/addField', declaredType: 'string' },
+    { type: 'draft/patchField', key: 'd3', patch: { name: 'material' } },
+    { type: 'draft/addField', declaredType: 'string' },
+    { type: 'draft/patchField', key: 'd4', patch: { name: 'finish' } },
+    { type: 'draft/addField', declaredType: 'string' },
+    { type: 'draft/patchField', key: 'd5', patch: { name: 'origin' } },
+    { type: 'draft/addField', declaredType: 'int' },
+    { type: 'draft/patchField', key: 'd6', patch: { name: 'weight' } },
+  ];
+}
+
+/** Commit the draft. Fields commit in draft order: sku = 1 … weight = 6. */
+export function commitCatalog(): SimAction[] {
+  return [{ type: 'registry/createModel' }];
+}
+
+export function seedCatalog(): SimAction[] {
+  return [{ type: 'payload/selectModel', modelId: CATALOG_MODEL }, { type: 'entry/seed' }];
+}
+
+/**
+ * The shared prefix: a six-field `catalog` model and 600 rows, nothing
+ * indexed. Seeding before any promotion is load-bearing, on `draftPlaces()`'s
+ * own precedent: a filterable field with no slot routes writes into the ADR
+ * 0007 exhaustion path, which would steal Reconciler workers from the
+ * backfills the rest of the script depends on.
+ */
+export function catalogModel(): SimAction[] {
+  return [
+    { type: 'world/reset' },
+    ...draftCatalog(),
+    ...commitCatalog(),
+    ...seedCatalog(),
+  ];
+}

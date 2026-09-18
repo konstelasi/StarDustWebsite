@@ -30,7 +30,9 @@
  * marching on would spend the other sources' budgets against the same wall.
  *
  * `LOCK_WAIT` is the engine's other one, and it is deliberately absent: see
- * {@link ./types.ts}. Nothing in a browser contends for a row.
+ * {@link ./types.ts}. Nothing in a browser contends for a *row* — the
+ * Liberator's page-level exclusion, simulated since ADR 0049, is a different
+ * mechanism at a different granularity and does not bear on this one.
  */
 
 import { advanceCheckpoint, JOB_PREFIXES } from '../checkpoints';
@@ -46,7 +48,7 @@ import { reserveForBackfill, reserveForExhaustion } from '../reserve';
 import { RETYPE_JOB_PREFIX } from '../retype';
 import type { SimCheckpoint, SimDlqRow, SimEntry } from '../types';
 import { fieldsOf, liveSlotForField, simNow, type SimWorld } from '../world';
-import type { TickOutcome, WorkerClaim, WorkSourceName } from './types';
+import type { TickOutcome, WorkerLine, WorkSourceName } from './types';
 
 /** `Config::$reconcilerChunkSize`. One transaction per chunk. */
 export const RECONCILER_CHUNK_SIZE = 500;
@@ -64,10 +66,100 @@ const WORK_SOURCES: WorkSourceName[] = [
 ];
 
 /**
+ * One worker's structured result for one tick, internal to this file.
+ *
+ * This is the shape the old shared `WorkerClaim` used to be — kept here
+ * because the five `SourceTick` functions below mutate it freely by
+ * spreading (`{ ...claim, outcome: 'capacity_wait' }` and similar), and
+ * recomputing a rendered message at each of those sites would scatter the
+ * Reconciler's own vocabulary across itself. `toLine()` converts to the
+ * shared `WorkerLine` exactly once, at the point a tick's `DaemonActivity` is
+ * built — see `./types.ts` for why the shared shape stopped carrying these
+ * fields directly.
+ */
+interface ReconcilerClaim {
+  /** `w1` … `w3`. Stands in for the engine's `host:pid:uuid`. */
+  worker: string;
+  source: WorkSourceName | null;
+  outcome: TickOutcome;
+  /** Rows or units claimed. Zero when the worker found nothing to claim. */
+  claimed: number;
+  /** The id range this worker's chunk covered, when it claimed one. */
+  firstId: number | null;
+  lastId: number | null;
+  /**
+   * What actually happened to the chunk, when "work done" is not the whole
+   * story.
+   *
+   * The ADR 0007 recovery reports `work_done` — reserving a slot *is* work, and
+   * the engine deliberately does not raise a capacity alarm on a successful
+   * recovery. But the chunk it claimed rolled back whole and nothing drained,
+   * so a chip that read "500 rows" would describe a drain that did not happen.
+   */
+  note?: 'reserved_and_rolled_back';
+}
+
+/**
  * One tick of one source, for one worker. `null` means "found nothing to
  * claim", which is different from claiming a chunk and doing nothing with it.
  */
-type SourceTick = (state: TickState, worker: string, corrId: string) => WorkerClaim | null;
+type SourceTick = (state: TickState, worker: string, corrId: string) => ReconcilerClaim | null;
+
+/**
+ * The single conversion from this file's own vocabulary to the shared
+ * `WorkerLine` shape — see the interface doc above for why the conversion
+ * happens here rather than at every mutation site.
+ */
+function toLine(claim: ReconcilerClaim): WorkerLine {
+  if (claim.outcome === 'idle') {
+    return { worker: claim.worker, state: 'idle', detail: { key: 'daemonRoom.activity.workerIdle' } };
+  }
+
+  const source = claim.source ?? '';
+
+  if (claim.outcome === 'capacity_wait') {
+    return {
+      worker: claim.worker,
+      state: 'blocked',
+      detail: { key: 'daemonRoom.activity.claimCapacityWait', params: { source } },
+    };
+  }
+
+  if (claim.note === 'reserved_and_rolled_back') {
+    return {
+      worker: claim.worker,
+      state: 'working',
+      detail: {
+        key: 'daemonRoom.activity.claimRolledBack',
+        params: { source, claimed: claim.claimed },
+      },
+    };
+  }
+
+  if (claim.firstId === null) {
+    return {
+      worker: claim.worker,
+      state: 'working',
+      detail: { key: 'daemonRoom.activity.claimBare', params: { source, claimed: claim.claimed } },
+    };
+  }
+
+  return {
+    worker: claim.worker,
+    state: 'working',
+    detail: {
+      key: 'daemonRoom.activity.claimRows',
+      params: {
+        source,
+        claimed: claim.claimed,
+        firstId: claim.firstId,
+        // `lastId` is not narrowed by the `firstId` check above, but a claim
+        // with a first id always has a last one too.
+        lastId: claim.lastId as number,
+      },
+    },
+  };
+}
 
 /**
  * The dispatch, as a total map over {@link WorkSourceName}.
@@ -93,7 +185,7 @@ interface TickState {
   heldQueueIds: Set<number>;
   /** Checkpoint job names some worker is already holding. Same reason. */
   heldJobNames: Set<string>;
-  claims: WorkerClaim[];
+  claims: ReconcilerClaim[];
 }
 
 export function reconcilerTick(world: SimWorld): SimWorld {
@@ -149,7 +241,8 @@ export function reconcilerTick(world: SimWorld): SimWorld {
                 key: 'daemonRoom.activity.reconcilerBusy',
                 params: { busy: busy.length, total: RECONCILER_WORKERS },
               },
-        workers: state.claims,
+        // Converted once here, at the boundary — see `toLine()`'s doc comment.
+        workers: state.claims.map(toLine),
       },
     },
   };
@@ -179,7 +272,7 @@ function tickSyncQueue(
   state: TickState,
   worker: string,
   corrId: string,
-): WorkerClaim | null {
+): ReconcilerClaim | null {
   const { world } = state;
 
   const rows = world.syncQueue
@@ -191,7 +284,7 @@ function tickSyncQueue(
 
   for (const row of rows) state.heldQueueIds.add(row.id);
 
-  const claim: WorkerClaim = {
+  const claim: ReconcilerClaim = {
     worker,
     source: 'sync_queue',
     outcome: 'work_done',
@@ -342,10 +435,10 @@ function tickSyncQueue(
  */
 function rollBackAndReserve(
   state: TickState,
-  claim: WorkerClaim,
+  claim: ReconcilerClaim,
   corrId: string,
   stillUnmapped: Map<number, string[]>,
-): WorkerClaim {
+): ReconcilerClaim {
   // The rollback itself is the absence of any write above — `state.world` still
   // carries only the `chunk_claimed` line, which is exactly what surviving a
   // rollback means.
@@ -415,7 +508,7 @@ function tickRetypeBackfill(
   state: TickState,
   worker: string,
   corrId: string,
-): WorkerClaim | null {
+): ReconcilerClaim | null {
   const checkpoint = state.world.checkpoints.find(
     c =>
       c.status === 'running' &&
@@ -430,7 +523,7 @@ function tickRetypeBackfill(
   const field = state.world.fields.find(f => f.id === fieldId);
   if (field === undefined) return null;
 
-  const claim: WorkerClaim = {
+  const claim: ReconcilerClaim = {
     worker,
     source: 'retype_backfill',
     outcome: 'work_done',
@@ -663,7 +756,7 @@ function tickRenameBackfill(
   state: TickState,
   worker: string,
   corrId: string,
-): WorkerClaim | null {
+): ReconcilerClaim | null {
   const checkpoint = state.world.checkpoints.find(
     c =>
       c.status === 'running' &&
@@ -818,7 +911,7 @@ function tickDeletePurge(
   state: TickState,
   worker: string,
   corrId: string,
-): WorkerClaim | null {
+): ReconcilerClaim | null {
   const checkpoint = state.world.checkpoints.find(
     c =>
       c.status === 'running' &&
@@ -971,7 +1064,7 @@ function tickModelPurge(
   state: TickState,
   worker: string,
   corrId: string,
-): WorkerClaim | null {
+): ReconcilerClaim | null {
   const checkpoint = state.world.checkpoints.find(
     c =>
       c.status === 'running' &&

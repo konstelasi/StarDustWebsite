@@ -330,11 +330,8 @@
     "noDemand": "none — every filterable field holds a slot",
     "demandChip": "{waiting} waiting · {claimable} claimable",
     "syncQueuePending": "stardust_sync_queue · {count} pending",
-    "workerIdle": "idle",
-    "claimCapacityWait": " · capacity_wait",
-    "claimRolledBack": " · claimed {claimed}, rolled back, reserved a slot",
-    "claimBare": " · {claimed}",
-    "claimRows": " · {claimed} rows, ids {firstId}–{lastId}",
+    "reconcilerWorkersLabel": "Reconciler workers",
+    "liberatorWorkersLabel": "Liberator workers",
     "reconcilerFootnote1": "Nothing assigns work to a worker. Each claims the next rows nobody else is holding — that is all ",
     "reconcilerFootnote2": " does, and it is the whole coordination mechanism. A chunk is 500 rows, so one 600-row seed keeps two workers busy and leaves the third with nothing to take.",
     "liberatorEmpty": "nothing tombstoned — demote a field below and a column full of values nobody will read again appears here",
@@ -353,7 +350,17 @@
       "liberatorSweptOne": "nullified {nullified} across {batchSize} tombstoned slot",
       "liberatorSweptMany": "nullified {nullified} across {batchSize} tombstoned slots",
       "reconcilerIdle": "nothing to claim",
-      "reconcilerBusy": "{busy} of {total} workers claimed work"
+      "reconcilerBusy": "{busy} of {total} workers claimed work",
+      "workerIdle": "idle",
+      "claimCapacityWait": "{source} · capacity_wait",
+      "claimRolledBack": "{source} · claimed {claimed}, rolled back, reserved a slot",
+      "claimBare": "{source} · {claimed}",
+      "claimRows": "{source} · {claimed} rows, ids {firstId}–{lastId}",
+      "liberatorWorkerBlocked": "every batched page held by another worker",
+      "liberatorWorkerSweptOne": "page {pageId} · 1 slot, {nullified} rows nullified",
+      "liberatorWorkerSweptMany": "page {pageId} · {slots} slots, {nullified} rows nullified",
+      "liberatorWorkerReclaimedOne": "page {pageId} · {reclaimed} slot returned to free ({nullified} nullified)",
+      "liberatorWorkerReclaimedMany": "page {pageId} · {reclaimed} slots returned to free ({nullified} nullified)"
     }
   },
   "sharedState": {

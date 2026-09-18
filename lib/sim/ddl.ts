@@ -344,7 +344,15 @@ ALTER TABLE backfill_checkpoints
 -- deliberately not a column on it: this row is the Watcher's fleet-wide
 -- advisory-sample due time, not "when the schema last changed". A NULL
 -- next_sample_at means never scheduled, which is what preserves the
--- first-sample phase randomisation.`,
+-- first-sample phase randomisation.
+
+-- Same guarantee as stardust_schema_version's seed above, and for the same
+-- reason: the PRIMARY KEY plus this INSERT are what make the singleton real on
+-- every supported version, not the CHECK, which 8.0.13-8.0.15 parse and
+-- silently drop.
+INSERT INTO stardust_advisory_schedule (id, next_sample_at, last_sample_at, updated_at)
+VALUES (1, NULL, NULL, ?)
+ON DUPLICATE KEY UPDATE id = id`,
 };
 
 /** The MySQL type each slot family's columns are declared with. */

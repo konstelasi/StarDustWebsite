@@ -3,7 +3,6 @@
 import Term from '@/components/Term';
 import { useTranslations } from '@/lib/i18n';
 import { readPendingDemand, reportCapacity } from '@/lib/sim/capacity';
-import { RECONCILER_WORKERS } from '@/lib/sim/daemons/reconciler';
 import { sweepProgress, tombstonedBatch } from '@/lib/sim/daemons/liberator';
 import type { SlotFamily } from '@/lib/sim/types';
 import EventLog from './EventLog';
@@ -11,6 +10,7 @@ import DaemonCard from './DaemonCard';
 import FieldIndexReadout from './FieldIndexReadout';
 import SharedState from './SharedState';
 import { usePlayground } from './PlaygroundContext';
+import WorkerStrip from './WorkerStrip';
 import styles from './DaemonRoom.module.css';
 
 /**
@@ -177,7 +177,7 @@ function WatcherBody() {
 
 function ReconcilerBody() {
   const { world } = usePlayground();
-  const claims = world.daemonActivity.reconciler?.workers ?? [];
+  const lines = world.daemonActivity.reconciler?.workers ?? [];
   const t = useTranslations('playground');
 
   return (
@@ -186,51 +186,7 @@ function ReconcilerBody() {
         {t('daemonRoom.syncQueuePending', { count: world.syncQueue.length })}
       </p>
 
-      <div className={styles.workers}>
-        {Array.from({ length: RECONCILER_WORKERS }, (_, i) => {
-          const worker = `w${i + 1}`;
-          const mine = claims.filter(c => c.worker === worker);
-          const busy = mine.filter(c => c.outcome !== 'idle');
-
-          return (
-            <div
-              key={worker}
-              className={`${styles.worker} ${busy.length > 0 ? styles.workerBusy : ''}`}
-            >
-              <span className={styles.workerName}>{worker}</span>
-              {busy.length === 0 ? (
-                <em className={styles.none}>{t('daemonRoom.workerIdle')}</em>
-              ) : (
-                busy.map((claim, n) => (
-                  <em
-                    key={n}
-                    className={claim.outcome === 'capacity_wait' ? styles.waiting : undefined}
-                  >
-                    {claim.source}
-                    {claim.outcome === 'capacity_wait'
-                      ? t('daemonRoom.claimCapacityWait')
-                      : claim.note === 'reserved_and_rolled_back'
-                        ? // The chunk claimed rows and then rolled back whole,
-                          // so saying "500 rows" would describe a drain that
-                          // did not happen. What it did was reserve a slot.
-                          t('daemonRoom.claimRolledBack', { claimed: claim.claimed })
-                        : claim.firstId === null
-                          ? t('daemonRoom.claimBare', { claimed: claim.claimed })
-                          : t('daemonRoom.claimRows', {
-                              claimed: claim.claimed,
-                              firstId: claim.firstId,
-                              // `lastId` is not narrowed by the `firstId`
-                              // check above, but a claim with a first id
-                              // always has a last one too.
-                              lastId: claim.lastId as number,
-                            })}
-                  </em>
-                ))
-              )}
-            </div>
-          );
-        })}
-      </div>
+      <WorkerStrip lines={lines} label={t('daemonRoom.reconcilerWorkersLabel')} />
 
       <p className={styles.footnote}>
         {t('daemonRoom.reconcilerFootnote1')}
@@ -244,6 +200,7 @@ function ReconcilerBody() {
 function LiberatorBody() {
   const { world } = usePlayground();
   const batch = tombstonedBatch(world);
+  const lines = world.daemonActivity.liberator?.workers ?? [];
   const t = useTranslations('playground');
 
   return (
@@ -251,25 +208,30 @@ function LiberatorBody() {
       {batch.length === 0 ? (
         <p className={styles.none}>{t('daemonRoom.liberatorEmpty')}</p>
       ) : (
-        batch.slice(0, 4).map(slot => {
-          // Counted off the page table, the same population the sweep walks.
-          const { swept, total } = sweepProgress(world, slot.pageId, slot.sweepCursorId ?? 0);
-          const pct = total === 0 ? 100 : Math.min(100, (swept / total) * 100);
-          return (
-            <div key={slot.id} className={styles.sweepRow}>
-              <span className={styles.sweepCol}>
-                <span className={styles.sweepPage}>p{slot.pageId}</span>
-                {slot.slotColumn}
-              </span>
-              <div className={styles.track}>
-                <div className={styles.sweepFill} style={{ width: `${pct}%` }} />
+        <>
+          {batch.slice(0, 4).map(slot => {
+            // Counted off the page table, the same population the sweep walks.
+            const { swept, total } = sweepProgress(world, slot.pageId, slot.sweepCursorId ?? 0);
+            const pct = total === 0 ? 100 : Math.min(100, (swept / total) * 100);
+            return (
+              <div key={slot.id} className={styles.sweepRow}>
+                <span className={styles.sweepCol}>
+                  <span className={styles.sweepPage}>p{slot.pageId}</span>
+                  {slot.slotColumn}
+                </span>
+                <div className={styles.track}>
+                  <div className={styles.sweepFill} style={{ width: `${pct}%` }} />
+                </div>
+                <span className={styles.sweepCursor}>
+                  {swept}/{total}
+                </span>
               </div>
-              <span className={styles.sweepCursor}>
-                {swept}/{total}
-              </span>
-            </div>
-          );
-        })
+            );
+          })}
+          {lines.length > 0 && (
+            <WorkerStrip lines={lines} label={t('daemonRoom.liberatorWorkersLabel')} />
+          )}
+        </>
       )}
       <p className={styles.footnote}>
         {t('daemonRoom.liberatorFootnote1')}

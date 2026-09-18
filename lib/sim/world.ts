@@ -87,6 +87,15 @@ import type {
  *     `t()` returns its own argument unresolved when a key does not resolve,
  *     which for an old English sentence looks like a working translation
  *     that silently stopped translating.
+ * 6 — `DaemonActivity.workers` changed element type, from `WorkerClaim`
+ *     (Reconciler-shaped: `source`, `firstId`/`lastId`, an optional `note`) to
+ *     `WorkerLine` (`{worker, state, detail}`), so the Liberator could write
+ *     the same field once it went multi-worker too. Both are top-level-nested
+ *     — `workers` lives inside `daemonActivity`, which is restored wholesale
+ *     — so a v5 snapshot's array is the old shape and rendering an element of
+ *     it as the new one reads `line.detail.key` off an object that has no
+ *     `detail`, which is the same silent-then-crashing failure version 5 was
+ *     written to prevent for `action`.
  *
  * `payloadDraft` arrived without a bump, as the first application of the rule
  * above: it is top-level, `seq` already carried `entry` and `sync`, and a v3
@@ -100,7 +109,7 @@ import type {
  * merge is what fixes it, and it repairs those snapshots in place rather than
  * discarding a returning visitor's schema.
  */
-export const SIM_SCHEMA_VERSION = 5;
+export const SIM_SCHEMA_VERSION = 6;
 
 /**
  * The **most** slots of each family a page can carry, 25/15/10/10.
@@ -215,6 +224,24 @@ export interface SimWorld {
    */
   schemaVersionUpdatedAt: string;
 
+  /**
+   * `stardust_advisory_schedule` (ADR 0052), the engine's second singleton —
+   * three flat top-level members rather than a nested object, on the same
+   * precedent as the pair above, and for the same `persist.ts` reason: a
+   * top-level member an older snapshot lacks restores as its `emptyWorld()`
+   * default for free, so this needed no version bump of its own.
+   *
+   * `advisoryNextSampleAt === null` means "never scheduled", which is what
+   * preserves first-sample phase randomisation in the engine. The Watcher
+   * claims it once — writing a due time — and never fires a sample: a
+   * 24-hour cadence has nothing to show on a one-second tick, and inventing a
+   * shorter one would put a number on screen that means nothing. So
+   * `advisoryLastSampleAt` stays `null` forever here; only the claim is real.
+   */
+  advisoryNextSampleAt: string | null;
+  advisoryLastSampleAt: string | null;
+  advisoryUpdatedAt: string;
+
   models: SimModel[];
   fields: SimField[];
   pages: SimPage[];
@@ -280,6 +307,12 @@ export function emptyWorld(): SimWorld {
     schemaVersion: 0,
     // Bootstrap seeds the singleton row; it is never absent, only unbumped.
     schemaVersionUpdatedAt: formatSimTime(0),
+    // Bootstrap seeds this singleton too, with next/last both NULL — "never
+    // scheduled" — so the fields start byte-identical to the literal they
+    // replaced in `WorldInspector.tsx` until the Watcher's first tick claims it.
+    advisoryNextSampleAt: null,
+    advisoryLastSampleAt: null,
+    advisoryUpdatedAt: formatSimTime(0),
     models: [],
     fields: [],
     pages: [],

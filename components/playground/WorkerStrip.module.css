@@ -1,0 +1,37 @@
+/* Moved out of DaemonRoom.module.css the moment a second multi-worker daemon
+   (the Liberator) needed the identical markup — see WorkerStrip.tsx. */
+
+.workers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.worker {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 7px 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--well);
+  color: var(--text-dim);
+}
+
+/* Highlighted exactly when this worker did real work this tick — not for
+   `idle` (nothing to claim) and not for `blocked` (found the page or the
+   capacity it needed already spoken for), which both stay muted and are told
+   apart from each other by their text colour instead. */
+.workerBusy { border-color: #bebebe55; background: var(--accent-soft); }
+
+.workerName { color: var(--text); }
+.worker em { font-style: normal; }
+
+.idle { color: var(--text-faint); }
+.blocked { color: var(--pending); }

@@ -10,46 +10,80 @@
  * whole exchange happens through one row's `status`.
  *
  * **It has no PID guard.** ADR 0049 replaced the old process singleton with
- * page-table-granularity `GET_LOCK` exclusion, taken inside the sweep itself —
+ * page-table-granularity `GET_LOCK` exclusion, taken inside the sweep itself:
  * several Liberator processes can run at once, each excluded only from the one
- * `entry_slots_page_N` another is already sweeping. One instance runs here
- * because a single-threaded browser simulation has no second process to
- * contend with; the lock is invisible for the same reason `LOCK_WAIT` is
- * invisible in {@link ./reconciler.ts} — nothing here ever contends for
- * anything.
+ * `entry_slots_page_N` another is already sweeping — throughput scales with
+ * how many *pages* hold tombstones, not with how many workers are running.
+ * `LIBERATOR_WORKERS = 3` run here, and the exclusion is simulated by treating
+ * one tick as one simultaneity window: real workers' cycles overlap, so a page
+ * one worker is sweeping is genuinely unavailable to the others for that
+ * window. Each worker therefore claims **at most one page per tick** — the
+ * batch's distinct pages dealt round-robin across the three — sweeps one chunk
+ * of every batched slot on the page(s) it holds, and reports every other
+ * batched slot as contended. This is a deliberate deviation from the engine's
+ * literal per-worker loop (which walks the *whole* batch, acquiring and
+ * releasing one page lock at a time) rather than a transcription of it — a
+ * literal transcription in a single-threaded fold would have worker one sweep
+ * every page and release each lock before worker two ever looked, making
+ * contention structurally unreachable. The deviation preserves the one
+ * invariant that matters: for every worker, `slots_claimed + slots_contended
+ * === batch_size`, exactly as the engine's own payload always does, because
+ * every distinct page in the batch is dealt to exactly one worker.
  *
- * Four details are worth keeping straight:
+ * Five details are worth keeping straight:
  *
  *   - **The sweep never joins the field table.** It keys on the page, the
  *     column and a cursor, and nothing else. That is what lets it reclaim a
  *     slot whose field row has already been deleted.
- *   - **`sweepGapCount` survives the reclaim.** It counts chunks a sweep
- *     skipped over under contention, and it is an operator annotation about the
- *     *column*, not about the field that used to hold it. Resetting it on
- *     reclaim would erase the record; the engine clears it at the next
- *     tombstone instead (ADR 0045), which `reserve.ts` mirrors.
- *   - **There is no gap path here, and its absence is why this reclaim is
- *     unconditional.** Contention has no meaning in a single-threaded browser
- *     simulation, so every sweep completes cleanly and every completed sweep
- *     reclaims. In the engine those are two statements: a sweep that abandons a
- *     chunk rewinds and stays tombstoned rather than reclaiming (ADR 0046), so
- *     `free` still means verified empty. Do not read this function as evidence
- *     that reaching the final chunk is sufficient to reclaim.
- *   - **An idle tick emits nothing at all.** Not a heartbeat, not a
+ *   - **`sweepGapCount` survives the reclaim, and page-lock contention never
+ *     touches it.** It counts chunks a sweep skipped over under *deadlock*
+ *     contention (ADR 0046), an operator annotation about the column rather
+ *     than the field that used to hold it; the engine clears it at the next
+ *     tombstone instead (ADR 0045), which `reserve.ts` mirrors. Page-lock
+ *     contention is a different mechanism entirely — a worker that finds a
+ *     batched page already held skips the *whole slot*, untouched, with no
+ *     cursor advance and no gap recorded. Conflating the two would be a worse
+ *     defect than either alone.
+ *   - **There is still no *deadlock* gap path here, and its absence is still
+ *     why a reclaim is unconditional.** Page-lock contention is now simulated
+ *     — a worker excluded from a page simply does not sweep it this tick — but
+ *     that invents no failure: nothing rolls back, nothing is fabricated, no
+ *     data changes, and the slot stays `tombstoned` for whichever worker takes
+ *     its page next cycle. What stays absent is the ADR 0046 *chunk-
+ *     abandonment* path (three consecutive InnoDB deadlocks on the same
+ *     chunk), which has no meaning in a single-threaded browser simulation, so
+ *     every chunk a worker actually sweeps completes cleanly and every
+ *     completed sweep reclaims. `free` still means verified empty: a
+ *     contended slot was never touched, so it carries no unverified residue.
+ *   - **An idle tick — the whole batch empty — emits nothing at all**, and
+ *     writes no `daemonActivity` either. Not a heartbeat, not a
  *     `poll_complete`. A daemon with no work is silent, which is why its card
- *     has to read as deliberately quiet rather than broken.
+ *     has to read as deliberately quiet rather than broken. A tick where every
+ *     worker is contended (nonempty batch, but a worker holds none of its
+ *     pages) is different: that worker's own `sweep_started` is what stays
+ *     silent, per the next point, but the *tick* still writes activity because
+ *     at least one worker did claim something — the round-robin guarantees a
+ *     nonempty batch always has an owner for every distinct page.
+ *   - **`worker_identity` rides all five Liberator events**, per ADR 0049,
+ *     because with N workers the event stream alone can no longer say which
+ *     process emitted what; here it is `w1`…`w3`, the same stand-in used on the
+ *     Reconciler's chunk events.
  */
 
 import { correlationId, emit } from '../emit';
 import { line, type SimEvent } from '../events';
 import type { SimEntry, SimSlot } from '../types';
 import { simNow, type SimWorld } from '../world';
+import type { WorkerLine } from './types';
 
 /** `Config::$liberatorBatchSize` — tombstoned slots picked up per tick. */
 export const LIBERATOR_BATCH_SIZE = 50;
 
 /** `Config::$liberatorChunkSize` — rows nullified per chunk transaction. */
 export const LIBERATOR_CHUNK_SIZE = 500;
+
+/** How many worker processes the playground runs. `bin/stardust liberator` ×3. */
+export const LIBERATOR_WORKERS = 3;
 
 export function liberatorTick(world: SimWorld): SimWorld {
   const batch = tombstonedBatch(world);
@@ -58,40 +92,102 @@ export function liberatorTick(world: SimWorld): SimWorld {
   // "swept 0 slots" every three ticks would bury the ticks that mattered.
   if (batch.length === 0) return world;
 
-  const corrId = correlationId('liberator', world.clock.tick);
+  // The round-robin unit is the *distinct page*, in the batch's own order —
+  // several tombstoned slots can share one page, and they must share one
+  // owner, since the engine's exclusion is page-table granularity.
+  const pages: number[] = [];
+  for (const slot of batch) {
+    if (!pages.includes(slot.pageId)) pages.push(slot.pageId);
+  }
+  const ownerOf = new Map<number, number>();
+  pages.forEach((pageId, k) => ownerOf.set(pageId, k % LIBERATOR_WORKERS));
 
   let next = world;
-  let reclaimed = 0;
-  let nullified = 0;
+  let totalReclaimed = 0;
+  let totalNullified = 0;
+  const lines: WorkerLine[] = [];
 
-  for (const slot of batch) {
-    const swept = sweepOneChunk(next, slot, corrId);
-    next = swept.world;
-    nullified += swept.rowsNullified;
-    if (swept.reclaimed) reclaimed++;
+  for (let w = 0; w < LIBERATOR_WORKERS; w++) {
+    const worker = `w${w + 1}`;
+    const mine = batch.filter(slot => ownerOf.get(slot.pageId) === w);
+
+    if (mine.length === 0) {
+      // Fully contended: every batched page belongs to some other worker this
+      // tick. No event — the engine's own worker emits nothing when it claims
+      // zero slots, extending AC#13's idle-tick silence to "nothing to do
+      // because everything is already spoken for."
+      lines.push({
+        worker,
+        state: 'blocked',
+        detail: { key: 'daemonRoom.activity.liberatorWorkerBlocked' },
+      });
+      continue;
+    }
+
+    // One correlation id per worker per tick, standing in for one Liberator
+    // *process* invocation — not one per tick overall, or two workers'
+    // sweeps would be indistinguishable in a log panel whose whole point is
+    // disentangling concurrent units.
+    const corrId = correlationId('liberator', world.clock.tick, w);
+
+    let workerReclaimed = 0;
+    let workerNullified = 0;
+    for (const slot of mine) {
+      const swept = sweepOneChunk(next, slot, corrId, worker);
+      next = swept.world;
+      workerNullified += swept.rowsNullified;
+      if (swept.reclaimed) workerReclaimed++;
+    }
+    totalNullified += workerNullified;
+    totalReclaimed += workerReclaimed;
+
+    // `sweep_started` fires LAST for this worker, not first — the engine's
+    // Liberator::sweepBatch() does the same, because its tallies
+    // (`slots_claimed` / `slots_contended`) are not knowable until the
+    // worker's own share of the batch has been walked slot by slot.
+    next = emit(next, (nextSeq, tick): SimEvent[] => [
+      line(
+        nextSeq(),
+        tick,
+        'liberator',
+        'sweep_started',
+        {
+          correlation_id: corrId,
+          worker_identity: worker,
+          batch_size: batch.length,
+          slots_claimed: mine.length,
+          slots_contended: batch.length - mine.length,
+        },
+      ),
+    ]);
+
+    // The page a worker's message names. Every scripted world today ever
+    // hands one worker at most one page — round-robin only assigns a second
+    // to the same worker once a batch spans more than `LIBERATOR_WORKERS`
+    // distinct pages, which nothing here produces — so naming the first is
+    // never a simplification in practice, only in principle.
+    const pageId = mine[0].pageId;
+    lines.push({
+      worker,
+      state: 'working',
+      detail:
+        workerReclaimed > 0
+          ? {
+              key:
+                workerReclaimed === 1
+                  ? 'daemonRoom.activity.liberatorWorkerReclaimedOne'
+                  : 'daemonRoom.activity.liberatorWorkerReclaimedMany',
+              params: { pageId, reclaimed: workerReclaimed, nullified: workerNullified },
+            }
+          : {
+              key:
+                mine.length === 1
+                  ? 'daemonRoom.activity.liberatorWorkerSweptOne'
+                  : 'daemonRoom.activity.liberatorWorkerSweptMany',
+              params: { pageId, slots: mine.length, nullified: workerNullified },
+            },
+    });
   }
-
-  // `sweep_started` fires LAST, not first — the engine's Liberator::sweepBatch()
-  // does the same, because its tallies (`slots_claimed` / `slots_contended`)
-  // are not knowable until the whole batch has been walked slot by slot; this
-  // sim has no contention, so every claimable slot is claimed and the second
-  // number is always zero, but the shape — and the resulting event order,
-  // sweep_chunk(s) → sweep_complete → sweep_started — matches the engine's
-  // pinned sequence rather than the pre-ADR-0049 one.
-  next = emit(next, (nextSeq, tick): SimEvent[] => [
-    line(
-      nextSeq(),
-      tick,
-      'liberator',
-      'sweep_started',
-      {
-        correlation_id: corrId,
-        batch_size: batch.length,
-        slots_claimed: batch.length,
-        slots_contended: 0,
-      },
-    ),
-  ]);
 
   return {
     ...next,
@@ -99,22 +195,27 @@ export function liberatorTick(world: SimWorld): SimWorld {
       ...next.daemonActivity,
       liberator: {
         tick: world.clock.tick,
+        // The tick-level aggregate across every worker — unchanged in meaning
+        // from before this file went multi-worker, and byte-identical to what
+        // the old single-loop code computed whenever the batch spans exactly
+        // one page (every scenario up to and including `warm-path`).
         action:
-          reclaimed > 0
+          totalReclaimed > 0
             ? {
                 key:
-                  reclaimed === 1
+                  totalReclaimed === 1
                     ? 'daemonRoom.activity.liberatorReclaimedOne'
                     : 'daemonRoom.activity.liberatorReclaimedMany',
-                params: { nullified, reclaimed },
+                params: { nullified: totalNullified, reclaimed: totalReclaimed },
               }
             : {
                 key:
                   batch.length === 1
                     ? 'daemonRoom.activity.liberatorSweptOne'
                     : 'daemonRoom.activity.liberatorSweptMany',
-                params: { nullified, batchSize: batch.length },
+                params: { nullified: totalNullified, batchSize: batch.length },
               },
+        workers: lines,
       },
     },
   };
@@ -175,6 +276,7 @@ function sweepOneChunk(
   world: SimWorld,
   slot: SimSlot,
   corrId: string,
+  worker: string,
 ): { world: SimWorld; rowsNullified: number; reclaimed: boolean } {
   const cursor = slot.sweepCursorId ?? 0;
 
@@ -238,6 +340,7 @@ function sweepOneChunk(
           'sweep_chunk',
           {
             correlation_id: corrId,
+            worker_identity: worker,
             slot_assignment_id: slot.id,
             rows_nullified: candidates.length,
             sweep_cursor_id: newCursor,
@@ -253,6 +356,7 @@ function sweepOneChunk(
             'sweep_complete',
             {
               correlation_id: corrId,
+              worker_identity: worker,
               slot_assignment_id: slot.id,
               sweep_cursor_id: newCursor,
             },

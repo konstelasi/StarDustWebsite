@@ -51,6 +51,18 @@
         "ready": "dua tick lagi menyelesaikannya dan slot bergerak ke siap",
         "answered": "filter yang identik sekarang mengembalikan baris"
       }
+    },
+    "twoPageSweep": {
+      "title": "Dua page, tiga worker",
+      "blurb": "Tiga tombstone berbagi satu page sementara yang keempat berada di page kedua — dan hanya yang kedua yang memberi worker sesuatu untuk dikerjakan.",
+      "parked": "600 baris catalog · sku, brand dan material dipromosikan, di-backfill, lalu diturunkan — ketiganya di-tombstone di entry_slots_page_1, bersama finish, yang masih hidup di sana. Headroom string page 1 terisi penuh oleh empat promosi pertama; origin, yang kelima, memaksa entry_slots_page_2 tercipta dan hidup di sana. Belum ada yang disapu.",
+      "nextStep": "Tekan jalankan untuk satu tick. Tiga Liberator melakukan poll, dan hanya satu yang melakukan sesuatu: setiap tombstone ada di page 1, jadi satu worker mengambil page itu dan dua lainnya mendapatinya sudah dipegang. Kemudian turunkan origin di ruang kontrol daemon dan jalankan lagi — tombstone-nya mendarat di page 2, jadi worker kedua akhirnya punya page sendiri, dan keduanya menyapu sekaligus.",
+      "nextStepReduced": "Tekan maju untuk satu tick. Tiga Liberator melakukan poll, dan hanya satu yang melakukan sesuatu: setiap tombstone ada di page 1, jadi satu worker mengambil page itu dan dua lainnya mendapatinya sudah dipegang. Kemudian turunkan origin di ruang kontrol daemon dan maju lagi — tombstone-nya mendarat di page 2, jadi worker kedua akhirnya punya page sendiri, dan keduanya menyapu sekaligus.",
+      "anchorLabel": "ruang kontrol daemon",
+      "stages": {
+        "onePage": "satu page, satu worker sibuk — dua lainnya tidak mendapat apa pun untuk diambil",
+        "twoPages": "page kedua, worker kedua — keduanya menyapu sekaligus"
+      }
     }
   }
 }
