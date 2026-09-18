@@ -23,6 +23,16 @@
    ------------------------------------------------------------------ */
 
 :root {
+  /* Dark-only site, no light variant. Without this, a `<select>` popup (and
+     other native chrome — scrollbars, `<input type=date>`, etc.) defaults to
+     the browser's light UA palette while its text still inherits this
+     page's light-on-dark `color` tokens, which is invisible rather than
+     merely mismatched: light text on the light popup background. Declaring
+     the scheme here is what makes the browser pair a dark popup background
+     with light system text on its own, everywhere a native widget renders
+     one, instead of that pairing being fixed up per component. */
+  color-scheme: dark;
+
   --bg:            #090909;
   --bg-rgb:        9, 9, 9;
   --bg-raised:     #111111;

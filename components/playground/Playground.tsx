@@ -384,7 +384,7 @@ export default function Playground() {
       {/* Outside the shell: both are `position: fixed`, and nesting them inside
           a scrolling column would only invite a future `overflow` on an
           ancestor to clip them. Rendered after hydration for the same reason
-          the scenario buttons are — the static export's HTML is built from
+          the scenario picker's confirm step is — the static export's HTML is built from
           `emptyWorld()`, which has nothing to narrate and no tour running.
 
           Exactly one of the two is ever mounted. They occupy the same corner,

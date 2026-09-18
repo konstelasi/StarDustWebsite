@@ -595,8 +595,10 @@
   "scenarioPicker": {
     "groupLabel": "preset skenario",
     "label": "skenario",
+    "placeholder": "pilih skenario…",
     "replaceWorld": "ganti world?",
     "discardWarning": "Ini akan membuang world yang Anda miliki sekarang",
+    "cancel": "batalkan",
     "parkedEyebrow": "diparkir",
     "dismiss": "tutup",
     "next": "Berikutnya:",

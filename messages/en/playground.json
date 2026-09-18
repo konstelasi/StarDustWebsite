@@ -595,8 +595,10 @@
   "scenarioPicker": {
     "groupLabel": "scenario presets",
     "label": "scenario",
+    "placeholder": "choose a scenario…",
     "replaceWorld": "replace world?",
     "discardWarning": "This discards the world you have now",
+    "cancel": "cancel",
     "parkedEyebrow": "parked",
     "dismiss": "dismiss",
     "next": "Next:",

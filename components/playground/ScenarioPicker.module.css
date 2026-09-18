@@ -12,7 +12,7 @@
   letter-spacing: 0.03em;
 }
 
-.load {
+.select {
   font-family: var(--mono);
   font-size: 11px;
   padding: 5px 9px;
@@ -21,18 +21,56 @@
   background: transparent;
   color: var(--text-dim);
   cursor: pointer;
+  max-width: min(220px, 60vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: color 140ms var(--ease), border-color 140ms var(--ease),
               background 140ms var(--ease);
 }
-.load:hover { border-color: var(--border-hover); color: var(--text); }
+.select:hover { border-color: var(--border-hover); color: var(--text); }
+.select:focus-visible { border-color: var(--accent); outline: none; }
 
-/* Armed reads as a warning rather than as a second style of button: the next
-   click discards whatever the visitor has built. */
-.armed {
-  border-color: #bebebe55;
+/* `color-scheme: dark` on `:root` (and the `viewport.colorScheme` meta tag
+   it mirrors) is a hint, not a guarantee — Firefox's native popup list in
+   particular renders from the OS theme and mostly ignores it. An explicit
+   `background-color` + `color` on the option itself is what both Chromium
+   and Firefox actually honour for the open list, closed-box color already
+   comes from `.select` above. */
+.select option {
+  background-color: var(--panel);
+  color: var(--text);
+}
+
+/* The pending-confirm row reads as a warning: loading it discards whatever
+   the visitor has built. Same treatment `.armed` gave the button it replaced. */
+.confirm {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #bebebe55;
   background: var(--accent-soft);
   color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
 }
+
+.confirmBtn,
+.cancelBtn {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+}
+.confirmBtn { color: var(--accent); border-color: currentColor; }
+.confirmBtn:hover { background: var(--accent-soft); }
+.cancelBtn { color: var(--text-faint); }
+.cancelBtn:hover { color: var(--text-dim); border-color: var(--border-hover); }
 
 .strip {
   margin-top: 10px;

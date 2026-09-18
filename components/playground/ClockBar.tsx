@@ -7,7 +7,7 @@ import type { ScenarioId } from '@/lib/sim/scenarios';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import NowLine from './NowLine';
 import { usePlayground } from './PlaygroundContext';
-import { ScenarioButtons } from './ScenarioPicker';
+import { ScenarioPicker } from './ScenarioPicker';
 import { ShareButton } from './ShareLink';
 import styles from './ClockBar.module.css';
 
@@ -162,7 +162,7 @@ export default function ClockBar({
         })}
       </div>
 
-      <ScenarioButtons
+      <ScenarioPicker
         onLoad={id => {
           // One dispatch, not one per scripted action: the whole script is
           // folded inside the reducer, so this is a single commit and a single
