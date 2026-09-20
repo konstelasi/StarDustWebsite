@@ -16,7 +16,8 @@
     "verify:link": "tsc -p tsconfig.scripts.json && node .scenario-build/scripts/verify-link.js",
     "verify:contrast": "tsc -p tsconfig.scripts.json && node .scenario-build/scripts/verify-contrast.js",
     "verify:glossary": "tsc -p tsconfig.scripts.json && node .scenario-build/scripts/verify-glossary.js",
-    "verify:messages": "tsc -p tsconfig.scripts.json && node .scenario-build/scripts/verify-messages.js"
+    "verify:messages": "tsc -p tsconfig.scripts.json && node .scenario-build/scripts/verify-messages.js",
+    "deploy": "bash deploy.sh"
   },
   "dependencies": {
     "next": "15.5.4",

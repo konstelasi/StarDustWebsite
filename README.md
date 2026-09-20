@@ -182,6 +182,11 @@ release never requires building locally. It deliberately does not deploy —
 that would mean putting host credentials in repository secrets, which is a
 decision to make on purpose rather than inherit from a template.
 
+Deploying is instead a manual, local step: [`deploy.sh`](deploy.sh) (`npm run
+deploy`) builds `out/` and pushes it over SSH to the live host. It relies on
+an `stardustwebsite` entry already present in the operator's own
+`~/.ssh/config`, so no host, user, or key ever lives in this repo.
+
 Three settings exist for the sake of static hosting, and are easy to break by
 tidying:
 
