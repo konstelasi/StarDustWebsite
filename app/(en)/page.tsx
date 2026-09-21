@@ -104,7 +104,7 @@ export default function Home() {
           title="Four daemons. No broker between them."
           lede={
             <>
-              They never talk to each other directly — MySQL is the only coordination point,
+              They never talk to each other directly — the database is the only coordination point,
               with claims taken under <code>FOR UPDATE SKIP LOCKED</code>, and the{' '}
               <Term id="watcher">Watcher</Term> is the one singleton, held by advisory lock.
               Run more <Term id="reconciler">Reconcilers</Term>,{' '}
@@ -144,7 +144,7 @@ export default function Home() {
             </div>
             <div className={styles.req}>
               <span className={styles.reqLabel}>Database</span>
-              <strong>MySQL 8.0.13+</strong>
+              <strong>MySQL 8.0.13+ · MariaDB 10.11+</strong>
               <em>or Percona Server 8.0.13+</em>
             </div>
             <div className={styles.req}>
@@ -154,7 +154,7 @@ export default function Home() {
             </div>
             <div className={styles.req}>
               <span className={styles.reqLabel}>Rejected</span>
-              <strong className={styles.no}>MariaDB · MySQL ≤ 5.7</strong>
+              <strong className={styles.no}>MariaDB ≤ 10.6 · MySQL ≤ 5.7</strong>
               <em>refuses to start rather than corrupt the registry</em>
             </div>
           </div>

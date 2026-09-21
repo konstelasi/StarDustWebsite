@@ -18,7 +18,7 @@ const poppins = Poppins({
 
 const description =
   'Field dinamis tanpa skema, diquery dengan kecepatan indeks SQL asli — tidak ada cluster ' +
-  'pencarian terpisah, tidak ada rawa join EAV. Engine PHP netral terhadap framework untuk MySQL 8.';
+  'pencarian terpisah, tidak ada rawa join EAV. Engine PHP netral terhadap framework untuk MySQL 8 dan MariaDB.';
 
 const title = 'StarDust — field dinamis dengan kecepatan indeks SQL asli';
 
@@ -33,6 +33,7 @@ export const metadata: Metadata = {
   category: 'technology',
   keywords: [
     'MySQL',
+    'MariaDB',
     'PHP',
     'field dinamis',
     'alternatif EAV',
@@ -96,7 +97,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'StarDust',
-  operatingSystem: 'Cross-platform (MySQL 8.0.13+, PHP 8.1+)',
+  operatingSystem: 'Cross-platform (MySQL 8.0.13+ atau MariaDB 10.11+, PHP 8.1+)',
   applicationCategory: 'DeveloperApplication',
   description,
   url: `${SITE_URL}/id/`,
@@ -106,7 +107,7 @@ const jsonLd = {
     url: 'https://konstelasi.co.id',
   },
   programmingLanguage: 'PHP',
-  softwareRequirements: 'PHP 8.1+, MySQL 8.0.13+',
+  softwareRequirements: 'PHP 8.1+, MySQL 8.0.13+ atau MariaDB 10.11+',
   codeRepository: REPO,
   license: 'https://opensource.org/licenses/MIT',
 };

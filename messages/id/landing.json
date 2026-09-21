@@ -3,7 +3,7 @@
     "badge": "v0.3.0 pre-release · Vertical Schema Partitioning",
     "titleLine1": "Field dinamis tanpa skema,",
     "titleLine2": "diquery dengan kecepatan indeks SQL asli.",
-    "lede": "Berikan setiap tenant field mereka sendiri, lalu filter seperti kolom native. Tidak ada cluster pencarian terpisah. Tidak ada rawa join EAV. Hanya MySQL 8, melakukan scan indeks pada data yang tidak pernah Anda deklarasikan saat migrasi.",
+    "lede": "Berikan setiap tenant field mereka sendiri, lalu filter seperti kolom native. Tidak ada cluster pencarian terpisah. Tidak ada rawa join EAV. Hanya MySQL atau MariaDB, melakukan scan indeks pada data yang tidak pernah Anda deklarasikan saat migrasi.",
     "copy": "salin",
     "copied": "disalin",
     "readSource": "Baca kode sumber",
@@ -29,7 +29,7 @@
     "daemons": {
       "eyebrow": "04 · bagian yang bergerak",
       "title": "Empat daemon. Tidak ada broker di antara mereka.",
-      "lede": "Mereka tidak pernah berbicara langsung satu sama lain — MySQL adalah satu-satunya titik koordinasi, dengan klaim diambil melalui FOR UPDATE SKIP LOCKED dan singleton Watcher dipegang oleh advisory lock. Jalankan lebih banyak Reconciler, Liberator, dan Chronicler untuk throughput — hanya Watcher yang tetap satu-satunya."
+      "lede": "Mereka tidak pernah berbicara langsung satu sama lain — database adalah satu-satunya titik koordinasi, dengan klaim diambil melalui FOR UPDATE SKIP LOCKED dan singleton Watcher dipegang oleh advisory lock. Jalankan lebih banyak Reconciler, Liberator, dan Chronicler untuk throughput — hanya Watcher yang tetap satu-satunya."
     },
     "status": {
       "eyebrow": "05 · jawaban langsung",
@@ -47,7 +47,7 @@
       "heading": "cocok jika",
       "items": [
         "Anda memerlukan field dinamis yang ditentukan pengguna atau per-tenant yang masih dapat difilter dengan kecepatan indeks asli, tanpa menyiapkan cluster pencarian terpisah.",
-        "Anda sudah menjalankan MySQL 8.0.13+ atau Percona — kedua mode deployment sama-sama bisa dipakai: daemon yang berjalan terus-menerus, atau tick terjadwal.",
+        "Anda sudah menjalankan MySQL 8.0.13+, Percona, atau MariaDB 10.11+ — kedua mode deployment sama-sama bisa dipakai: daemon yang berjalan terus-menerus, atau tick terjadwal.",
         "Anda ingin engine yang netral terhadap framework, yang Anda pasang melalui Composer. Tidak ada ORM, tidak ada pembuat query, tidak ada yang ditarik ke aplikasi Anda.",
         "Anda dapat mentoleransi field yang baru saja dapat difilter menjadi dapat di-query tidak lama setelahnya, bukan secara instan."
       ]
@@ -55,7 +55,7 @@
     "bad": {
       "heading": "mungkin tidak cocok jika",
       "items": [
-        "MariaDB, atau MySQL 5.7 dan lebih lama. Keduanya secara aktif ditolak saat boot — CI menyimpan pekerjaan yang mengharapkan suite gagal di MariaDB.",
+        "MariaDB 10.6 atau lebih lama, atau MySQL 5.7 dan lebih lama. Keduanya langsung ditolak saat boot — CI punya satu job yang justru mengharapkan suite gagal di server di bawah batas minimum.",
         "Konsistensi read-after-write yang kuat pada filter segera setelah retype atau promosi. Field-nya dilayani dari JSON sampai backfill-nya mendarat.",
         "Pencarian teks penuh, fuzzy, atau substring. Driver default menyediakan kecocokan eksak, perbandingan, rentang, keanggotaan set, dan anchored prefix — tidak ada yang lain.",
         "Nomor halaman, lompat-ke-halaman, atau jumlah hasil total. Pembacaan dipaginasi kursor dan forward-sequential, dengan sengaja."
@@ -122,7 +122,7 @@
     "resume": "lanjutkan",
     "pause": "jeda",
     "tickLabel": "tick {count}",
-    "legend": "Tidak ada satu pun di sini yang berupa message queue. Setiap panah adalah koneksi ke MySQL.",
+    "legend": "Tidak ada satu pun di sini yang berupa message queue. Setiap panah adalah koneksi ke database.",
     "watcherRole": "Menyediakan page terindeks sebelum kapasitas habis.",
     "reconcilerRole": "Menguras enam work source di bawah SKIP LOCKED.",
     "liberatorRole": "Menyapu slot yang di-tombstone kembali menjadi free, sehingga kapasitas bisa dipakai lagi.",

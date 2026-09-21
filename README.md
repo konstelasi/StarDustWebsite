@@ -1,7 +1,7 @@
 # StarDust — website
 
-Landing page for [StarDust](https://github.com/damarbob/StarDust), a MySQL-native
-Vertical Schema Partitioning engine for dynamic data models.
+Landing page for [StarDust](https://github.com/damarbob/StarDust), a MySQL &
+MariaDB-native Vertical Schema Partitioning engine for dynamic data models.
 
 The engine is abstract — most of what makes it interesting happens in background
 daemons, over time, in tables nobody sees. So the page is built around four

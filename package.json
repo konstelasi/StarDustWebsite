@@ -2,7 +2,7 @@
   "name": "stardust-website",
   "version": "0.1.0",
   "private": true,
-  "description": "Landing page for StarDust — a MySQL-native Vertical Schema Partitioning engine for dynamic data models.",
+  "description": "Landing page for StarDust — a MySQL & MariaDB-native Vertical Schema Partitioning engine for dynamic data models.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

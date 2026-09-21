@@ -19,7 +19,7 @@ const poppins = Poppins({
 
 const description =
   'Schemaless dynamic fields, queried at native SQL index speed — no separate ' +
-  'search cluster, no EAV join swamp. A framework-neutral PHP engine for MySQL 8.';
+  'search cluster, no EAV join swamp. A framework-neutral PHP engine for MySQL 8 and MariaDB.';
 
 const title = 'StarDust — dynamic fields at native SQL index speed';
 
@@ -34,6 +34,7 @@ export const metadata: Metadata = {
   category: 'technology',
   keywords: [
     'MySQL',
+    'MariaDB',
     'PHP',
     'dynamic fields',
     'EAV alternative',
@@ -97,7 +98,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'StarDust',
-  operatingSystem: 'Cross-platform (MySQL 8.0.13+, PHP 8.1+)',
+  operatingSystem: 'Cross-platform (MySQL 8.0.13+ or MariaDB 10.11+, PHP 8.1+)',
   applicationCategory: 'DeveloperApplication',
   description,
   url: SITE_URL,
@@ -107,7 +108,7 @@ const jsonLd = {
     url: 'https://konstelasi.co.id',
   },
   programmingLanguage: 'PHP',
-  softwareRequirements: 'PHP 8.1+, MySQL 8.0.13+',
+  softwareRequirements: 'PHP 8.1+, MySQL 8.0.13+ or MariaDB 10.11+',
   codeRepository: REPO,
   license: 'https://opensource.org/licenses/MIT',
 };

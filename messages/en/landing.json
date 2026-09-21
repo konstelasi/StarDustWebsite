@@ -3,7 +3,7 @@
     "badge": "v0.3.0 pre-release · Vertical Schema Partitioning",
     "titleLine1": "Schemaless dynamic fields,",
     "titleLine2": "queried at native SQL index speed.",
-    "lede": "Give every tenant their own fields, then filter them like first-class columns. No separate search cluster. No EAV join swamp. Just MySQL 8, doing an index scan on data you never declared at migration time.",
+    "lede": "Give every tenant their own fields, then filter them like first-class columns. No separate search cluster. No EAV join swamp. Just MySQL or MariaDB, doing an index scan on data you never declared at migration time.",
     "copy": "copy",
     "copied": "copied",
     "readSource": "Read the source",
@@ -29,7 +29,7 @@
     "daemons": {
       "eyebrow": "04 · the moving parts",
       "title": "Four daemons. No broker between them.",
-      "lede": "They never talk to each other directly — MySQL is the only coordination point, with claims taken under FOR UPDATE SKIP LOCKED and the Watcher's singleton held by advisory lock. Run more Reconcilers, Liberators, and Chroniclers for throughput — only the Watcher stays one apiece."
+      "lede": "They never talk to each other directly — the database is the only coordination point, with claims taken under FOR UPDATE SKIP LOCKED and the Watcher's singleton held by advisory lock. Run more Reconcilers, Liberators, and Chroniclers for throughput — only the Watcher stays one apiece."
     },
     "status": {
       "eyebrow": "05 · straight answers",
@@ -47,7 +47,7 @@
       "heading": "a good fit if",
       "items": [
         "You need user-defined or per-tenant dynamic fields that are still filterable at native index speed, without standing up a search cluster.",
-        "You already run MySQL 8.0.13+ or Percona — either deployment mode works, persistent daemons or a scheduled tick.",
+        "You already run MySQL 8.0.13+, Percona, or MariaDB 10.11+ — either deployment mode works, persistent daemons or a scheduled tick.",
         "You want a framework-neutral engine you drop in via Composer. No ORM, no query builder, nothing pulled into your app.",
         "You can tolerate a newly filterable field becoming queryable shortly after the fact rather than instantly."
       ]
@@ -55,7 +55,7 @@
     "bad": {
       "heading": "probably not a fit if",
       "items": [
-        "MariaDB, or MySQL 5.7 and older. Both are actively rejected at boot — CI keeps a job that expects the suite to fail on MariaDB.",
+        "MariaDB 10.6 or older, or MySQL 5.7 and older. Both are actively rejected at boot — CI keeps a job that expects the suite to fail on a server below the floor.",
         "Strong read-after-write consistency on filters immediately after a retype or promotion. The field serves from JSON until its backfill lands.",
         "Full-text, fuzzy, or substring search. The default driver ships exact match, comparison, range, set membership, and anchored prefix — nothing else.",
         "Page numbers, jump-to-page, or a total result count. Reads are cursor-paginated and forward-sequential, deliberately."
@@ -122,7 +122,7 @@
     "resume": "resume",
     "pause": "pause",
     "tickLabel": "tick {count}",
-    "legend": "Nothing here is a message queue. Every arrow is a connection to MySQL.",
+    "legend": "Nothing here is a message queue. Every arrow is a connection to the database.",
     "watcherRole": "Provisions indexed pages before capacity runs out.",
     "reconcilerRole": "Drains six work sources under SKIP LOCKED.",
     "liberatorRole": "Sweeps tombstoned slots back to free, so capacity is reused.",

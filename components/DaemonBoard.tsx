@@ -264,7 +264,7 @@ export default function DaemonBoard() {
       {/* ---------- the only thing any of them talks to ---------- */}
       <div className={styles.core}>
         <div className={styles.coreHead}>
-          <span className={styles.coreTitle}>MySQL 8.0.13+</span>
+          <span className={styles.coreTitle}>MySQL · MariaDB</span>
           <span className={styles.coreSub}>{t('daemonBoard.coreSub')}</span>
         </div>
         <div className={styles.coreTables}>

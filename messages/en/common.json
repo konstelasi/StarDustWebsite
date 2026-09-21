@@ -17,7 +17,7 @@
   },
   "footer": {
     "tagline": "Schemaless dynamic fields, queried at native SQL index speed.",
-    "description": "MySQL-native Vertical Schema Partitioning for dynamic data models. Framework-neutral, MIT licensed.",
+    "description": "MySQL & MariaDB-native Vertical Schema Partitioning for dynamic data models. Framework-neutral, MIT licensed.",
     "copyright": "© {year} Konstelasi Teknologi Internasional",
     "columns": {
       "project": "Project",

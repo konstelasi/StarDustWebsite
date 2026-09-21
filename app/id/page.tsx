@@ -105,7 +105,7 @@ export default function IdHome() {
           title="Empat daemon. Tidak ada broker di antara mereka."
           lede={
             <>
-              Mereka tidak pernah berbicara langsung satu sama lain — MySQL adalah satu-satunya titik
+              Mereka tidak pernah berbicara langsung satu sama lain — database adalah satu-satunya titik
               koordinasi, dengan klaim diambil melalui <code>FOR UPDATE SKIP LOCKED</code>, dan{' '}
               <Term id="watcher">Watcher</Term> adalah satu-satunya singleton, dipegang oleh
               advisory lock. Jalankan lebih banyak{' '}
@@ -145,7 +145,7 @@ export default function IdHome() {
             </div>
             <div className={styles.req}>
               <span className={styles.reqLabel}>Database</span>
-              <strong>MySQL 8.0.13+</strong>
+              <strong>MySQL 8.0.13+ · MariaDB 10.11+</strong>
               <em>atau Percona Server 8.0.13+</em>
             </div>
             <div className={styles.req}>
@@ -155,7 +155,7 @@ export default function IdHome() {
             </div>
             <div className={styles.req}>
               <span className={styles.reqLabel}>Ditolak</span>
-              <strong className={styles.no}>MariaDB · MySQL ≤ 5.7</strong>
+              <strong className={styles.no}>MariaDB ≤ 10.6 · MySQL ≤ 5.7</strong>
               <em>menolak untuk memulai daripada merusak registry</em>
             </div>
           </div>

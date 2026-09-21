@@ -17,7 +17,7 @@
   },
   "footer": {
     "tagline": "Field dinamis tanpa skema, diquery dengan kecepatan indeks SQL asli.",
-    "description": "MySQL-native Vertical Schema Partitioning untuk model data dinamis. Framework-netral, lisensi MIT.",
+    "description": "Vertical Schema Partitioning native MySQL & MariaDB untuk model data dinamis. Framework-netral, lisensi MIT.",
     "copyright": "© {year} Konstelasi Teknologi Internasional",
     "columns": {
       "project": "Proyek",
