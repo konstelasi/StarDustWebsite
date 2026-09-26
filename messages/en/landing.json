@@ -1,6 +1,6 @@
 {
   "hero": {
-    "badge": "v0.3.0 pre-release · Vertical Schema Partitioning",
+    "badge": "v0.3.0-alpha.1 · Vertical Schema Partitioning",
     "titleLine1": "Schemaless dynamic fields,",
     "titleLine2": "queried at native SQL index speed.",
     "lede": "Give every tenant their own fields, then filter them like first-class columns. No separate search cluster. No EAV join swamp. Just MySQL or MariaDB, doing an index scan on data you never declared at migration time.",
@@ -34,7 +34,7 @@
     "status": {
       "eyebrow": "05 · straight answers",
       "title": "Whether you should actually use this.",
-      "lede": "StarDust is a v0.3.0 pre-release. main and the 0.3.x tags are a breaking architectural migration away from the legacy 0.2.x line, driven by scalability limits and OOM vulnerabilities in the old design. Neither line has reached 1.0. If you need something to run today, ^0.2.0-alpha.x is the more settled of the two and still receives critical fixes on support/v0.2 — but it is an alpha as well, and choosing it means adopting an architecture this project has already moved off."
+      "lede": "The current release is 0.3.0-alpha.1 — a ground-up rewrite (Vertical Schema Partitioning) of the legacy 0.2.x line, sharing no API with it. It hasn't reached 1.0, and the public API may still change before 0.3.0. Everything below is implemented and covered by the test suite."
     },
     "start": {
       "eyebrow": "06 · get started",

@@ -124,14 +124,11 @@ export default function IdHome() {
           title="Apakah Anda sebaiknya benar-benar menggunakan ini."
           lede={
             <>
-              StarDust adalah <strong>pre-release v0.3.0</strong>. <code>main</code> dan tag{' '}
-              <code>0.3.x</code> merupakan migrasi arsitektur besar yang menjauh dari lini 0.2.x
-              lama, didorong oleh batasan skalabilitas dan kerentanan OOM pada desain lama.{' '}
-              <strong>Tidak ada lini yang telah mencapai 1.0.</strong> Jika Anda memerlukan sesuatu
-              untuk dijalankan hari ini, <code>^0.2.0-alpha.x</code> adalah yang lebih stabil di
-              antara keduanya dan masih menerima perbaikan kritis di <code>support/v0.2</code> —
-              tetapi itu juga masih alpha, dan memilihnya berarti mengadopsi arsitektur yang sudah
-              ditinggalkan proyek ini.
+              Rilis saat ini adalah <strong><code>0.3.0-alpha.1</code></strong> — penulisan ulang
+              total (<Term id="vertical-schema-partitioning">Vertical Schema Partitioning</Term>)
+              dari lini 0.2.x lama, tanpa API yang sama dengannya.{' '}
+              <strong>Belum mencapai 1.0</strong>, dan API publik masih bisa berubah sebelum 0.3.0.
+              Semua yang ada di bawah ini sudah diimplementasikan dan tercakup oleh test suite.
             </>
           }
         >

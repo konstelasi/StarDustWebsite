@@ -1,6 +1,6 @@
 {
   "hero": {
-    "badge": "v0.3.0 pre-release · Vertical Schema Partitioning",
+    "badge": "v0.3.0-alpha.1 · Vertical Schema Partitioning",
     "titleLine1": "Field dinamis tanpa skema,",
     "titleLine2": "diquery dengan kecepatan indeks SQL asli.",
     "lede": "Berikan setiap tenant field mereka sendiri, lalu filter seperti kolom native. Tidak ada cluster pencarian terpisah. Tidak ada rawa join EAV. Hanya MySQL atau MariaDB, melakukan scan indeks pada data yang tidak pernah Anda deklarasikan saat migrasi.",
@@ -34,7 +34,7 @@
     "status": {
       "eyebrow": "05 · jawaban langsung",
       "title": "Apakah Anda sebaiknya benar-benar menggunakan ini.",
-      "lede": "StarDust adalah pre-release v0.3.0. main dan tag 0.3.x merupakan migrasi arsitektur besar yang menjauh dari lini 0.2.x lama, didorong oleh batasan skalabilitas dan kerentanan OOM pada desain lama. Tidak ada lini yang telah mencapai 1.0. Jika Anda memerlukan sesuatu untuk dijalankan hari ini, ^0.2.0-alpha.x adalah yang lebih stabil di antara keduanya dan masih menerima perbaikan kritis di support/v0.2 — tetapi itu juga masih alpha, dan memilihnya berarti mengadopsi arsitektur yang sudah ditinggalkan proyek ini."
+      "lede": "Rilis saat ini adalah 0.3.0-alpha.1 — penulisan ulang total (Vertical Schema Partitioning) dari lini 0.2.x lama, tanpa API yang sama dengannya. Belum mencapai 1.0, dan API publik masih bisa berubah sebelum 0.3.0. Semua yang ada di bawah ini sudah diimplementasikan dan tercakup oleh test suite."
     },
     "start": {
       "eyebrow": "06 · mulai sekarang",

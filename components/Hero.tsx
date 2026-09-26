@@ -20,7 +20,7 @@ $page = $engine->read(new EntryQuery(
     selectFields: ['name', 'employees'],
 ));`;
 
-const INSTALL = 'composer require damarbob/stardust';
+const INSTALL = 'composer require damarbob/stardust:^0.3@alpha';
 
 export default function Hero() {
   const locale = useLocale();

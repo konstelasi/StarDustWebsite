@@ -123,14 +123,11 @@ export default function Home() {
           title="Whether you should actually use this."
           lede={
             <>
-              StarDust is a <strong>v0.3.0 pre-release</strong>. <code>main</code> and the{' '}
-              <code>0.3.x</code> tags are a breaking architectural migration away from the
-              legacy 0.2.x line, driven by scalability limits and OOM vulnerabilities in the
-              old design. <strong>Neither line has reached 1.0.</strong> If you need
-              something to run today, <code>^0.2.0-alpha.x</code> is the more settled of the
-              two and still receives critical fixes on <code>support/v0.2</code> — but it is
-              an alpha as well, and choosing it means adopting an architecture this project
-              has already moved off.
+              The current release is <strong><code>0.3.0-alpha.1</code></strong> — a ground-up
+              rewrite (<Term id="vertical-schema-partitioning">Vertical Schema Partitioning</Term>)
+              of the legacy 0.2.x line, sharing no API with it. <strong>It hasn&apos;t reached
+              1.0</strong>, and the public API may still change before 0.3.0. Everything below is
+              implemented and covered by the test suite.
             </>
           }
         >
