@@ -19,7 +19,7 @@
     "joins": {
       "eyebrow": "02 · why not EAV",
       "title": "Every EAV condition is another self-join.",
-      "lede": "The classic attribute table makes a narrower question cost more, because each filtered attribute needs its own join and the intermediate result has to be carried through all of them. StarDust joins one page, once, no matter how many conditions you stack on it."
+      "lede": "The classic attribute table makes a narrower question cost more, because each filtered attribute needs its own join and the intermediate result has to be carried through all of them. StarDust joins once per indexed page the model's fields occupy, not once per condition — so when those fields share a page, it is one join however many conditions you stack on it."
     },
     "lifecycle": {
       "eyebrow": "03 · the honest caveat",
@@ -72,9 +72,9 @@
     "joinsMany": "{count} joins",
     "rowsExaminedLabel": "rows examined · log scale",
     "eavNote": "Each condition adds a join, and the intermediate result has to be carried through all of them — so asking a narrower question costs strictly more.",
-    "sdHead": "StarDust — one page join, always",
+    "sdHead": "StarDust — one join per page, not per condition",
     "sdTag": "1 join · 2 queries",
-    "sdNote": "Every condition is another predicate on the same indexed row of the same extension page. Narrower question, less work — the way an index is supposed to behave.",
+    "sdNote": "With the model's fields on one page, every condition is another predicate on the same indexed row. Narrower question, less work — the way an index is supposed to behave.",
     "factorOne": "more rows touched by EAV at {count} condition",
     "factorMany": "more rows touched by EAV at {count} conditions",
     "disclaimer": "An illustrative cost model of join fan-out — not a benchmark. The shape is what matters: EAV grows with the number of conditions, StarDust does not. Measure your own workload before quoting a number."

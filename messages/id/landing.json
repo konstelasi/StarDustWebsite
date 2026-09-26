@@ -19,7 +19,7 @@
     "joins": {
       "eyebrow": "02 · mengapa bukan EAV",
       "title": "Setiap kondisi EAV adalah self-join lain.",
-      "lede": "Tabel atribut klasik membuat pertanyaan yang lebih spesifik menjadi lebih mahal, karena setiap atribut yang difilter memerlukan join-nya sendiri dan hasil antaranya harus dibawa melalui semuanya. StarDust cukup join satu page, sekali, tidak peduli berapa banyak kondisi yang Anda tumpuk di atasnya."
+      "lede": "Tabel atribut klasik membuat pertanyaan yang lebih spesifik menjadi lebih mahal, karena setiap atribut yang difilter memerlukan join-nya sendiri dan hasil antaranya harus dibawa melalui semuanya. StarDust melakukan join sekali untuk setiap page terindeks yang ditempati field model, bukan sekali untuk setiap kondisi — jadi selama field-field itu berada di page yang sama, cukup satu join, berapa pun kondisi yang Anda tumpuk."
     },
     "lifecycle": {
       "eyebrow": "03 · catatan jujur",
@@ -72,9 +72,9 @@
     "joinsMany": "{count} join",
     "rowsExaminedLabel": "baris diperiksa · skala log",
     "eavNote": "Setiap kondisi menambah satu join, dan hasil antaranya harus dibawa melalui semuanya — jadi pertanyaan yang lebih spesifik justru menelan lebih banyak biaya.",
-    "sdHead": "StarDust — satu join page, selalu",
+    "sdHead": "StarDust — satu join per page, bukan per kondisi",
     "sdTag": "1 join · 2 query",
-    "sdNote": "Setiap kondisi hanyalah predikat lain pada baris terindeks yang sama, di page yang sama. Pertanyaan yang lebih spesifik, kerja yang lebih sedikit — persis seperti seharusnya perilaku sebuah indeks.",
+    "sdNote": "Selama field model berada di satu page, setiap kondisi hanyalah predikat lain pada baris terindeks yang sama. Pertanyaan yang lebih spesifik, kerja yang lebih sedikit — persis seperti seharusnya perilaku sebuah indeks.",
     "factorOne": "lebih banyak baris disentuh EAV pada {count} kondisi",
     "factorMany": "lebih banyak baris disentuh EAV pada {count} kondisi",
     "disclaimer": "Model biaya ilustratif dari fan-out join — bukan benchmark. Yang penting adalah bentuknya: EAV tumbuh seiring jumlah kondisi, StarDust tidak. Ukur beban kerja Anda sendiri sebelum mengutip sebuah angka."
