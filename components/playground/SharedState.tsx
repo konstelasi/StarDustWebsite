@@ -62,7 +62,7 @@ export default function SharedState() {
   return (
     <div className={`panel ${styles.core}`}>
       <div className="panel-head">
-        <span>MySQL 8.0.13+</span>
+        <span>MySQL 8.0.13+ · MariaDB 10.11+</span>
         <span className="tag tag-json">{t('sharedState.groupLabel')}</span>
       </div>
 
