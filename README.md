@@ -131,18 +131,27 @@ handful of them inline in the landing page's own prose, and more densely in
 `/custom-fields`'s — a dotted underline, revealed on hover, focus, or tap —
 each deep-linking to its full entry on the page.
 
-**The definitions are a manual mirror of the engine's own
-[`GLOSSARY.md`](https://github.com/damarbob/StarDust/blob/main/GLOSSARY.md),
-not machine-synced.** Unlike [`lib/sim/ddl.ts`](lib/sim/ddl.ts)'s verbatim
-quoting of the engine's `CREATE TABLE` statements described above, these are
-condensed by hand into one sentence each rather than copied literally — and,
-same duty as `ddl.ts`, updated by hand when the source changes.
-[`messages/{en,id}/glossary.json`](messages/en/glossary.json) carries one
-sentence per term, deliberately shorter than the engine's own glossary entries
-(that file is contributor-facing and cites internal detail — ADR numbers,
-table and column names — the site must not repeat).
-[`scripts/verify-glossary.ts`](scripts/verify-glossary.ts) is what catches
-drift automatically: it walks every `.tsx` file under `app/` and
+**[`messages/{en,id}/glossary.json`](messages/en/glossary.json) is generated,
+not hand-written.** The canonical content — one entry per term, both
+locales — lives in a separate repo, `StarDustGlossary`, which also compiles
+the same content into the StarDust docs site's own glossary page. Clone it as
+a sibling of this repo (the same layout `SDDPG` uses alongside the engine
+repo) and run its compiler whenever glossary content changes:
+
+```bash
+git clone <StarDustGlossary repo URL> ../StarDustGlossary
+cd ../StarDustGlossary && npm install && npm run compile
+```
+
+`npm run compile` (no arguments) writes into `../StarDustWebsite` and
+`../StarDustDocs` by default. Only the `terms` and `orientation` keys of each
+`glossary.json` are regenerated — `meta`, `hero`, `orientationHeading`,
+`termsHeading`, and `popup` stay exactly as this repo owns them, so page
+chrome and tone can differ from the docs site without drifting the actual
+definitions.
+
+[`scripts/verify-glossary.ts`](scripts/verify-glossary.ts) still runs after
+every regeneration: it walks every `.tsx` file under `app/` and
 `components/`, so a `<Term id>` used anywhere — not only on a hardcoded list of
 pages remembered at the time — must resolve in both locale catalogs, the two
 catalogs must carry identical keys, and every

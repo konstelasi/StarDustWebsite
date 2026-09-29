@@ -10,12 +10,12 @@
   },
   "orientationHeading": "Cara semua bagian saling terhubung",
   "orientation": [
-    "Tenant adalah batas isolasi Anda — satu pelanggan, satu workspace, satu akun, apa pun artinya dalam aplikasi Anda. Di dalam sebuah tenant Anda mendefinisikan model (sebuah bentuk data, misalnya \"perusahaan\" atau \"invoice\"), dan setiap model memiliki field. Sebuah entry adalah satu record dari sebuah model.",
-    "Saat Anda menulis sebuah entry, seluruh datanya — setiap field, baik filterable maupun tidak — masuk ke dalam satu payload JSON. Payload itulah system of record: selalu lengkap, selalu otoritatif, dan tidak ada bagian lain dari engine yang boleh berbeda darinya.",
-    "Kalau berhenti di situ saja, Anda hanya punya document store yang tidak bisa diquery secara efisien. Karena itu StarDust menambahkan satu langkah lagi: field mana pun yang Anda tandai filterable juga dicerminkan ke kolom bertipe dan terindeks — sebuah slot — pada sebuah extension page, tabel sisi yang terhubung 1:1 ke tabel entry. Filter terhadap field itu kemudian membaca indeks asli, bukan memindai JSON. Pemisahan inilah seluruh arsitekturnya, dan namanya vertical schema partitioning.",
-    "Slot adalah sumber daya yang terbatas: sebuah page dibuat dengan sejumlah kolom terindeks yang tetap, dan tidak akan pernah bisa diperlebar lagi setelahnya. Watcher menyediakan page baru begitu kapasitas menipis, dan index headroom membuat setiap page baru membawa kolom cadangan supaya beberapa field yang dipromosikan berurutan mendarat bersama, bukan tercecer. Saat sebuah field dinyatakan filterable tapi belum dicerminkan, field itu juga belum indexed — dan memfilternya langsung ditolak di depan, bukan melambat jadi scan.",
-    "Jeda antara \"sudah saya minta\" dan \"sudah benar-benar bisa\" itulah backfill window, dan inilah satu konsep yang paling penting untuk dipahami. Menandai field sebagai filterable, me-retype-nya, mengganti namanya, atau menghapusnya — semuanya langsung kembali dan baru tuntas di latar belakang, dikerjakan oleh Reconciler. Dua daemon lain melengkapi: Liberator mengambil kembali slot yang dibebaskan oleh field yang didemosikan atau dihapus, dan Chronicler menulis file export.",
-    "Seiring waktu, slot sebuah model bisa tersebar ke lebih banyak page daripada yang sebenarnya diperlukan — disebut spread — dan itu berarti satu join tambahan pada setiap query terfilter. Engine melaporkannya, dan Andalah yang memutuskan apakah perlu membayar biaya compaction."
+    "Tenant adalah batas isolasi Anda: satu pelanggan, satu workspace, satu akun, apa pun artinya di aplikasi Anda. Di dalam sebuah tenant Anda mendefinisikan model (sebuah bentuk data, misalnya \"company\" atau \"invoice\"), dan setiap model punya field. Entry adalah satu record dari sebuah model.",
+    "Saat Anda menulis entry, seluruh datanya, semua field baik filterable maupun tidak, masuk ke satu payload JSON yang disimpan di tabel `entry_data`. Payload itu adalah system of record: selalu lengkap, selalu menjadi sumber yang sah, dan tidak ada bagian lain dari engine yang boleh berbeda dengannya.",
+    "Kalau hanya itu, hasilnya document store yang tidak bisa di-query dengan efisien. Maka StarDust menambahkan langkah kedua: setiap field yang Anda tandai filterable juga disalin ke kolom bertipe yang terindeks, sebuah slot, di extension page, tabel samping yang berelasi 1:1 dengan `entry_data`. Filter pada field itu kemudian membaca B-tree index sungguhan, bukan memindai JSON. Pemisahan ini adalah seluruh arsitekturnya, dan ia punya nama: vertical schema partitioning.",
+    "Slot adalah sumber daya terbatas: sebuah page dibuat dengan sekumpulan kolom terindeks yang tetap dan tidak bisa dilebarkan sesudahnya. Daemon Watcher menyediakan page baru ketika kapasitas menipis, dan index headroom membuat setiap page baru membawa kolom cadangan agar beberapa field yang dipromosikan berurutan mendarat bersama, bukan tercerai-berai. Ketika sebuah field sudah dideklarasikan filterable tetapi belum disalin, ia juga belum indexed, dan memfilternya ditolak sejak awal lewat pre-flight rejection, bukan dibiarkan berubah menjadi scan yang lambat.",
+    "Jarak antara \"sudah saya minta\" dan \"sudah berfungsi\" itulah backfill window, dan ia adalah konsep yang paling layak Anda pahami betul. Menjadikan field filterable, me-retype-nya, mengganti namanya, atau menghapusnya semuanya kembali seketika dan selesai di latar belakang. Daemon Reconciler yang mengerjakan proses menyusul itu. Selama window, pembacaan tetap berjalan dari payload JSON, sedangkan filter pada field yang sedang diproses tidak. Dua daemon lain melengkapi gambaran ini: Liberator mereklamasi slot yang dibebaskan oleh field yang didemosikan atau dihapus, dan Chronicler menulis file ekspor.",
+    "Seiring waktu, slot milik sebuah model bisa tersebar di lebih banyak page daripada yang diperlukan, itulah spread, dan ia menambah satu join pada setiap query terfilter. Engine melaporkannya dan Anda yang memutuskan apakah akan membayar compaction."
   ],
   "termsHeading": "Istilah",
   "popup": {
@@ -62,13 +62,13 @@
       "term": "Daemon",
       "short": "Pekerjaan latar belakang yang membuat penyaringan tetap mengejar ketertinggalan, dijalankan baik sebagai proses yang berjalan terus-menerus maupun dalam putaran singkat terjadwal — StarDust menyediakan empat, yang berkoordinasi hanya lewat database."
     },
-    "declared-type": {
-      "term": "Declared type",
-      "short": "Tipe yang Anda daftarkan untuk sebuah field — string, int, numeric, atau datetime."
-    },
     "dead-letter-queue": {
       "term": "Dead-letter queue",
       "short": "Tempat Reconciler menaruh satu record yang gagal diproses, supaya satu baris bermasalah tidak menyumbat seluruh antrean."
+    },
+    "declared-type": {
+      "term": "Declared type",
+      "short": "Tipe yang Anda daftarkan untuk sebuah field — string, int, numeric, atau datetime."
     },
     "demotion": {
       "term": "Demotion",
@@ -94,13 +94,13 @@
       "term": "Field",
       "short": "Satu atribut bernama milik sebuah model, dengan declared type dan status filterable."
     },
-    "filterable": {
-      "term": "Filterable",
-      "short": "Penanda yang menentukan apakah sebuah field mendapat slot dan karenanya bisa dipakai dalam filter dan sort."
-    },
     "filter-tree": {
       "term": "Filter tree",
       "short": "Struktur yang dibentuk sebuah filter: kondisi-kondisi individual yang digabungkan dengan AND, OR, dan NOT menjadi sebuah tree sedalam apa pun."
+    },
+    "filterable": {
+      "term": "Filterable",
+      "short": "Penanda yang menentukan apakah sebuah field mendapat slot dan karenanya bisa dipakai dalam filter dan sort."
     },
     "idempotency-key": {
       "term": "Idempotency key",

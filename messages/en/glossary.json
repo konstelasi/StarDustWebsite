@@ -10,12 +10,12 @@
   },
   "orientationHeading": "How the pieces fit",
   "orientation": [
-    "A tenant is your isolation boundary — one customer, one workspace, one account, whatever that means in your app. Inside a tenant you define models (a shape, like \"company\" or \"invoice\"), and each model has fields. An entry is one record of a model.",
-    "When you write an entry, its complete data — every field, filterable or not — goes into a single JSON payload. That payload is the system of record: it is always complete, always authoritative, and nothing else in the engine is allowed to disagree with it.",
-    "That alone would give you a document store you cannot query efficiently. So StarDust adds a second step: any field you mark filterable is also mirrored into a typed, indexed column — a slot — on an extension page, a side table joined 1:1 to the entry table. A filter on that field then reads a real index instead of scanning JSON. This split is the whole architecture, and it has a name: vertical schema partitioning.",
-    "Slots are a finite resource: a page is created with a fixed set of indexed columns and can never be widened afterwards. The Watcher provisions fresh pages as capacity runs low, and index headroom makes each new page carry spare columns so a handful of fields promoted in sequence land together rather than scattering. When a field is declared filterable but has not been mirrored yet, it is not indexed yet either — and filtering it is refused up front rather than degrading into a slow scan.",
-    "That gap between \"I asked for it\" and \"it works\" is the backfill window, and it is the single concept most worth internalising. Making a field filterable, retyping it, renaming it, or deleting it all return immediately and finish in the background — the Reconciler does the catching up. Two more daemons round it out: the Liberator reclaims slots freed by demoted or deleted fields, and the Chronicler writes export files.",
-    "Over time a model's slots can end up scattered across more pages than they need — spread — which costs an extra join per filtered query. The engine reports it and you decide whether to pay for compaction."
+    "A tenant is your isolation boundary: one customer, one workspace, one account, whatever that means in your app. Inside a tenant you define models (a shape, like \"company\" or \"invoice\"), and each model has fields. An entry is one record of a model.",
+    "When you write an entry, its complete data, every field whether filterable or not, goes into a single JSON payload stored in the `entry_data` table. That payload is the system of record: it is always complete, always authoritative, and nothing else in the engine is allowed to disagree with it.",
+    "That alone would give you a document store you cannot query efficiently. So StarDust adds a second step: any field you mark filterable is also mirrored into a typed, indexed column, a slot, on an extension page, a side table joined 1:1 to `entry_data`. A filter on that field then reads a real B-tree index instead of scanning JSON. This split is the whole architecture, and it has a name: vertical schema partitioning.",
+    "Slots are a finite resource: a page is created with a fixed set of indexed columns and can never be widened afterwards. The Watcher daemon provisions fresh pages as capacity runs low, and index headroom makes each new page carry spare columns so a handful of fields promoted in sequence land together rather than scattering. When a field is declared filterable but has not been mirrored yet, it is not indexed yet either, and filtering it is refused up front by pre-flight rejection rather than degrading into a slow scan.",
+    "That gap between \"I asked for it\" and \"it works\" is the backfill window, and it is the single concept most worth internalising. Making a field filterable, retyping it, renaming it, or deleting it all return immediately and finish in the background. The Reconciler daemon does the catching up. During the window, reads keep working from the JSON payload, and filters on the field in flight do not. Two more daemons round it out: the Liberator reclaims slots freed by demoted or deleted fields, and the Chronicler writes export files.",
+    "Over time a model's slots can end up scattered across more pages than they need, which is spread, and it costs an extra join per filtered query. The engine reports it and you decide whether to pay for compaction."
   ],
   "termsHeading": "Terms",
   "popup": {
@@ -62,13 +62,13 @@
       "term": "Daemon",
       "short": "Background work that keeps filtering caught up, run either as a long-lived process or in bounded bursts from a schedule — StarDust ships four, coordinating only through the database."
     },
-    "declared-type": {
-      "term": "Declared type",
-      "short": "The type you register a field as — string, int, numeric, or datetime."
-    },
     "dead-letter-queue": {
       "term": "Dead-letter queue",
       "short": "Where the Reconciler parks an individual record it could not process, so one bad row cannot wedge the whole queue."
+    },
+    "declared-type": {
+      "term": "Declared type",
+      "short": "The type you register a field as — string, int, numeric, or datetime."
     },
     "demotion": {
       "term": "Demotion",
@@ -94,13 +94,13 @@
       "term": "Field",
       "short": "One named attribute of a model, with a declared type and a filterable flag."
     },
-    "filterable": {
-      "term": "Filterable",
-      "short": "The flag that decides whether a field gets a slot and can therefore be used in filters and sorts."
-    },
     "filter-tree": {
       "term": "Filter tree",
       "short": "The structure a filter takes: individual conditions combined with AND, OR, and NOT into a tree of any depth."
+    },
+    "filterable": {
+      "term": "Filterable",
+      "short": "The flag that decides whether a field gets a slot and can therefore be used in filters and sorts."
     },
     "idempotency-key": {
       "term": "Idempotency key",
