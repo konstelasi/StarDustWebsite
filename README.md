@@ -196,6 +196,10 @@ deploy`) builds `out/` and pushes it over SSH to the live host. It relies on
 an `stardustwebsite` entry already present in the operator's own
 `~/.ssh/config`, so no host, user, or key ever lives in this repo.
 
+On Windows, run `bash deploy.sh` from Git Bash. From PowerShell or cmd,
+`npm run deploy` picks up Windows' WSL `bash` stub first and fails before the
+script starts.
+
 Three settings exist for the sake of static hosting, and are easy to break by
 tidying:
 
