@@ -18,10 +18,10 @@ const poppins = Poppins({
 });
 
 const description =
-  'Schemaless dynamic fields, queried at native SQL index speed — no separate ' +
-  'search cluster, no EAV join swamp. A framework-neutral PHP engine for MySQL 8 and MariaDB.';
+  'Schemaless dynamic fields, filterable through native SQL indexes, with no separate ' +
+  'search cluster and no EAV join swamp. A framework-neutral PHP engine for MySQL 8 and MariaDB.';
 
-const title = 'StarDust — dynamic fields at native SQL index speed';
+const title = 'StarDust, dynamic fields filterable through native SQL indexes';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'StarDust — dynamic fields at native SQL index speed',
+    title: 'StarDust, dynamic fields filterable through native SQL indexes',
     description,
     images: ['/og-image.png'],
   },

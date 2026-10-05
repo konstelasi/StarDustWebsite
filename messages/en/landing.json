@@ -2,7 +2,7 @@
   "hero": {
     "badge": "v0.3.0-alpha.1 · Vertical Schema Partitioning",
     "titleLine1": "Schemaless dynamic fields,",
-    "titleLine2": "queried at native SQL index speed.",
+    "titleLine2": "filterable through native SQL indexes.",
     "lede": "Give every tenant their own fields, then filter them like first-class columns. No separate search cluster. No EAV join swamp. Just MySQL or MariaDB, doing an index scan on data you never declared at migration time.",
     "copy": "copy",
     "copied": "copied",
@@ -46,7 +46,7 @@
     "good": {
       "heading": "a good fit if",
       "items": [
-        "You need user-defined or per-tenant dynamic fields that are still filterable at native index speed, without standing up a search cluster.",
+        "You need user-defined or per-tenant dynamic fields that are still filterable through native SQL indexes, without standing up a search cluster.",
         "You already run MySQL 8.0.13+, Percona, or MariaDB 10.11+ — either deployment mode works, persistent daemons or a scheduled tick.",
         "You want a framework-neutral engine you drop in via Composer. No ORM, no query builder, nothing pulled into your app.",
         "You can tolerate a newly filterable field becoming queryable shortly after the fact rather than instantly."

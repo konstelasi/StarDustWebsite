@@ -74,7 +74,7 @@ const element = h(
         maxWidth: 920,
       },
     },
-    'Dynamic fields, queried at native SQL index speed',
+    'Dynamic fields, filterable through native SQL indexes',
   ),
   h(
     'div',

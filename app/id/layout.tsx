@@ -17,10 +17,10 @@ const poppins = Poppins({
 });
 
 const description =
-  'Field dinamis tanpa skema, diquery dengan kecepatan indeks SQL asli — tidak ada cluster ' +
-  'pencarian terpisah, tidak ada rawa join EAV. Engine PHP netral terhadap framework untuk MySQL 8 dan MariaDB.';
+  'Field dinamis tanpa skema, bisa difilter lewat indeks SQL asli, tanpa cluster ' +
+  'pencarian terpisah dan tanpa rawa join EAV. Engine PHP netral terhadap framework untuk MySQL 8 dan MariaDB.';
 
-const title = 'StarDust — field dinamis dengan kecepatan indeks SQL asli';
+const title = 'StarDust, field dinamis yang bisa difilter lewat indeks SQL asli';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

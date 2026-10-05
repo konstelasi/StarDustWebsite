@@ -2,7 +2,7 @@
   "hero": {
     "badge": "v0.3.0-alpha.1 · Vertical Schema Partitioning",
     "titleLine1": "Field dinamis tanpa skema,",
-    "titleLine2": "diquery dengan kecepatan indeks SQL asli.",
+    "titleLine2": "bisa difilter lewat indeks SQL asli.",
     "lede": "Berikan setiap tenant field mereka sendiri, lalu filter seperti kolom native. Tidak ada cluster pencarian terpisah. Tidak ada rawa join EAV. Hanya MySQL atau MariaDB, melakukan scan indeks pada data yang tidak pernah Anda deklarasikan saat migrasi.",
     "copy": "salin",
     "copied": "disalin",
@@ -46,7 +46,7 @@
     "good": {
       "heading": "cocok jika",
       "items": [
-        "Anda memerlukan field dinamis yang ditentukan pengguna atau per-tenant yang masih dapat difilter dengan kecepatan indeks asli, tanpa menyiapkan cluster pencarian terpisah.",
+        "Anda memerlukan field dinamis yang ditentukan pengguna atau per-tenant yang masih dapat difilter lewat indeks SQL asli, tanpa menyiapkan cluster pencarian terpisah.",
         "Anda sudah menjalankan MySQL 8.0.13+, Percona, atau MariaDB 10.11+ — kedua mode deployment sama-sama bisa dipakai: daemon yang berjalan terus-menerus, atau tick terjadwal.",
         "Anda ingin engine yang netral terhadap framework, yang Anda pasang melalui Composer. Tidak ada ORM, tidak ada pembuat query, tidak ada yang ditarik ke aplikasi Anda.",
         "Anda dapat mentoleransi field yang baru saja dapat difilter menjadi dapat di-query tidak lama setelahnya, bukan secara instan."

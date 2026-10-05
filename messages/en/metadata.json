@@ -1,7 +1,7 @@
 {
   "home": {
-    "title": "StarDust — dynamic fields at native SQL index speed",
-    "description": "Schemaless dynamic fields, queried at native SQL index speed — no separate search cluster, no EAV join swamp. A framework-neutral PHP engine for MySQL 8 and MariaDB."
+    "title": "StarDust, dynamic fields filterable through native SQL indexes",
+    "description": "Schemaless dynamic fields, filterable through native SQL indexes, with no separate search cluster and no EAV join swamp. A framework-neutral PHP engine for MySQL 8 and MariaDB."
   },
   "playground": {
     "title": "Playground | StarDust",
