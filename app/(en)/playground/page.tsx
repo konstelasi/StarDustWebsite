@@ -5,7 +5,7 @@ import { loadMessages, type Locale, LocaleProvider } from '@/lib/i18n';
 const locale: Locale = 'en';
 
 /**
- * This file stays a server component purely so it can export `metadata` — Next
+ * This file stays a server component purely so it can export `metadata`, because Next
  * only reads that from a server module, which is why the entire interactive
  * tree starts one level down in `components/playground/Playground.tsx`.
  *
@@ -14,7 +14,7 @@ const locale: Locale = 'en';
  * declare itself a duplicate of the landing page.
  */
 
-const title = 'StarDust playground — the whole lifecycle, in your browser';
+const title = 'Walk the whole StarDust lifecycle in the playground';
 const description =
   'Define a model, write rows, pause the daemons mid-backfill and watch a filter be ' +
   'rejected for a reason you caused. A hand-written simulation of the StarDust engine.';

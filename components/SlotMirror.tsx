@@ -128,7 +128,7 @@ export default function SlotMirror() {
         const wall = nodes.current.get('slot_wall');
         if (!wall) return Promise.resolve();
         return fly(layer, from, wall, {
-          label: `${f.name} — JSON only`,
+          label: `${f.name} (JSON only)`,
           tone: 'danger',
           delay: i * 130,
           duration: 720,
@@ -263,9 +263,9 @@ export default function SlotMirror() {
                 className={`${styles.row} ${phase === 'clean' ? styles.rowEmpty : ''}`}
                 ref={setNode('entry_data_row')}
               >
-                <span>{phase === 'clean' ? '—' : '7'}</span>
-                <span>{phase === 'clean' ? '—' : '1'}</span>
-                <span>{phase === 'clean' ? '—' : '42'}</span>
+                <span>{phase === 'clean' ? '' : '7'}</span>
+                <span>{phase === 'clean' ? '' : '1'}</span>
+                <span>{phase === 'clean' ? '' : '42'}</span>
                 <span className={`${styles.grow} ${styles.json}`}>
                   {phase === 'clean' ? (
                     <em className={styles.dim}>{t('slotMirror.noRowYet')}</em>
@@ -312,7 +312,7 @@ export default function SlotMirror() {
               </div>
 
               <div className={`${styles.row} ${styles.slotRow} ${phase === 'clean' ? styles.rowEmpty : ''}`}>
-                <span>{phase === 'clean' ? '—' : '7'}</span>
+                <span>{phase === 'clean' ? '' : '7'}</span>
                 {SLOT_COLUMNS.map(col => {
                   const owner = [...slots.entries()].find(([, c]) => c === col)?.[0];
                   const field = stored.find(f => f.name === owner);
@@ -430,7 +430,7 @@ SELECT id, tenant_id, model_id, created_at, fields
                 <pre className={styles.sqlError}>
 {`FieldNotFilterableException: field "${target.name}" is not filterable
 
-  → still readable — it is in the JSON payload
+  → still readable, because it is in the JSON payload
   → but never silently table-scanned on your behalf`}
                 </pre>
               </>
