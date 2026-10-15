@@ -1,15 +1,15 @@
-# StarDust — website
+# The StarDust website
 
 Landing page for [StarDust](https://github.com/damarbob/StarDust), a MySQL &
 MariaDB-native Vertical Schema Partitioning engine for dynamic data models.
 
-The engine is abstract — most of what makes it interesting happens in background
-daemons, over time, in tables nobody sees. So the page is built around four
+The engine is abstract. Most of what makes it interesting happens in background
+daemons, over time, in tables nobody sees, so the page is built around four
 interactive demonstrations rather than prose:
 
 | Section | What it shows |
 | :-- | :-- |
-| `components/SlotMirror.tsx` | Edit a payload, flip fields between filterable and JSON-only, and watch values mirror into typed indexed slot columns — then see what a filter on each field actually costs. |
+| `components/SlotMirror.tsx` | Edit a payload, flip fields between filterable and JSON-only, and watch values mirror into typed indexed slot columns, then see what a filter on each field actually costs. |
 | `components/JoinSwamp.tsx` | An illustrative cost model of EAV join fan-out against StarDust's fixed single-page join, as the number of filter conditions grows. |
 | `components/FieldLifecycle.tsx` | The promotion window: `promoteFieldToFilterable()` returns → the Watcher provisions a page → the Reconciler claims the slot and backfills → it flips to `ready`, with a live NDJSON event stream. Mirrors `examples/01-field-lifecycle.php` in the engine repo. |
 | `components/DaemonBoard.tsx` | All four daemons running on their own poll periods, coordinating only through shared MySQL state. |
@@ -21,20 +21,20 @@ interactive demonstrations rather than prose:
 continuous world where the schema you define produces the rows you write, which
 produce the index the daemons build. Unlike the four sections above, which each
 reset on their own and share nothing, every part of it reads the state the
-previous part produced — so it needs a persistent world with a clock, which is
+previous part produced, so it needs a persistent world with a clock, which is
 what [`lib/sim/`](lib/sim/) is.
 
-It opens **guided** on a first visit: a sixteen-step walk through the whole arc —
-define, store, write, index, query, evolve — that dispatches the same actions a
+It opens **guided** on a first visit: a sixteen-step walk through the whole arc
+(define, store, write, index, query, evolve) that dispatches the same actions a
 visitor dispatches by hand, one commit per press, and hands the world it built
 over to the sandbox at the end. The toggle in the page header switches between
-the two at any point; they are two modes over one world, never two routes.
+the two at any point. They are two modes over one world, never two routes.
 [`lib/sim/tour.ts`](lib/sim/tour.ts) holds the steps and, beside each one's copy,
 an assertion for every number and event name that copy says out loud.
 
 **It is a simulation and says so on the page.** There is no Node runtime, no PHP
 and no MySQL in production, so it cannot run the real engine. The rules were
-written by hand to match; where the two disagree, the engine is right.
+written by hand to match. Where the two disagree, the engine is right.
 
 Two conventions hold that honesty in place, and both are cheaper to keep than to
 restore:
@@ -47,25 +47,25 @@ restore:
   vocabulary and [`lib/sim/filter/ast.ts`](lib/sim/filter/ast.ts) its twelve
   operators and thirteen validation codes, so an invented name in either is a
   `npm run typecheck` failure rather than a plausible-looking string in a log
-  panel or a dropdown. Both are checked-in copies — the engine is a separate
-  repository and nothing here can verify them — so when the engine adds one,
+  panel or a dropdown. Both are checked-in copies, and the engine is a separate
+  repository, so nothing here can verify them. When the engine adds one,
   add it there in the same change. The mirrors that are *behaviour* rather than
   text can be checked against the engine directly, and two have been. A 75-case
   corpus run through the real `JsonFilterDecoder` agrees with the decoder on
   error code and JSON Pointer for every case, including three where PHP's
   inability to tell `{}` from `[]` decides the answer. A 96-case corpus run
   through the real `RetypeCoercionEngine` agrees with the ADR 0024 matrix in
-  `lib/sim/backfill.ts` on outcome and reason for **every** case; the only
+  `lib/sim/backfill.ts` on outcome and reason for **every** case. The only
   divergences are nine values where JavaScript's single number type cannot
   represent PHP's distinction (`(float) 42` is `42.0` there and `42` here) or
   loses integer precision above 2^53.
 - **Reducers are pure.** No `new Date()`, no `Math.random()`, no module-level
   counters: timestamps come from `simNow(world)` and ids from `world.seq`.
   React StrictMode double-invokes reducers, so anything else builds a different
-  world in development than in production — and a random seed generator would
+  world in development than in production, and a random seed generator would
   produce rows the event log then describes wrongly.
 - **Where the simulation is narrower than the engine, it says so on the page.**
-  The datetime parser takes ISO 8601 and `Y-m-d H:i:s`; the engine hands the
+  The datetime parser takes ISO 8601 and `Y-m-d H:i:s`, while the engine hands the
   value to PHP's `DateTimeImmutable`, which also accepts `tomorrow` and reads a
   naked string in the *server's* timezone. Reproducing that in a browser would
   mean guessing at a server configuration and rendering the guess as fact, so
@@ -73,8 +73,8 @@ restore:
   limit rather than a choice is in the filter decoder's `in` deduplication:
   PHP distinguishes `1` from `1.0` and JavaScript does not, so the engine keeps
   both and the simulation collapses them.
-- **Where the simulation is *wider* than the engine — because the engine has a
-  bug — it says so at the line that causes it.** There are two, and this is the
+- **Where the simulation is *wider* than the engine because the engine has a
+  bug, it says so at the line that causes it.** There are two, and this is the
   only kind of divergence that needs naming rather than merely documenting,
   because reproducing it faithfully would make a demo teach the defect:
   - The simulation resets `sweep_cursor_id` when a slot is tombstoned and the
@@ -83,13 +83,13 @@ restore:
     ([`lib/sim/reserve.ts`](lib/sim/reserve.ts)).
   - The simulation applies a datetime filter bound's UTC offset and the engine
     does not: MySQL parses the offset off an RFC 3339 literal and throws it
-    away, so `+07:00` compares as though it were UTC — while the *write* path
-    converts properly, which means a value written and then filtered for does
+    away, so `+07:00` compares as though it were UTC, while the *write* path
+    converts properly. That means a value written and then filtered for does
     not match itself ([`lib/sim/search/execute.ts`](lib/sim/search/execute.ts),
     measured against a real MySQL 8.0.13).
 
   Both comments are what stop the lines being quietly "corrected" back to
-  match; when the engine fixes either, delete the comment rather than the line.
+  match. When the engine fixes either, delete the comment rather than the line.
 - **The schema is quoted, not paraphrased.** [`lib/sim/ddl.ts`](lib/sim/ddl.ts)
   holds each `CREATE TABLE` verbatim from the engine's bootstrap runner, and the
   playground puts it one click from the rows so the "these are the engine's
@@ -105,8 +105,8 @@ Build sequencing lives in [`PLAYGROUND_ROADMAP.md`](PLAYGROUND_ROADMAP.md).
 [`components/customfields/`](components/customfields/)) sits between the
 landing page and the playground on purpose: the landing page explains the
 mechanism and the playground hands over every control, and neither ever shows
-an application. This page walks one worked example — a multi-tenant SaaS
-tenant's `contact` record — from defining the model through a customer asking
+an application. This page walks one worked example, a multi-tenant SaaS
+tenant's `contact` record, from defining the model through a customer asking
 for a new filterable field after launch, ending on an honest list of what the
 engine will not do for you.
 
@@ -114,11 +114,11 @@ Six of its seven sections are static: prose, real PHP, and a couple of small
 CSS illustrations (`TenantColumns`, `PayloadMirror`). **Section 05 is the one
 exception, and it runs the real reducer.** `FieldRequestDemo.tsx` seeds
 `lib/sim/`'s `tenant-field-request` scenario and lets a visitor step through
-its `payoff` stages one press at a time — the same registry `npm run
+its `payoff` stages one press at a time. It is the same registry `npm run
 verify:scenarios` folds and asserts on every run, so this section is checked
 by the scenario picker's own test rather than by a second script. It never
 calls `persist.save()` (which would silently overwrite whatever the visitor
-already built at `/playground/`) and never starts a ticker — every press folds
+already built at `/playground/`) and never starts a ticker. Every press folds
 its own `clock/tick`s, the same discipline `tour.ts` holds, so the section
 behaves identically under `prefers-reduced-motion`.
 
@@ -128,12 +128,11 @@ behaves identically under `prefers-reduced-motion`.
 [`components/Glossary.tsx`](components/Glossary.tsx)) lists all 44 StarDust
 terms in plain language. [`components/Term.tsx`](components/Term.tsx) marks a
 handful of them inline in the landing page's own prose, and more densely in
-`/custom-fields`'s — a dotted underline, revealed on hover, focus, or tap —
-each deep-linking to its full entry on the page.
+`/custom-fields`'s. Each has a dotted underline, revealed on hover, focus, or tap, and each links to its full entry on the page.
 
 **[`messages/{en,id}/glossary.json`](messages/en/glossary.json) is generated,
-not hand-written.** The canonical content — one entry per term, both
-locales — lives in a separate repo, `StarDustGlossary`, which also compiles
+not hand-written.** The canonical content (one entry per term, both
+locales) lives in a separate repo, `StarDustGlossary`, which also compiles
 the same content into the StarDust docs site's own glossary page. Clone it as
 a sibling of this repo (the same layout `SDDPG` uses alongside the engine
 repo) and run its compiler whenever glossary content changes:
@@ -145,17 +144,17 @@ cd ../StarDustGlossary && npm install && npm run compile
 
 `npm run compile` (no arguments) writes into `../StarDustWebsite` and
 `../StarDustDocs` by default. Only the `terms` and `orientation` keys of each
-`glossary.json` are regenerated — `meta`, `hero`, `orientationHeading`,
+`glossary.json` are regenerated. `meta`, `hero`, `orientationHeading`,
 `termsHeading`, and `popup` stay exactly as this repo owns them, so page
 chrome and tone can differ from the docs site without drifting the actual
 definitions.
 
 [`scripts/verify-glossary.ts`](scripts/verify-glossary.ts) still runs after
 every regeneration: it walks every `.tsx` file under `app/` and
-`components/`, so a `<Term id>` used anywhere — not only on a hardcoded list of
-pages remembered at the time — must resolve in both locale catalogs, the two
+`components/`, so a `<Term id>` used anywhere, not only on a hardcoded list of
+pages remembered at the time, must resolve in both locale catalogs, the two
 catalogs must carry identical keys, and every
-definition must stay a single sentence — run with `npm run verify:glossary`.
+definition must stay a single sentence. Run it with `npm run verify:glossary`.
 
 ## Develop
 
@@ -168,7 +167,7 @@ npm run build      # static export into out/
 
 Requires Node 20+ (CI uses 22).
 
-Don't run `npm run build` while `npm run dev` is up — they share `.next/`, and
+Don't run `npm run build` while `npm run dev` is up, because they share `.next/` and
 the build overwrites the running server's webpack runtime, which turns every
 request into a `MODULE_NOT_FOUND` 500. Stop the dev server first, or delete
 `.next/` and restart it if you already have.
@@ -187,7 +186,7 @@ Publishing is putting the **contents** of `out/` at the web root.
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) typechecks and builds on
 every push and attaches `out/` as a downloadable **`site`** artifact, so a
-release never requires building locally. It deliberately does not deploy —
+release never requires building locally. It deliberately does not deploy, because
 that would mean putting host credentials in repository secrets, which is a
 decision to make on purpose rather than inherit from a template.
 
@@ -207,31 +206,31 @@ tidying:
   route as `<route>/index.html`, which a plain file server resolves through its
   normal index lookup. Turn it off and routes 404 unless the visitor types
   `.html`.
-- **No `basePath`** — the site is served from the domain root. Set one only if
+- **No `basePath`.** The site is served from the domain root. Set one only if
   it moves into a subdirectory.
 - **[`public/.htaccess`](public/.htaccess)** ships alongside the build, since
   Next copies dotfiles from `public/`. On Apache-family hosts it wires up the
   exported 404 page, forces HTTPS, and caches the content-hashed
-  `_next/static/` bundles for a year while holding HTML at `must-revalidate` —
-  that pairing is what makes a redeploy take effect immediately rather than
-  after a cache expiry. Other hosts ignore the file; configure the equivalent
+  `_next/static/` bundles for a year while holding HTML at `must-revalidate`.
+  That pairing is what makes a redeploy take effect immediately rather than
+  after a cache expiry. Other hosts ignore the file, so configure the equivalent
   there.
 
 `SITE_URL` in [`lib/links.ts`](lib/links.ts) is the canonical origin used for
 the canonical link and Open Graph tags. Those must be absolute, and a static
 export has no request to derive a host from, so it is stated there and nowhere
-else — update that one constant if the domain changes.
+else, so update that one constant if the domain changes.
 
 ## Conventions
 
-- **No CSS framework.** Design tokens live at the top of [`app/globals.css`](app/globals.css);
-  everything else is CSS Modules. The colour ramp is load-bearing, not decorative —
-  teal means *indexed*, amber means *pending/backfilling*, rose means *rejected or
+- **No CSS framework.** Design tokens live at the top of [`app/globals.css`](app/globals.css),
+  and everything else is CSS Modules. The colour ramp is load-bearing, not decorative.
+  Teal means *indexed*, amber means *pending/backfilling*, rose means *rejected or
   tombstoned*, and neutral slate means *JSON-only: stored, and never mirrored by
-  design*. Keep that mapping if you add a demo — the last two are the pair most
+  design*. Keep that mapping if you add a demo. The last two are the pair most
   easily confused, and colouring a JSON-only value as a failure teaches the
   opposite of what the engine does.
-- **No animation library.** Transitions are CSS; the value-in-flight ghosts are the
+- **No animation library.** Transitions are CSS, and the value-in-flight ghosts are the
   Web Animations API over measured DOM rects ([`lib/fly.ts`](lib/fly.ts)).
 - **Every demo honours `prefers-reduced-motion`** by jumping to a settled end state
   rather than by animating faster. The end state is the lesson.
@@ -247,4 +246,4 @@ else — update that one constant if the domain changes.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
