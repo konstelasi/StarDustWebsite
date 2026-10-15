@@ -291,11 +291,11 @@ const WARM_PATH: Scenario = {
   title: 'The warm path',
   blurb: 'A swept column goes back in the pool, and is the one the next promotion takes.',
   parked:
-    'city was promoted, backfilled and then demoted · the Liberator has swept its slot back to free · i_str_01 is free, still indexed, and carries no residue · country is not filterable yet. The page also holds i_str_02–i_str_04, indexed since it was provisioned and never claimed by anything: that is the headroom, and it is why a second promotion is warm even without a demotion. What only a full round trip produces is a column that has been used and handed back.',
+    'city was promoted, backfilled and then demoted · the Liberator has swept its slot back to free · i_str_01 is free, still indexed, and carries no residue · country is not filterable yet. The page also holds i_str_02 to i_str_04, indexed since it was provisioned and never claimed by anything. That is the headroom, and it is why a second promotion is warm even without a demotion. What only a full round trip produces is a column that has been used and handed back.',
   nextStep:
-    'Promote country in the daemon control room. It reserves inside the promoting transaction with no Watcher tick in between — and it takes i_str_01, the recycled column, rather than untouched headroom, because the reserver walks the free list oldest first. Then press run to drain the backfill.',
+    'Promote country in the daemon control room. It reserves inside the promoting transaction with no Watcher tick in between. It takes i_str_01, the recycled column, rather than untouched headroom, because the reserver walks the free list oldest first. Then press run to drain the backfill.',
   nextStepReduced:
-    'Promote country in the daemon control room. It reserves inside the promoting transaction with no Watcher tick in between — and it takes i_str_01, the recycled column, rather than untouched headroom, because the reserver walks the free list oldest first. Then press step to drain the backfill.',
+    'Promote country in the daemon control room. It reserves inside the promoting transaction with no Watcher tick in between. It takes i_str_01, the recycled column, rather than untouched headroom, because the reserver walks the free list oldest first. Then press step to drain the backfill.',
   anchor: '#daemons',
   anchorLabel: 'the daemon control room',
   actions: [
@@ -452,11 +452,11 @@ const HALF_MIGRATED: Scenario = {
   parked:
     'city was renamed to locality · the registry already says locality · 500 payloads have been rewritten and 100 are still stored under city · stardust_fields.previous_name holds the old name · the Reconciler is stopped. No page and no slot exist, because a rename touches neither.',
   nextStep:
-    'Run a read in the query builder. Every row comes back on locality — including the hundred still stored as city, which the read resolves through the fallback. Then resume the Reconciler and press run to finish the rewrite.',
+    'Run a read in the query builder. Every row comes back on locality, including the hundred still stored as city, which the read resolves through the fallback. Then resume the Reconciler and press run to finish the rewrite.',
   // Identical on purpose: the first two stages need no tick, so there is no
   // disabled button to steer anyone away from.
   nextStepReduced:
-    'Run a read in the query builder. Every row comes back on locality — including the hundred still stored as city, which the read resolves through the fallback. Then resume the Reconciler and press step to finish the rewrite.',
+    'Run a read in the query builder. Every row comes back on locality, including the hundred still stored as city, which the read resolves through the fallback. Then resume the Reconciler and press step to finish the rewrite.',
   anchor: '#query',
   anchorLabel: 'the query builder',
   actions: [
@@ -768,13 +768,13 @@ const TENANT_FIELD_REQUEST: Scenario = {
 const TWO_PAGE_SWEEP: Scenario = {
   id: 'two-page-sweep',
   title: 'Two pages, three workers',
-  blurb: 'Three tombstones share one page while a fourth sits on a second — and only the second one buys a worker anything.',
+  blurb: 'Three tombstones share one page while a fourth sits on a second, and only the second one buys a worker anything.',
   parked:
-    '600 catalog rows · sku, brand and material were promoted, backfilled, then demoted — all three tombstoned on entry_slots_page_1, alongside finish, still live there. Page 1\'s string headroom filled with the first four promotions; origin, the fifth, forced entry_slots_page_2 into existence and is live there. Nothing has swept yet.',
+    '600 catalog rows · sku, brand and material were promoted, backfilled, then demoted, so all three are tombstoned on entry_slots_page_1, alongside finish, still live there. Page 1\'s string headroom filled with the first four promotions; origin, the fifth, forced entry_slots_page_2 into existence and is live there. Nothing has swept yet.',
   nextStep:
-    'Press run for one tick. Three Liberators poll, and only one of them does anything: every tombstone is on page 1, so one worker takes that page and the other two find it already held. Then demote origin in the daemon control room and run again — its tombstone lands on page 2, so a second worker finally has a page of its own, and both sweep at once.',
+    'Press run for one tick. Three Liberators poll, and only one of them does anything: every tombstone is on page 1, so one worker takes that page and the other two find it already held. Then demote origin in the daemon control room and run again. Its tombstone lands on page 2, so a second worker finally has a page of its own, and both sweep at once.',
   nextStepReduced:
-    'Press step for one tick. Three Liberators poll, and only one of them does anything: every tombstone is on page 1, so one worker takes that page and the other two find it already held. Then demote origin in the daemon control room and step again — its tombstone lands on page 2, so a second worker finally has a page of its own, and both sweep at once.',
+    'Press step for one tick. Three Liberators poll, and only one of them does anything: every tombstone is on page 1, so one worker takes that page and the other two find it already held. Then demote origin in the daemon control room and step again. Its tombstone lands on page 2, so a second worker finally has a page of its own, and both sweep at once.',
   anchor: '#daemons',
   anchorLabel: 'the daemon control room',
   actions: [
@@ -879,7 +879,7 @@ const TWO_PAGE_SWEEP: Scenario = {
   },
   payoff: [
     {
-      label: 'one page, one busy worker — the other two find nothing to take',
+      label: 'one page, one busy worker, so the other two find nothing to take',
       actions: ticks(1),
       // No milestone here: `column-reclaimed` fires on `sweep_complete`, and a
       // 600-row slot's first 500-row chunk is never the final one. The strip
@@ -901,7 +901,7 @@ const TWO_PAGE_SWEEP: Scenario = {
           }
           if (startedLine.fields.slots_contended !== 0) {
             bad.push(
-              `expected slots_contended 0 — the whole batch is on one page, got ${startedLine.fields.slots_contended}`,
+              `expected slots_contended 0, the whole batch is on one page, got ${startedLine.fields.slots_contended}`,
             );
           }
         }
@@ -928,7 +928,7 @@ const TWO_PAGE_SWEEP: Scenario = {
       },
     },
     {
-      label: 'a second page, a second worker — both sweep at once',
+      label: 'a second page, a second worker, so both sweep at once',
       actions: [{ type: 'field/demote', fieldId: ORIGIN }, ...ticks(3)],
       narrates: ['column-reclaimed'],
       assert(world) {

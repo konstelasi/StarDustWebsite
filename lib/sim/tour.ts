@@ -125,7 +125,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'An empty database',
     actions: [{ type: 'world/reset' }],
     body:
-      'No models, no fields, no entries, and no page tables. StarDust bootstraps a fixed set of registry tables once and never adds another one — everything you are about to define becomes rows, not DDL.',
+      'No models, no fields, no entries, and no page tables. StarDust bootstraps a fixed set of registry tables once and never adds another one. Everything you are about to define becomes rows, not DDL.',
     assert(world) {
       const bad: string[] = [];
       if (world.clock.tick !== 0) bad.push(`expected tick 0, got ${world.clock.tick}`);
@@ -142,7 +142,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'Three fields, still a draft',
     actions: draftPlaces(),
     body:
-      'A model called places, with city, country and population. Nothing is committed yet — this is a form. Every field starts non-filterable, which is what is_filterable NOT NULL DEFAULT FALSE means: a field is JSON-only until somebody asks for more.',
+      'A model called places, with city, country and population. Nothing is committed yet. This is a form. Every field starts non-filterable, which is what is_filterable NOT NULL DEFAULT FALSE means: a field is JSON-only until somebody asks for more.',
     assert(world) {
       const bad: string[] = [];
       if (world.draft.name !== 'places') {
@@ -168,7 +168,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'Committed',
     actions: commitPlaces(),
     body:
-      'One row in stardust_models, three in stardust_fields, and stardust_schema_version bumped exactly once. No page table was created and no slot reserved, because nothing here is filterable. The event log is still empty too — SchemaBuilder writes a PSR-3 message, not an engine event.',
+      'One row in stardust_models, three in stardust_fields, and stardust_schema_version bumped exactly once. No page table was created and no slot reserved, because nothing here is filterable. The event log is still empty too, because SchemaBuilder writes a PSR-3 message, not an engine event.',
     assert(world) {
       const bad: string[] = [];
       if (world.models.length !== 1) bad.push(`expected 1 model, got ${world.models.length}`);
@@ -194,7 +194,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'What that became in MySQL',
     actions: [],
     body:
-      'Your model is rows in two registry tables, and that is the whole of it. There is no entry_slots_page_1 — extension pages are provisioned by the Watcher when something actually needs indexing, never when a model is defined.',
+      'Your model is rows in two registry tables, and that is the whole of it. There is no entry_slots_page_1. Extension pages are provisioned by the Watcher when something actually needs indexing, never when a model is defined.',
     assert(world) {
       const bad: string[] = [];
       if (world.models.length !== 1) {
@@ -217,7 +217,7 @@ export const TOUR: readonly TourStep[] = [
       { type: 'entry/write' },
     ],
     body:
-      'The whole payload went into entry_data.fields as JSON. The splitter looked for a live slot for each of the three fields, found none, and mirrored nothing — and queued nothing either, because no index is falling behind. A write with no index behind it is still a complete, correct write.',
+      'The whole payload went into entry_data.fields as JSON. The splitter looked for a live slot for each of the three fields, found none, and mirrored nothing, and queued nothing either, because no index is falling behind. A write with no index behind it is still a complete, correct write.',
     assert(world) {
       const bad: string[] = [];
       if (world.entries.length !== 1) bad.push(`expected 1 entry, got ${world.entries.length}`);
@@ -242,7 +242,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'Six hundred more',
     actions: seedPlaces(),
     body:
-      'Bulk ingest, chunked at 500 rows per transaction — so the log shows two commits rather than six hundred. 601 rows now, every one of them JSON-only, and the sync queue is still empty.',
+      'Bulk ingest, chunked at 500 rows per transaction, so the log shows two commits rather than six hundred. 601 rows now, every one of them JSON-only, and the sync queue is still empty.',
     assert(world) {
       const bad: string[] = [];
       if (world.entries.length !== TOTAL_ROWS) {
@@ -285,7 +285,7 @@ export const TOUR: readonly TourStep[] = [
       ...ticks(3),
     ],
     body:
-      'The registry says city is filterable, and city holds no slot. There was no page to reserve from, so the promotion deferred the assignment — and the Reconciler has since tried once and logged capacity_wait. Nothing is broken. The daemon that provisions capacity is stopped, and the system is saying so rather than pretending.',
+      'The registry says city is filterable, and city holds no slot. There was no page to reserve from, so the promotion deferred the assignment, and the Reconciler has since tried once and logged capacity_wait. Nothing is broken. The daemon that provisions capacity is stopped, and the system is saying so rather than pretending.',
     assert(world) {
       const bad: string[] = [];
       if (world.clock.tick !== 3) bad.push(`expected tick 3, got ${world.clock.tick}`);
@@ -311,7 +311,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'Start it, and one tick does three things',
     actions: [{ type: 'daemon/togglePaused', daemon: 'watcher' }, ...ticks(1)],
     body:
-      'The Watcher provisioned entry_slots_page_1, and on the same tick the Reconciler reserved i_str_01 and drained the first 500 rows into it. The slot is backfilling: city is neither unindexed nor queryable, and a filter on it is still refused. That state is real, and it is why the two daemons never talk to each other — they meet in MySQL.',
+      'The Watcher provisioned entry_slots_page_1, and on the same tick the Reconciler reserved i_str_01 and drained the first 500 rows into it. The slot is backfilling: city is neither unindexed nor queryable, and a filter on it is still refused. That state is real, and it is why the two daemons never talk to each other. They meet in MySQL.',
     assert(world) {
       const bad: string[] = [];
       if (world.clock.tick !== 4) bad.push(`expected tick 4, got ${world.clock.tick}`);
@@ -340,7 +340,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'The remaining rows, and the flip',
     actions: ticks(2),
     body:
-      'The final chunk landed, and the slot went to ready in the same transaction that finished it. That is promote_to_ready — and it is the only moment at which the field becomes filterable. There is no half-open state where some rows are searchable and the rest are not.',
+      'The final chunk landed, and the slot went to ready in the same transaction that finished it. That is promote_to_ready, and it is the only moment at which the field becomes filterable. There is no half-open state where some rows are searchable and the rest are not.',
     assert(world) {
       const bad: string[] = [];
       if (world.clock.tick !== 6) bad.push(`expected tick 6, got ${world.clock.tick}`);
@@ -361,7 +361,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'The identical filter returns the row',
     actions: [{ type: 'query/run' }],
     body:
-      'Same tree, same wire format, same two-query bounded read — and it answers now. The row that comes back is the one you typed by hand at the very start, copied into i_str_01 by the backfill along with the six hundred behind it.',
+      'Same tree, same wire format, same two-query bounded read, and it answers now. The row that comes back is the one you typed by hand at the very start, copied into i_str_01 by the backfill along with the six hundred behind it.',
     assert(world) {
       const run = world.queryDraft.lastRun;
       const bad: string[] = [];
@@ -388,7 +388,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'Rename it under six hundred rows',
     actions: [{ type: 'field/rename', fieldId: CITY, name: 'locality' }, ...ticks(2)],
     body:
-      'The registry said locality immediately. But entry_data.fields is keyed by name, so a rename is a rewrite of every payload in the model — and the Reconciler has done one 500-row chunk of it. 500 rows are on the new key, 101 are still on the old one, and stardust_fields.previous_name holds city. That column is the bridge.',
+      'The registry said locality immediately. But entry_data.fields is keyed by name, so a rename is a rewrite of every payload in the model, and the Reconciler has done one 500-row chunk of it. 500 rows are on the new key, 101 are still on the old one, and stardust_fields.previous_name holds city. That column is the bridge.',
     assert(world) {
       const bad: string[] = [];
       if (world.clock.tick !== 8) bad.push(`expected tick 8, got ${world.clock.tick}`);
@@ -422,7 +422,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'The old filter fails loudly',
     actions: [{ type: 'query/run' }],
     body:
-      'field_unknown — as far as the registry is concerned there is no field called city any more. Writes converge on the new name and filters refuse outright. The asymmetry is deliberate: a rejected filter loses nothing, and a mis-keyed write loses data.',
+      'field_unknown. As far as the registry is concerned there is no field called city any more. Writes converge on the new name and filters refuse outright. The asymmetry is deliberate: a rejected filter loses nothing, and a mis-keyed write loses data.',
     assert(world) {
       const code = world.queryDraft.lastRun?.rejection?.errorCode;
       return code === 'field_unknown'
@@ -444,7 +444,7 @@ export const TOUR: readonly TourStep[] = [
       { type: 'query/run' },
     ],
     body:
-      'Newest first, so this page is entirely rows the rewrite has not reached — and every one of them comes back on locality, resolved through previous_name. The old key never appears in a result at all, because the projection is over the schema snapshot and the snapshot knows only the current name.',
+      'Newest first, so this page is entirely rows the rewrite has not reached, and every one of them comes back on locality, resolved through previous_name. The old key never appears in a result at all, because the projection is over the schema snapshot and the snapshot knows only the current name.',
     assert(world) {
       const bad: string[] = [];
       const rows = world.queryDraft.lastRun?.outcome?.rows ?? [];
@@ -472,7 +472,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'The rewrite lands',
     actions: ticks(2),
     body:
-      'The last chunk cleared, previous_name went back to null and the checkpoint completed — all in one transaction, because a reader refreshing between them would lose the fallback while un-migrated rows still existed. The bridge exists only while it is needed.',
+      'The last chunk cleared, previous_name went back to null and the checkpoint completed, all in one transaction, because a reader refreshing between them would lose the fallback while un-migrated rows still existed. The bridge exists only while it is needed.',
     assert(world) {
       const bad: string[] = [];
       if (world.clock.tick !== 10) bad.push(`expected tick 10, got ${world.clock.tick}`);
@@ -499,7 +499,7 @@ export const TOUR: readonly TourStep[] = [
     title: 'That is the whole arc',
     actions: [],
     body:
-      'Define, store, write, index, query, evolve. Everything you just watched is still here — the model, the 601 rows, the page, the indexed slot — and every control is unlocked now. Stop a daemon and try to break it.',
+      'Define, store, write, index, query, evolve. Everything you just watched is still here (the model, the 601 rows, the page, the indexed slot), and every control is unlocked now. Stop a daemon and try to break it.',
     assert(world) {
       // The closing sentence is a set of claims about the world it hands over,
       // so it is checked like any other.
