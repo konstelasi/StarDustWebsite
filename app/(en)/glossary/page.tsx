@@ -12,7 +12,7 @@ const locale: Locale = 'en';
  * both at `/`, and a second page inheriting them would declare itself a
  * duplicate of the landing page.
  */
-const title = 'StarDust glossary — the vocabulary behind the engine';
+const title = 'StarDust glossary and the vocabulary behind the engine';
 const description =
   'Forty-four StarDust terms defined in plain language, from tenant and payload to backfill window and spread.';
 

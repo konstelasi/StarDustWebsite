@@ -27,7 +27,7 @@ const ROWS: MirrorRow[] = [
 export default function PayloadMirror() {
   return (
     <div className={styles.grid}>
-      <CodeBlock code={PAYLOAD} lang="json" title="the payload — always complete" />
+      <CodeBlock code={PAYLOAD} lang="json" title="the payload, always complete" />
       <div className="panel">
         <div className="panel-head">
           <span>entry_slots_page_1</span>

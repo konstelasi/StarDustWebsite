@@ -14,27 +14,27 @@
     "mirror": {
       "eyebrow": "01 · where the data lives",
       "title": "One row of truth, mirrored into an index.",
-      "lede": "The complete JSON payload is always the system of record. Fields you mark filterable are additionally mirrored into typed, indexed slot columns on a 1:1 extension page — so a filter reads a real index instead of scanning JSON. Edit the payload below and write it."
+      "lede": "The complete JSON payload is always the system of record. Fields you mark filterable are additionally mirrored into typed, indexed slot columns on a 1:1 extension page, so a filter reads a real index instead of scanning JSON. Edit the payload below and write it."
     },
     "joins": {
       "eyebrow": "02 · why not EAV",
       "title": "Every EAV condition is another self-join.",
-      "lede": "The classic attribute table makes a narrower question cost more, because each filtered attribute needs its own join and the intermediate result has to be carried through all of them. StarDust joins once per indexed page the model's fields occupy, not once per condition — so when those fields share a page, it is one join however many conditions you stack on it."
+      "lede": "The classic attribute table makes a narrower question cost more, because each filtered attribute needs its own join and the intermediate result has to be carried through all of them. StarDust joins once per indexed page the model's fields occupy, not once per condition, so when those fields share a page, it is one join however many conditions you stack on it."
     },
     "lifecycle": {
       "eyebrow": "03 · the honest caveat",
       "title": "Filterable is a promise the daemons keep, not an instant.",
-      "lede": "This is the behaviour that trips up nearly everyone, so it gets its own section rather than a footnote. Marking a field filterable records an intention and returns immediately — two background daemons then do the work that makes filtering actually possible."
+      "lede": "This is the behaviour that trips up nearly everyone, so it gets its own section rather than a footnote. Marking a field filterable records an intention and returns immediately. Two background daemons then do the work that makes filtering actually possible."
     },
     "daemons": {
       "eyebrow": "04 · the moving parts",
       "title": "Four daemons. No broker between them.",
-      "lede": "They never talk to each other directly — the database is the only coordination point, with claims taken under FOR UPDATE SKIP LOCKED and the Watcher's singleton held by advisory lock. Run more Reconcilers, Liberators, and Chroniclers for throughput — only the Watcher stays one apiece."
+      "lede": "They never talk to each other directly. The database is the only coordination point, with claims taken under FOR UPDATE SKIP LOCKED and the Watcher's singleton held by advisory lock. Run more Reconcilers, Liberators, and Chroniclers for throughput. Only the Watcher stays one apiece."
     },
     "status": {
       "eyebrow": "05 · straight answers",
       "title": "Whether you should actually use this.",
-      "lede": "The current release is 0.3.0-alpha.1 — a ground-up rewrite (Vertical Schema Partitioning) of the legacy 0.2.x line, sharing no API with it. It hasn't reached 1.0, and the public API may still change before 0.3.0. Everything below is implemented and covered by the test suite."
+      "lede": "The current release is 0.3.0-alpha.1, a ground-up rewrite (Vertical Schema Partitioning) of the legacy 0.2.x line, sharing no API with it. It hasn't reached 1.0, and the public API may still change before 0.3.0. Everything below is implemented and covered by the test suite."
     },
     "start": {
       "eyebrow": "06 · get started",
@@ -47,7 +47,7 @@
       "heading": "a good fit if",
       "items": [
         "You need user-defined or per-tenant dynamic fields that are still filterable through native SQL indexes, without standing up a search cluster.",
-        "You already run MySQL 8.0.13+, Percona, or MariaDB 10.11+ — either deployment mode works, persistent daemons or a scheduled tick.",
+        "You already run MySQL 8.0.13+, Percona, or MariaDB 10.11+. Either deployment mode works, persistent daemons or a scheduled tick.",
         "You want a framework-neutral engine you drop in via Composer. No ORM, no query builder, nothing pulled into your app.",
         "You can tolerate a newly filterable field becoming queryable shortly after the fact rather than instantly."
       ]
@@ -55,9 +55,9 @@
     "bad": {
       "heading": "probably not a fit if",
       "items": [
-        "MariaDB 10.6 or older, or MySQL 5.7 and older. Both are actively rejected at boot — CI keeps a job that expects the suite to fail on a server below the floor.",
+        "MariaDB 10.6 or older, or MySQL 5.7 and older. Both are actively rejected at boot, and CI keeps a job that expects the suite to fail on a server below the floor.",
         "Strong read-after-write consistency on filters immediately after a retype or promotion. The field serves from JSON until its backfill lands.",
-        "Full-text, fuzzy, or substring search. The default driver ships exact match, comparison, range, set membership, and anchored prefix — nothing else.",
+        "Full-text, fuzzy, or substring search. The default driver ships exact match, comparison, range, set membership, and anchored prefix, and nothing else.",
         "Page numbers, jump-to-page, or a total result count. Reads are cursor-paginated and forward-sequential, deliberately."
       ]
     },
@@ -67,17 +67,17 @@
   "joinSwamp": {
     "sliderLabel": "filter conditions",
     "entriesNote": "over {count} entries",
-    "eavHead": "EAV — one self-join per condition",
+    "eavHead": "EAV needs one self-join per condition",
     "joinsOne": "{count} join",
     "joinsMany": "{count} joins",
     "rowsExaminedLabel": "rows examined · log scale",
-    "eavNote": "Each condition adds a join, and the intermediate result has to be carried through all of them — so asking a narrower question costs strictly more.",
-    "sdHead": "StarDust — one join per page, not per condition",
+    "eavNote": "Each condition adds a join, and the intermediate result has to be carried through all of them, so asking a narrower question costs strictly more.",
+    "sdHead": "StarDust needs one join per page, not per condition",
     "sdTag": "1 join · 2 queries",
-    "sdNote": "With the model's fields on one page, every condition is another predicate on the same indexed row. Narrower question, less work — the way an index is supposed to behave.",
+    "sdNote": "With the model's fields on one page, every condition is another predicate on the same indexed row. Narrower question, less work. That is the way an index is supposed to behave.",
     "factorOne": "more rows touched by EAV at {count} condition",
     "factorMany": "more rows touched by EAV at {count} conditions",
-    "disclaimer": "An illustrative cost model of join fan-out — not a benchmark. The shape is what matters: EAV grows with the number of conditions, StarDust does not. Measure your own workload before quoting a number."
+    "disclaimer": "An illustrative cost model of join fan-out, not a benchmark. The shape is what matters: EAV grows with the number of conditions, StarDust does not. Measure your own workload before quoting a number."
   },
   "fieldLifecycle": {
     "acts": {
@@ -86,7 +86,7 @@
       "act0Blurb": "The call recorded an intention and came back immediately. Nothing has been indexed. This is the state people file bugs about.",
       "act1Title": "the Watcher provisions a page",
       "act1Actor": "Watcher · singleton",
-      "act1Blurb": "No page had a free indexed int slot, so the Watcher provisions one. A page carries exactly the columns it indexes, four of every type family, so the three spare int columns are what let the next few promotions skip this step. It provisions capacity and nothing else — claiming a slot is not its job, so the field is still unmapped when this tick ends.",
+      "act1Blurb": "No page had a free indexed int slot, so the Watcher provisions one. A page carries exactly the columns it indexes, four of every type family, so the three spare int columns are what let the next few promotions skip this step. It provisions capacity and nothing else. Claiming a slot is not its job, so the field is still unmapped when this tick ends.",
       "act2Title": "the Reconciler claims the slot and backfills",
       "act2Actor": "Reconciler · multi-worker",
       "act2Blurb": "The Reconciler reserves the slot as backfilling, then copies every existing entry’s value out of JSON into the slot column in chunks, checkpointing after each one.",
@@ -95,18 +95,18 @@
       "act3Blurb": "The last chunk promotes the slot and bumps the schema version. The identical read() call that was throwing a minute ago now returns rows."
     },
     "caveat1": "This is the cold-start path, where no page yet has a free indexed slot of the right type. When capacity already exists, the slot is reserved inside the transaction that ",
-    "caveat2": " itself runs — acts 1 and 2 collapse, the Watcher never gets involved, and the field goes straight to ",
+    "caveat2": " itself runs. Acts 1 and 2 collapse, the Watcher never gets involved, and the field goes straight to ",
     "caveat3": ". Either way the window below is real: a ",
     "caveat4": " slot is not queryable.",
     "readout": {
-      "filterableNote": "registry intent — set the moment the call returned",
+      "filterableNote": "registry intent, set the moment the call returned",
       "indexedNoteTrue": "a filter works right now",
       "indexedNoteFalse": "no live slot a filter could use yet",
       "slotLabel": "slot",
       "noneReserved": "none reserved",
       "noteReady": "live and queryable",
       "noteReserved": "reserved, but pre-flight still rejects backfilling",
-      "noteCapacityExists": "capacity exists now — but nothing has claimed it yet",
+      "noteCapacityExists": "capacity exists now, but nothing has claimed it yet",
       "noteNoSlot": "no page had a free indexed int slot",
       "progressNote": "every entry's value copied out of JSON into the slot column, {chunk} at a time"
     },
@@ -116,7 +116,7 @@
     "resultOkTag": "EntryPage · 128 rows",
     "resultOkBody": "Nothing about the call changed. The engine caught up underneath it.",
     "resultErrTag": "FieldNotFilterableException",
-    "resultErrBody": "Rejected at pre-flight rather than silently returning an empty page — so a half-built index can never look like “no matches”."
+    "resultErrBody": "Rejected at pre-flight rather than silently returning an empty page, so a half-built index can never look like “no matches”."
   },
   "daemonBoard": {
     "resume": "resume",
@@ -135,7 +135,7 @@
     "workerIdle": "idle",
     "workerClaimed": "claimed {id}",
     "rowsDrained": "{count} rows drained",
-    "coreSub": "sole coordination point — no broker, no daemon-to-daemon RPC",
+    "coreSub": "sole coordination point, with no broker and no daemon-to-daemon RPC",
     "entriesRows": "{count} rows",
     "freeSlotsCount": "{count} free slots",
     "syncQueueCount": "{count} pending",
@@ -148,12 +148,12 @@
   },
   "slotMirror": {
     "yourWriteHead": "your write",
-    "noteBefore": "Fields are defined by your tenants at runtime — no migration, no ",
+    "noteBefore": "Fields are defined by your tenants at runtime, with no migration and no ",
     "noteAfter": ". Flip a field to filterable and watch where it lands.",
     "filterableToggle": "filterable",
     "jsonOnlyToggle": "JSON only",
     "valueAriaLabel": "value of {name}",
-    "noFreeSlotTag": "no free {type} slot — queued for backfill",
+    "noFreeSlotTag": "no free {type} slot, queued for backfill",
     "writing": "writing…",
     "resetButton": "reset",
     "sorText": "system of record · always complete",
@@ -164,15 +164,15 @@
     "moreSlots": "…56 more",
     "indexNotePrefix": "composite index on ",
     "queryCostHead": "so what does a filter cost?",
-    "payloadEditedTag": "payload edited — write() again",
+    "payloadEditedTag": "payload edited, write() again",
     "filterOnLabel": "filter on",
     "runWritePrefix": "Run ",
     "runWriteSuffix": " to see the query plan.",
     "indexScanTag": "index scan",
     "resolvedPrefix": "resolved to ",
-    "resolvedSuffix": " — two bounded queries, no JSON scan",
+    "resolvedSuffix": " (two bounded queries, no JSON scan)",
     "queuedTag": "queued",
-    "queuedText": "filterable, but no slot was free — the value is safe in JSON and the Reconciler will backfill it. The write never failed.",
+    "queuedText": "filterable, but no slot was free. The value is safe in JSON and the Reconciler will backfill it. The write never failed.",
     "rejectedTag": "rejected at pre-flight",
     "rejectedSuffix": " occupies no slot column."
   }

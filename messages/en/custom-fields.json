@@ -8,7 +8,7 @@
     "steps": {
       "0": {
         "button": "Try filtering contacts by plan",
-        "body": "plan was just marked filterable. The registry says so — but no slot has been reserved for it yet, so a filter naming it is refused before the database is even touched."
+        "body": "plan was just marked filterable. The registry says so, but no slot has been reserved for it yet, so a filter naming it is refused before the database is even touched."
       },
       "1": {
         "button": "Start the Watcher",
@@ -20,15 +20,15 @@
       },
       "3": {
         "button": "Try the same filter again",
-        "body": "Same filter, same field, no code change on your side — it now reads a real index."
+        "body": "Same filter, same field, no code change on your side. It now reads a real index."
       }
     },
     "done": "That is the whole backfill window: intent recorded immediately, capability arriving once the daemons catch up.",
     "playgroundLink": "Replay this in the full playground →",
     "codeTitle": "the call that started this",
-    "resultRefused": "rejected — {code}",
+    "resultRefused": "rejected with {code}",
     "resultMatched": "{count} row matched",
     "eventLogTitle": "what the daemons logged",
-    "eventLogEmpty": "Nothing yet — press the button above."
+    "eventLogEmpty": "Nothing yet. Press the button above."
   }
 }

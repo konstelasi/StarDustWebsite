@@ -17,9 +17,9 @@ import styles from './page.module.css';
  * both at `/`, and a second page inheriting them would declare itself a
  * duplicate of the landing page.
  */
-const title = 'StarDust for multi-tenant custom fields — a worked example';
+const title = 'A worked example of multi-tenant custom fields in StarDust';
 const description =
-  'One SaaS tenant, one contact record, one field added after launch — the whole StarDust arc walked in order, with the promotion window running live.';
+  'One SaaS tenant, one contact record, and one field added after launch. The whole StarDust arc is walked in order, with the promotion window running live.';
 
 export const metadata: Metadata = {
   title,
@@ -108,7 +108,7 @@ export default function CustomFields() {
               Acme wants to track <code>plan</code> and <code>seats</code> on a contact. Globex
               wants <code>industry</code>, <code>contract_value</code> and{' '}
               <code>renewal_date</code> on the same kind of record. There is no single{' '}
-              <Term id="tenant">tenant</Term>-wide table that fits both — a <Term id="model">model</Term> in
+              <Term id="tenant">tenant</Term>-wide table that fits both. A <Term id="model">model</Term> in
               StarDust is defined per tenant, and each <Term id="field">field</Term> on it is
               whatever that tenant actually needs.
             </>
@@ -123,8 +123,8 @@ export default function CustomFields() {
           title="Registering a shape a customer just asked for."
           lede={
             <>
-              A field is a name, a <Term id="declared-type">declared type</Term> — string, int,
-              numeric or datetime — and a flag. <code>company</code> and <code>seats</code> are
+              A field is a name, a <Term id="declared-type">declared type</Term> (string, int,
+              numeric or datetime) and a flag. <code>company</code> and <code>seats</code> are
               marked <Term id="filterable">filterable</Term> from the start, because this tenant
               already knows they will search on them; <code>plan</code> starts out JSON-only,
               because right now nobody has asked to filter on it.
@@ -149,7 +149,7 @@ export default function CustomFields() {
               The complete <Term id="payload">payload</Term> is always the{' '}
               <Term id="system-of-record">system of record</Term>. Every field marked filterable is
               additionally mirrored into a typed, indexed <Term id="slot">slot</Term> column on an{' '}
-              <Term id="extension-page">extension page</Term> — <code>plan</code> is not, yet, so
+              <Term id="extension-page">extension page</Term>. <code>plan</code> is not, yet, so
               it lives in the payload alone.
             </>
           }
@@ -163,13 +163,13 @@ export default function CustomFields() {
         <Section
           id="query"
           eyebrow="04 · browse the contacts"
-          title="Filtered, sorted, and paged — never all at once."
+          title="Filtered, sorted, and paged, but never all at once."
           lede={
             <>
               A read takes a <Term id="filter-tree">filter tree</Term>, an optional{' '}
               <Term id="sort">sort</Term>, and a page size, and hands back a{' '}
               <Term id="cursor">cursor</Term> instead of a page number. There is no
-              &quot;showing 1–20 of 1,204&quot; — you keep asking for the next page until the
+              &quot;showing 1 to 20 of 1,204&quot;, so you keep asking for the next page until the
               cursor comes back <code>null</code>.
             </>
           }
@@ -190,8 +190,8 @@ export default function CustomFields() {
           lede={
             <>
               This is the one part of the page that actually runs. Marking a field{' '}
-              <Term id="filterable">filterable</Term> is a <Term id="promotion">promotion</Term> —
-              it records intent and returns immediately, and the{' '}
+              <Term id="filterable">filterable</Term> is a <Term id="promotion">promotion</Term>.
+              It records intent and returns immediately, and the{' '}
               <Term id="backfill-window">backfill window</Term> between that moment and a working
               filter is closed by two background <Term id="daemon">daemons</Term>: the{' '}
               <Term id="watcher">Watcher</Term>, which provisions capacity, and the{' '}
@@ -209,7 +209,7 @@ export default function CustomFields() {
           id="limits"
           eyebrow="06 · what you would hit"
           title="The honest list, not the highlight reel."
-          lede="Eight things StarDust deliberately does not do. None of them are bugs — design around them, the way a real integration would have to."
+          lede="Eight things StarDust deliberately does not do. None of them are bugs, so design around them, the way a real integration would have to."
         >
           <LimitsTable
             items={[
@@ -217,7 +217,7 @@ export default function CustomFields() {
                 title: 'No COUNT, SUM, or GROUP BY',
                 body: (
                   <>
-                    Reads return rows, never a total. Facet counts and &quot;showing 1–20 of
+                    Reads return rows, never a total. Facet counts and &quot;showing 1 to 20 of
                     1,204&quot; are not something you can ask for.
                   </>
                 ),
@@ -235,7 +235,7 @@ export default function CustomFields() {
                 title: 'Search is prefix-only',
                 body: (
                   <>
-                    <code>prefix</code> matches the start of a value, nothing else — no substring
+                    <code>prefix</code> matches the start of a value, nothing else, with no substring
                     search, no fuzzy matching, no relevance ranking.
                   </>
                 ),
@@ -244,7 +244,7 @@ export default function CustomFields() {
                 title: 'Updates replace the whole record',
                 body: (
                   <>
-                    There is no partial update. A field you omit is cleared, not left alone — read,
+                    There is no partial update. A field you omit is cleared, not left alone. Read,
                     merge, then write back.
                   </>
                 ),
@@ -271,14 +271,14 @@ export default function CustomFields() {
                 title: 'Four field types, no more',
                 body: (
                   <>
-                    string, int, numeric, or datetime. No boolean, no enum, no arrays — and no
+                    string, int, numeric, or datetime. No boolean, no enum, no arrays, and no
                     nested object can be made filterable.
                   </>
                 ),
               },
               {
                 title: 'Filterable takes a moment',
-                body: 'Exactly what section 05 just showed: a newly filterable field works only once the daemons have caught up — either a long-lived process or a scheduled tick.',
+                body: 'Exactly what section 05 just showed: a newly filterable field works only once the daemons have caught up, through either a long-lived process or a scheduled tick.',
               },
             ]}
           />

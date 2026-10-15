@@ -6,8 +6,8 @@ import '../globals.css';
 
 const locale: Locale = 'en';
 
-// Konstelasi's brand typeface — every text role in their Elementor kit is
-// set to Poppins. Weights cover the 500–660 cluster this codebase's own
+// Konstelasi's brand typeface. Every text role in their Elementor kit is
+// set to Poppins. Weights cover the 500 to 660 cluster this codebase's own
 // font-weight declarations use (nearest-available matching handles the
 // odd values like 560/620/660); the mono stack is untouched.
 const poppins = Poppins({
@@ -125,8 +125,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       {/*
-        Extensions inject attributes onto <body> before React hydrates —
-        Grammarly's `data-gr-ext-installed`, ClickUp's class — which React
+        Extensions inject attributes onto <body> before React hydrates
+        (Grammarly's `data-gr-ext-installed`, ClickUp's class), which React
         reports as a hydration mismatch against server HTML that cannot
         possibly have carried them. Suppression is one level deep, so this
         covers the attributes without hiding a real mismatch in `children`.

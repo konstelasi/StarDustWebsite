@@ -56,7 +56,7 @@ export default function Home() {
               <Term id="system-of-record">system of record</Term>. Fields you mark{' '}
               <Term id="filterable">filterable</Term> are <em>additionally</em> mirrored into
               typed, indexed <Term id="slot">slot</Term> columns on a 1:1{' '}
-              <Term id="extension-page">extension page</Term> — so a filter reads a real index
+              <Term id="extension-page">extension page</Term>, so a filter reads a real index
               instead of scanning JSON. Edit the payload below and write it.
             </>
           }
@@ -89,7 +89,7 @@ export default function Home() {
             <>
               This is the behaviour that trips up nearly everyone, so it gets its own section
               rather than a footnote. Marking a field <Term id="filterable">filterable</Term>{' '}
-              records an intention and returns immediately — two background{' '}
+              records an intention and returns immediately. Two background{' '}
               <Term id="daemon">daemons</Term> then do the work that makes filtering actually
               possible.
             </>
@@ -104,12 +104,12 @@ export default function Home() {
           title="Four daemons. No broker between them."
           lede={
             <>
-              They never talk to each other directly — the database is the only coordination point,
+              They never talk to each other directly. The database is the only coordination point,
               with claims taken under <code>FOR UPDATE SKIP LOCKED</code>, and the{' '}
               <Term id="watcher">Watcher</Term> is the one singleton, held by advisory lock.
               Run more <Term id="reconciler">Reconcilers</Term>,{' '}
               <Term id="liberator">Liberators</Term>, and{' '}
-              <Term id="chronicler">Chroniclers</Term> for throughput — the Watcher alone
+              <Term id="chronicler">Chroniclers</Term> for throughput. The Watcher alone
               stays one apiece.
             </>
           }
@@ -123,7 +123,7 @@ export default function Home() {
           title="Whether you should actually use this."
           lede={
             <>
-              The current release is <strong><code>0.3.0-alpha.1</code></strong> — a ground-up
+              The current release is <strong><code>0.3.0-alpha.1</code></strong>, a ground-up
               rewrite (<Term id="vertical-schema-partitioning">Vertical Schema Partitioning</Term>)
               of the legacy 0.2.x line, sharing no API with it. <strong>It hasn&apos;t reached
               1.0</strong>, and the public API may still change before 0.3.0. Everything below is
@@ -137,7 +137,7 @@ export default function Home() {
             <div className={styles.req}>
               <span className={styles.reqLabel}>PHP</span>
               <strong>8.1+</strong>
-              <em>tested on 8.1 – 8.4</em>
+              <em>tested on 8.1 to 8.4</em>
             </div>
             <div className={styles.req}>
               <span className={styles.reqLabel}>Database</span>
@@ -147,7 +147,7 @@ export default function Home() {
             <div className={styles.req}>
               <span className={styles.reqLabel}>Runtime deps</span>
               <strong>psr/log · psr/clock</strong>
-              <em>interfaces only — no framework, no ORM</em>
+              <em>interfaces only, with no framework and no ORM</em>
             </div>
             <div className={styles.req}>
               <span className={styles.reqLabel}>Rejected</span>
@@ -179,7 +179,7 @@ export default function Home() {
               <h3>Filters arrive as JSON, too.</h3>
               <p>
                 HTTP gateways rarely hold a PHP AST. The wire format decodes into the same
-                closed <Term id="filter-tree">filter tree</Term> — twelve operators, full
+                closed <Term id="filter-tree">filter tree</Term>. It has twelve operators, full
                 AND/OR/NOT, a thirteen-code error taxonomy, and every rejection carries a JSON
                 Pointer to the offending node.
                 It ships as a normative JSON Schema so your clients can validate in any
