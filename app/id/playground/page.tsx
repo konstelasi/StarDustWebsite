@@ -8,7 +8,7 @@ const locale: Locale = 'id';
 export const metadata: Metadata = {
   title: 'Playground | StarDust',
   description:
-    'Playground interaktif untuk StarDust — jelajahi field dinamis, siklus hidup field, dan pencerminan database dengan simulasi langsung.',
+    'Playground interaktif untuk StarDust. Jelajahi field dinamis, siklus hidup field, dan pencerminan database dengan simulasi langsung.',
   alternates: {
     canonical: '/id/playground/',
     languages: {
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Playground | StarDust',
     description:
-      'Playground interaktif untuk StarDust — jelajahi field dinamis, siklus hidup field, dan pencerminan database dengan simulasi langsung.',
+      'Playground interaktif untuk StarDust. Jelajahi field dinamis, siklus hidup field, dan pencerminan database dengan simulasi langsung.',
     type: 'website',
     url: '/id/playground/',
     siteName: 'StarDust',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Playground | StarDust',
     description:
-      'Playground interaktif untuk StarDust — jelajahi field dinamis, siklus hidup field, dan pencerminan database dengan simulasi langsung.',
+      'Playground interaktif untuk StarDust. Jelajahi field dinamis, siklus hidup field, dan pencerminan database dengan simulasi langsung.',
     images: ['/og-image.png'],
   },
 };
