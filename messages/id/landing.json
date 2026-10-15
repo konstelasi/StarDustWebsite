@@ -14,27 +14,27 @@
     "mirror": {
       "eyebrow": "01 · tempat data berada",
       "title": "Satu baris sumber utama, dicerminkan ke dalam indeks.",
-      "lede": "Payload JSON lengkap selalu merupakan sistem catatan sumber. Field yang Anda tandai sebagai dapat difilter secara tambahan dicerminkan ke kolom slot bertipe dan terindeks pada extension page 1:1 — jadi filter membaca indeks asli, bukan memindai JSON. Edit payload di bawah, lalu write."
+      "lede": "Payload JSON lengkap selalu merupakan sistem catatan sumber. Field yang Anda tandai sebagai dapat difilter secara tambahan dicerminkan ke kolom slot bertipe dan terindeks pada extension page 1:1, jadi filter membaca indeks asli, bukan memindai JSON. Edit payload di bawah, lalu write."
     },
     "joins": {
       "eyebrow": "02 · mengapa bukan EAV",
       "title": "Setiap kondisi EAV adalah self-join lain.",
-      "lede": "Tabel atribut klasik membuat pertanyaan yang lebih spesifik menjadi lebih mahal, karena setiap atribut yang difilter memerlukan join-nya sendiri dan hasil antaranya harus dibawa melalui semuanya. StarDust melakukan join sekali untuk setiap page terindeks yang ditempati field model, bukan sekali untuk setiap kondisi — jadi selama field-field itu berada di page yang sama, cukup satu join, berapa pun kondisi yang Anda tumpuk."
+      "lede": "Tabel atribut klasik membuat pertanyaan yang lebih spesifik menjadi lebih mahal, karena setiap atribut yang difilter memerlukan join-nya sendiri dan hasil antaranya harus dibawa melalui semuanya. StarDust melakukan join sekali untuk setiap page terindeks yang ditempati field model, bukan sekali untuk setiap kondisi, jadi selama field-field itu berada di page yang sama, cukup satu join, berapa pun kondisi yang Anda tumpuk."
     },
     "lifecycle": {
       "eyebrow": "03 · catatan jujur",
       "title": "Dapat difilter adalah janji yang daemon jaga, bukan instan.",
-      "lede": "Ini adalah perilaku yang membingungkan hampir semua orang, jadi mendapat bagiannya sendiri, bukan sekadar catatan kaki. Menandai field sebagai dapat difilter itu instan — cuma mencatat permintaan itu dan langsung kembali. Pekerjaan yang sebenarnya, yang membuat penyaringan itu benar-benar berfungsi, dikerjakan setelahnya oleh dua daemon latar belakang."
+      "lede": "Ini adalah perilaku yang membingungkan hampir semua orang, jadi mendapat bagiannya sendiri, bukan sekadar catatan kaki. Menandai field sebagai dapat difilter itu instan. Ia cuma mencatat permintaan itu dan langsung kembali. Pekerjaan yang sebenarnya, yang membuat penyaringan itu benar-benar berfungsi, dikerjakan setelahnya oleh dua daemon latar belakang."
     },
     "daemons": {
       "eyebrow": "04 · bagian yang bergerak",
       "title": "Empat daemon. Tidak ada broker di antara mereka.",
-      "lede": "Mereka tidak pernah berbicara langsung satu sama lain — database adalah satu-satunya titik koordinasi, dengan klaim diambil melalui FOR UPDATE SKIP LOCKED dan singleton Watcher dipegang oleh advisory lock. Jalankan lebih banyak Reconciler, Liberator, dan Chronicler untuk throughput — hanya Watcher yang tetap satu-satunya."
+      "lede": "Mereka tidak pernah berbicara langsung satu sama lain. Database adalah satu-satunya titik koordinasi, dengan klaim diambil melalui FOR UPDATE SKIP LOCKED dan singleton Watcher dipegang oleh advisory lock. Jalankan lebih banyak Reconciler, Liberator, dan Chronicler untuk throughput. Hanya Watcher yang tetap satu-satunya."
     },
     "status": {
       "eyebrow": "05 · jawaban langsung",
       "title": "Apakah Anda sebaiknya benar-benar menggunakan ini.",
-      "lede": "Rilis saat ini adalah 0.3.0-alpha.1 — penulisan ulang total (Vertical Schema Partitioning) dari lini 0.2.x lama, tanpa API yang sama dengannya. Belum mencapai 1.0, dan API publik masih bisa berubah sebelum 0.3.0. Semua yang ada di bawah ini sudah diimplementasikan dan tercakup oleh test suite."
+      "lede": "Rilis saat ini adalah 0.3.0-alpha.1, penulisan ulang total (Vertical Schema Partitioning) dari lini 0.2.x lama, tanpa API yang sama dengannya. Belum mencapai 1.0, dan API publik masih bisa berubah sebelum 0.3.0. Semua yang ada di bawah ini sudah diimplementasikan dan tercakup oleh test suite."
     },
     "start": {
       "eyebrow": "06 · mulai sekarang",
@@ -47,7 +47,7 @@
       "heading": "cocok jika",
       "items": [
         "Anda memerlukan field dinamis yang ditentukan pengguna atau per-tenant yang masih dapat difilter lewat indeks SQL asli, tanpa menyiapkan cluster pencarian terpisah.",
-        "Anda sudah menjalankan MySQL 8.0.13+, Percona, atau MariaDB 10.11+ — kedua mode deployment sama-sama bisa dipakai: daemon yang berjalan terus-menerus, atau tick terjadwal.",
+        "Anda sudah menjalankan MySQL 8.0.13+, Percona, atau MariaDB 10.11+. Kedua mode deployment sama-sama bisa dipakai: daemon yang berjalan terus-menerus, atau tick terjadwal.",
         "Anda ingin engine yang netral terhadap framework, yang Anda pasang melalui Composer. Tidak ada ORM, tidak ada pembuat query, tidak ada yang ditarik ke aplikasi Anda.",
         "Anda dapat mentoleransi field yang baru saja dapat difilter menjadi dapat di-query tidak lama setelahnya, bukan secara instan."
       ]
@@ -55,9 +55,9 @@
     "bad": {
       "heading": "mungkin tidak cocok jika",
       "items": [
-        "MariaDB 10.6 atau lebih lama, atau MySQL 5.7 dan lebih lama. Keduanya langsung ditolak saat boot — CI punya satu job yang justru mengharapkan suite gagal di server di bawah batas minimum.",
+        "MariaDB 10.6 atau lebih lama, atau MySQL 5.7 dan lebih lama. Keduanya langsung ditolak saat boot, dan CI punya satu job yang justru mengharapkan suite gagal di server di bawah batas minimum.",
         "Konsistensi read-after-write yang kuat pada filter segera setelah retype atau promosi. Field-nya dilayani dari JSON sampai backfill-nya mendarat.",
-        "Pencarian teks penuh, fuzzy, atau substring. Driver default menyediakan kecocokan eksak, perbandingan, rentang, keanggotaan set, dan anchored prefix — tidak ada yang lain.",
+        "Pencarian teks penuh, fuzzy, atau substring. Driver default menyediakan kecocokan eksak, perbandingan, rentang, keanggotaan set, dan anchored prefix, dan tidak ada yang lain.",
         "Nomor halaman, lompat-ke-halaman, atau jumlah hasil total. Pembacaan dipaginasi kursor dan forward-sequential, dengan sengaja."
       ]
     },
@@ -67,17 +67,17 @@
   "joinSwamp": {
     "sliderLabel": "jumlah kondisi filter",
     "entriesNote": "di atas {count} entry",
-    "eavHead": "EAV — satu self-join per kondisi",
+    "eavHead": "EAV membutuhkan satu self-join per kondisi",
     "joinsOne": "{count} join",
     "joinsMany": "{count} join",
     "rowsExaminedLabel": "baris diperiksa · skala log",
-    "eavNote": "Setiap kondisi menambah satu join, dan hasil antaranya harus dibawa melalui semuanya — jadi pertanyaan yang lebih spesifik justru menelan lebih banyak biaya.",
-    "sdHead": "StarDust — satu join per page, bukan per kondisi",
+    "eavNote": "Setiap kondisi menambah satu join, dan hasil antaranya harus dibawa melalui semuanya, jadi pertanyaan yang lebih spesifik justru menelan lebih banyak biaya.",
+    "sdHead": "StarDust membutuhkan satu join per page, bukan per kondisi",
     "sdTag": "1 join · 2 query",
-    "sdNote": "Selama field model berada di satu page, setiap kondisi hanyalah predikat lain pada baris terindeks yang sama. Pertanyaan yang lebih spesifik, kerja yang lebih sedikit — persis seperti seharusnya perilaku sebuah indeks.",
+    "sdNote": "Selama field model berada di satu page, setiap kondisi hanyalah predikat lain pada baris terindeks yang sama. Pertanyaan yang lebih spesifik, kerja yang lebih sedikit. Persis seperti seharusnya perilaku sebuah indeks.",
     "factorOne": "lebih banyak baris disentuh EAV pada {count} kondisi",
     "factorMany": "lebih banyak baris disentuh EAV pada {count} kondisi",
-    "disclaimer": "Model biaya ilustratif dari fan-out join — bukan benchmark. Yang penting adalah bentuknya: EAV tumbuh seiring jumlah kondisi, StarDust tidak. Ukur beban kerja Anda sendiri sebelum mengutip sebuah angka."
+    "disclaimer": "Model biaya ilustratif dari fan-out join, bukan benchmark. Yang penting adalah bentuknya: EAV tumbuh seiring jumlah kondisi, StarDust tidak. Ukur beban kerja Anda sendiri sebelum mengutip sebuah angka."
   },
   "fieldLifecycle": {
     "acts": {
@@ -86,7 +86,7 @@
       "act0Blurb": "Panggilan itu mencatat sebuah niat dan langsung kembali. Belum ada apa pun yang terindeks. Inilah keadaan yang membuat orang melaporkan bug.",
       "act1Title": "Watcher menyediakan sebuah page",
       "act1Actor": "Watcher · singleton",
-      "act1Blurb": "Tidak ada page yang memiliki slot int terindeks yang bebas, jadi Watcher menyediakan satu. Sebuah page membawa persis kolom yang diindeksnya, empat dari setiap type family, sehingga tiga kolom int cadangan itulah yang membuat beberapa promosi berikutnya melewati langkah ini. Ia hanya menyediakan kapasitas dan tidak melakukan hal lain — mengklaim sebuah slot bukan tugasnya, jadi field tersebut masih belum dipetakan saat tick ini berakhir.",
+      "act1Blurb": "Tidak ada page yang memiliki slot int terindeks yang bebas, jadi Watcher menyediakan satu. Sebuah page membawa persis kolom yang diindeksnya, empat dari setiap type family, sehingga tiga kolom int cadangan itulah yang membuat beberapa promosi berikutnya melewati langkah ini. Ia hanya menyediakan kapasitas dan tidak melakukan hal lain. Mengklaim sebuah slot bukan tugasnya, jadi field tersebut masih belum dipetakan saat tick ini berakhir.",
       "act2Title": "Reconciler mengklaim slot dan melakukan backfill",
       "act2Actor": "Reconciler · multi-worker",
       "act2Blurb": "Reconciler memesan slot itu sebagai backfilling, lalu menyalin nilai setiap entry yang sudah ada dari JSON ke dalam kolom slot secara bertahap, mencatat checkpoint setelah tiap chunk.",
@@ -95,18 +95,18 @@
       "act3Blurb": "Chunk terakhir mempromosikan slot itu dan menaikkan versi skema. Panggilan read() yang identik, yang semenit lalu masih melempar exception, sekarang mengembalikan baris."
     },
     "caveat1": "Ini adalah jalur cold-start, ketika belum ada page yang memiliki slot terindeks bebas dari tipe yang tepat. Ketika kapasitas sudah tersedia, slot itu dipesan di dalam transaksi yang sama dengan yang dijalankan ",
-    "caveat2": " itu sendiri — act 1 dan 2 tergabung menjadi satu, Watcher tidak pernah terlibat, dan field langsung masuk ke ",
+    "caveat2": " itu sendiri. Act 1 dan 2 tergabung menjadi satu, Watcher tidak pernah terlibat, dan field langsung masuk ke ",
     "caveat3": ". Bagaimanapun, jendela di bawah ini nyata: sebuah slot ",
     "caveat4": " tidak bisa dikueri.",
     "readout": {
-      "filterableNote": "permintaan registry — diatur pada saat panggilan itu kembali",
+      "filterableNote": "permintaan registry, diatur pada saat panggilan itu kembali",
       "indexedNoteTrue": "sebuah filter bekerja saat ini juga",
       "indexedNoteFalse": "belum ada slot live yang bisa dipakai filter",
       "slotLabel": "slot",
       "noneReserved": "belum dipesan",
       "noteReady": "live dan bisa dikueri",
       "noteReserved": "sudah dipesan, tapi pre-flight masih menolak backfilling",
-      "noteCapacityExists": "kapasitas sudah tersedia sekarang — tapi belum ada yang mengklaimnya",
+      "noteCapacityExists": "kapasitas sudah tersedia sekarang, tapi belum ada yang mengklaimnya",
       "noteNoSlot": "tidak ada page yang punya slot int terindeks yang bebas",
       "progressNote": "nilai setiap entry disalin dari JSON ke kolom slot, {chunk} baris setiap kali"
     },
@@ -116,7 +116,7 @@
     "resultOkTag": "EntryPage · 128 baris",
     "resultOkBody": "Tidak ada yang berubah dari panggilan itu. Engine yang mengejar ketertinggalan di baliknya.",
     "resultErrTag": "FieldNotFilterableException",
-    "resultErrBody": "Ditolak di pre-flight, bukannya diam-diam mengembalikan page kosong — sehingga indeks yang setengah terbangun tidak akan pernah terlihat seperti “tidak ada yang cocok”."
+    "resultErrBody": "Ditolak di pre-flight, bukannya diam-diam mengembalikan page kosong, sehingga indeks yang setengah terbangun tidak akan pernah terlihat seperti “tidak ada yang cocok”."
   },
   "daemonBoard": {
     "resume": "lanjutkan",
@@ -135,7 +135,7 @@
     "workerIdle": "idle",
     "workerClaimed": "mengklaim {id}",
     "rowsDrained": "{count} baris dikuras",
-    "coreSub": "satu-satunya titik koordinasi — tanpa broker, tanpa RPC antar-daemon",
+    "coreSub": "satu-satunya titik koordinasi, tanpa broker dan tanpa RPC antar-daemon",
     "entriesRows": "{count} baris",
     "freeSlotsCount": "{count} slot bebas",
     "syncQueueCount": "{count} tertunda",
@@ -148,12 +148,12 @@
   },
   "slotMirror": {
     "yourWriteHead": "write Anda",
-    "noteBefore": "Field didefinisikan oleh tenant Anda saat runtime — tanpa migrasi, tanpa ",
+    "noteBefore": "Field didefinisikan oleh tenant Anda saat runtime, tanpa migrasi dan tanpa ",
     "noteAfter": ". Ubah sebuah field menjadi dapat difilter dan lihat ke mana ia mendarat.",
     "filterableToggle": "dapat difilter",
     "jsonOnlyToggle": "hanya JSON",
     "valueAriaLabel": "nilai dari {name}",
-    "noFreeSlotTag": "tidak ada slot {type} bebas — diantrekan untuk backfill",
+    "noFreeSlotTag": "tidak ada slot {type} bebas, diantrekan untuk backfill",
     "writing": "menulis…",
     "resetButton": "reset",
     "sorText": "system of record · selalu lengkap",
@@ -164,15 +164,15 @@
     "moreSlots": "…56 lainnya",
     "indexNotePrefix": "indeks komposit pada ",
     "queryCostHead": "jadi berapa biaya sebuah filter?",
-    "payloadEditedTag": "payload diedit — write() lagi",
+    "payloadEditedTag": "payload diedit, write() lagi",
     "filterOnLabel": "filter pada",
     "runWritePrefix": "Jalankan ",
     "runWriteSuffix": " untuk melihat rencana query.",
     "indexScanTag": "index scan",
     "resolvedPrefix": "terselesaikan ke ",
-    "resolvedSuffix": " — dua query terbatas, tanpa scan JSON",
+    "resolvedSuffix": " (dua query terbatas, tanpa scan JSON)",
     "queuedTag": "antre",
-    "queuedText": "dapat difilter, tapi tidak ada slot yang bebas — nilainya aman di JSON dan Reconciler akan melakukan backfill. Write-nya tidak pernah gagal.",
+    "queuedText": "dapat difilter, tapi tidak ada slot yang bebas. Nilainya aman di JSON dan Reconciler akan melakukan backfill. Write-nya tidak pernah gagal.",
     "rejectedTag": "ditolak di pre-flight",
     "rejectedSuffix": " tidak menempati kolom slot mana pun."
   }

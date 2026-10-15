@@ -8,7 +8,7 @@
     "steps": {
       "0": {
         "button": "Coba filter kontak berdasarkan plan",
-        "body": "plan baru saja ditandai dapat difilter. Registry sudah mencatatnya — tetapi belum ada slot yang dipesan untuknya, jadi filter yang menyebutnya ditolak sebelum database sempat disentuh."
+        "body": "plan baru saja ditandai dapat difilter. Registry sudah mencatatnya, tetapi belum ada slot yang dipesan untuknya, jadi filter yang menyebutnya ditolak sebelum database sempat disentuh."
       },
       "1": {
         "button": "Jalankan Watcher",
@@ -20,15 +20,15 @@
       },
       "3": {
         "button": "Coba filter yang sama lagi",
-        "body": "Filter yang sama, field yang sama, tanpa perubahan kode di sisi Anda — sekarang filter ini membaca indeks sungguhan."
+        "body": "Filter yang sama, field yang sama, tanpa perubahan kode di sisi Anda. Sekarang filter ini membaca indeks sungguhan."
       }
     },
     "done": "Itulah seluruh backfill window: niat tercatat seketika, kemampuannya baru hadir setelah daemon menyelesaikan pekerjaannya.",
     "playgroundLink": "Ulangi ini di playground lengkap →",
     "codeTitle": "pemanggilan yang memulai semua ini",
-    "resultRefused": "ditolak — {code}",
+    "resultRefused": "ditolak dengan {code}",
     "resultMatched": "{count} baris cocok",
     "eventLogTitle": "yang dicatat oleh daemon",
-    "eventLogEmpty": "Belum ada apa-apa — tekan tombol di atas."
+    "eventLogEmpty": "Belum ada apa-apa. Tekan tombol di atas."
   }
 }

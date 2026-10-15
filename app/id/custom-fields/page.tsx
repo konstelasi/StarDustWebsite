@@ -11,9 +11,9 @@ import Term from '@/components/Term';
 import { DOCS } from '@/lib/links';
 import styles from './page.module.css';
 
-const title = 'StarDust untuk custom field multi-tenant — studi kasus';
+const title = 'Studi kasus custom field multi-tenant dengan StarDust';
 const description =
-  'Satu tenant SaaS, satu record kontak, satu field yang ditambahkan setelah aplikasi berjalan — seluruh alur StarDust ditelusuri berurutan, dengan backfill window yang benar-benar berjalan langsung.';
+  'Satu tenant SaaS, satu record kontak, dan satu field yang ditambahkan setelah aplikasi berjalan. Seluruh alur StarDust ditelusuri berurutan, dengan backfill window yang benar-benar berjalan langsung.';
 
 export const metadata: Metadata = {
   title,
@@ -102,7 +102,7 @@ export default function IdCustomFields() {
               Acme ingin mencatat <code>plan</code> dan <code>seats</code> di setiap kontak.
               Globex ingin <code>industry</code>, <code>contract_value</code> dan{' '}
               <code>renewal_date</code> pada jenis record yang sama. Tidak ada satu tabel yang
-              cocok untuk keduanya sekaligus — sebuah <Term id="model">model</Term> di StarDust
+              cocok untuk keduanya sekaligus. Sebuah <Term id="model">model</Term> di StarDust
               didefinisikan per <Term id="tenant">tenant</Term>, dan setiap{' '}
               <Term id="field">field</Term> di dalamnya adalah apa pun yang benar-benar dibutuhkan
               tenant itu.
@@ -118,8 +118,8 @@ export default function IdCustomFields() {
           title="Mencatat bentuk yang baru saja diminta pelanggan."
           lede={
             <>
-              Sebuah field terdiri dari nama, <Term id="declared-type">declared type</Term> —
-              string, int, numeric, atau datetime — dan satu flag. <code>company</code> dan{' '}
+              Sebuah field terdiri dari nama, <Term id="declared-type">declared type</Term>
+              (string, int, numeric, atau datetime) dan satu flag. <code>company</code> dan{' '}
               <code>seats</code> ditandai <Term id="filterable">filterable</Term> sejak awal,
               karena tenant ini sudah tahu keduanya akan dicari; <code>plan</code> mulai sebagai
               JSON-only, karena saat ini belum ada yang meminta untuk memfilternya.
@@ -144,7 +144,7 @@ export default function IdCustomFields() {
               <Term id="payload">Payload</Term> lengkap selalu menjadi{' '}
               <Term id="system-of-record">system of record</Term>. Setiap field yang ditandai
               filterable juga dicerminkan ke kolom <Term id="slot">slot</Term> yang bertipe dan
-              terindeks pada <Term id="extension-page">extension page</Term> — <code>plan</code>{' '}
+              terindeks pada <Term id="extension-page">extension page</Term>. <code>plan</code>{' '}
               belum, sehingga ia hanya hidup di dalam payload.
             </>
           }
@@ -158,13 +158,13 @@ export default function IdCustomFields() {
         <Section
           id="query"
           eyebrow="04 · menelusuri kontak"
-          title="Difilter, diurutkan, dan dipaginasi — tidak pernah sekaligus semua."
+          title="Difilter, diurutkan, dan dipaginasi, tapi tidak pernah sekaligus semua."
           lede={
             <>
               Sebuah pembacaan membawa <Term id="filter-tree">filter tree</Term>, opsi{' '}
               <Term id="sort">sort</Term>, dan ukuran halaman, lalu mengembalikan{' '}
               <Term id="cursor">cursor</Term> alih-alih nomor halaman. Tidak ada &quot;menampilkan
-              1–20 dari 1.204&quot; — Anda terus meminta halaman berikutnya sampai cursor-nya
+              1 sampai 20 dari 1.204&quot;, jadi Anda terus meminta halaman berikutnya sampai cursor-nya
               kembali <code>null</code>.
             </>
           }
@@ -186,7 +186,7 @@ export default function IdCustomFields() {
             <>
               Ini satu-satunya bagian di halaman ini yang benar-benar berjalan. Menandai sebuah
               field <Term id="filterable">filterable</Term> adalah sebuah{' '}
-              <Term id="promotion">promotion</Term> — ia mencatat niat dan langsung kembali, dan{' '}
+              <Term id="promotion">promotion</Term>. Ia mencatat niat dan langsung kembali, dan{' '}
               <Term id="backfill-window">backfill window</Term> di antara momen itu dan filter
               yang benar-benar berfungsi ditutup oleh dua <Term id="daemon">daemon</Term> di latar
               belakang: <Term id="watcher">Watcher</Term>, yang menyediakan kapasitas, dan{' '}
@@ -203,7 +203,7 @@ export default function IdCustomFields() {
           id="limits"
           eyebrow="06 · yang akan Anda temui"
           title="Daftar jujur, bukan sorotan yang bagus-bagus saja."
-          lede="Delapan hal yang memang sengaja tidak dilakukan StarDust. Tidak satu pun ini bug — rancang di sekitarnya, sebagaimana integrasi sungguhan harus melakukannya."
+          lede="Delapan hal yang memang sengaja tidak dilakukan StarDust. Tidak satu pun ini bug, jadi rancang di sekitarnya, sebagaimana integrasi sungguhan harus melakukannya."
         >
           <LimitsTable
             items={[
@@ -212,7 +212,7 @@ export default function IdCustomFields() {
                 body: (
                   <>
                     Pembacaan selalu mengembalikan baris, tidak pernah total. Jumlah per facet dan
-                    &quot;menampilkan 1–20 dari 1.204&quot; bukan sesuatu yang bisa diminta.
+                    &quot;menampilkan 1 sampai 20 dari 1.204&quot; bukan sesuatu yang bisa diminta.
                   </>
                 ),
               },
@@ -230,7 +230,7 @@ export default function IdCustomFields() {
                 title: 'Pencarian hanya prefix',
                 body: (
                   <>
-                    <code>prefix</code> hanya mencocokkan awal sebuah nilai — tidak ada pencarian
+                    <code>prefix</code> hanya mencocokkan awal sebuah nilai, dan tidak ada pencarian
                     substring, tidak ada fuzzy matching, tidak ada peringkat relevansi.
                   </>
                 ),
@@ -240,7 +240,7 @@ export default function IdCustomFields() {
                 body: (
                   <>
                     Tidak ada update sebagian. Field yang tidak disertakan akan dikosongkan, bukan
-                    dibiarkan — baca dulu, gabungkan, baru tulis kembali.
+                    dibiarkan. Baca dulu, gabungkan, baru tulis kembali.
                   </>
                 ),
               },
@@ -267,13 +267,13 @@ export default function IdCustomFields() {
                 body: (
                   <>
                     string, int, numeric, atau datetime. Tidak ada boolean, tidak ada enum, tidak
-                    ada array — dan objek bersarang tidak bisa dijadikan filterable.
+                    ada array, dan objek bersarang tidak bisa dijadikan filterable.
                   </>
                 ),
               },
               {
                 title: 'Filterable butuh waktu',
-                body: 'Persis seperti yang baru saja ditunjukkan bagian 05: field yang baru ditandai filterable baru benar-benar berfungsi setelah daemon menyelesaikan pekerjaannya — baik lewat proses yang hidup terus-menerus maupun lewat tick terjadwal.',
+                body: 'Persis seperti yang baru saja ditunjukkan bagian 05: field yang baru ditandai filterable baru benar-benar berfungsi setelah daemon menyelesaikan pekerjaannya, baik lewat proses yang hidup terus-menerus maupun lewat tick terjadwal.',
               },
             ]}
           />

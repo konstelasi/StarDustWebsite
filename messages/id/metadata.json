@@ -5,7 +5,7 @@
   },
   "playground": {
     "title": "Playground | StarDust",
-    "description": "Playground interaktif untuk StarDust — jelajahi field dinamis, siklus hidup field, dan pencerminan database dengan simulasi langsung."
+    "description": "Playground interaktif untuk StarDust. Jelajahi field dinamis, siklus hidup field, dan pencerminan database dengan simulasi langsung."
   },
   "jsonLd": {
     "operatingSystem": "Cross-platform (MySQL 8.0.13+ atau MariaDB 10.11+, PHP 8.1+)",

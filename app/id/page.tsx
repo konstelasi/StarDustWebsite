@@ -56,7 +56,7 @@ export default function IdHome() {
               <Term id="system-of-record">sistem catatan sumber</Term>. Field yang Anda tandai
               sebagai <Term id="filterable">dapat difilter</Term> secara tambahan dicerminkan ke
               kolom <Term id="slot">slot</Term> bertipe dan terindeks pada{' '}
-              <Term id="extension-page">extension page</Term> 1:1 — jadi filter membaca indeks
+              <Term id="extension-page">extension page</Term> 1:1, jadi filter membaca indeks
               asli, bukan memindai JSON. Edit payload di bawah, lalu write.
             </>
           }
@@ -89,7 +89,7 @@ export default function IdHome() {
             <>
               Ini adalah perilaku yang membingungkan hampir semua orang, jadi mendapat bagiannya
               sendiri, bukan sekadar catatan kaki. Menandai field sebagai{' '}
-              <Term id="filterable">dapat difilter</Term> itu instan — cuma mencatat permintaan
+              <Term id="filterable">dapat difilter</Term> itu instan. Ia cuma mencatat permintaan
               itu dan langsung kembali. Pekerjaan yang sebenarnya, yang membuat penyaringan itu
               benar-benar berfungsi, dikerjakan setelahnya oleh dua{' '}
               <Term id="daemon">daemon</Term> latar belakang.
@@ -105,12 +105,12 @@ export default function IdHome() {
           title="Empat daemon. Tidak ada broker di antara mereka."
           lede={
             <>
-              Mereka tidak pernah berbicara langsung satu sama lain — database adalah satu-satunya titik
+              Mereka tidak pernah berbicara langsung satu sama lain. Database adalah satu-satunya titik
               koordinasi, dengan klaim diambil melalui <code>FOR UPDATE SKIP LOCKED</code>, dan{' '}
               <Term id="watcher">Watcher</Term> adalah satu-satunya singleton, dipegang oleh
               advisory lock. Jalankan lebih banyak{' '}
               <Term id="reconciler">Reconciler</Term>, <Term id="liberator">Liberator</Term>, dan{' '}
-              <Term id="chronicler">Chronicler</Term> untuk throughput — hanya Watcher yang tetap
+              <Term id="chronicler">Chronicler</Term> untuk throughput. Hanya Watcher yang tetap
               satu-satunya.
             </>
           }
@@ -124,7 +124,7 @@ export default function IdHome() {
           title="Apakah Anda sebaiknya benar-benar menggunakan ini."
           lede={
             <>
-              Rilis saat ini adalah <strong><code>0.3.0-alpha.1</code></strong> — penulisan ulang
+              Rilis saat ini adalah <strong><code>0.3.0-alpha.1</code></strong>, penulisan ulang
               total (<Term id="vertical-schema-partitioning">Vertical Schema Partitioning</Term>)
               dari lini 0.2.x lama, tanpa API yang sama dengannya.{' '}
               <strong>Belum mencapai 1.0</strong>, dan API publik masih bisa berubah sebelum 0.3.0.
@@ -138,7 +138,7 @@ export default function IdHome() {
             <div className={styles.req}>
               <span className={styles.reqLabel}>PHP</span>
               <strong>8.1+</strong>
-              <em>diuji pada 8.1 – 8.4</em>
+              <em>diuji pada 8.1 sampai 8.4</em>
             </div>
             <div className={styles.req}>
               <span className={styles.reqLabel}>Database</span>
@@ -148,7 +148,7 @@ export default function IdHome() {
             <div className={styles.req}>
               <span className={styles.reqLabel}>Dependensi runtime</span>
               <strong>psr/log · psr/clock</strong>
-              <em>hanya interface — tanpa framework, tanpa ORM</em>
+              <em>hanya interface, tanpa framework dan tanpa ORM</em>
             </div>
             <div className={styles.req}>
               <span className={styles.reqLabel}>Ditolak</span>
@@ -180,7 +180,7 @@ export default function IdHome() {
               <h3>Filter juga datang sebagai JSON.</h3>
               <p>
                 Gateway HTTP jarang menyimpan AST PHP. Wire format ini di-decode menjadi{' '}
-                <Term id="filter-tree">filter tree</Term> tertutup yang sama — dua belas
+                <Term id="filter-tree">filter tree</Term> tertutup yang sama, dengan dua belas
                 operator, AND/OR/NOT penuh, taksonomi error dengan tiga belas kode, dan setiap
                 penolakan membawa JSON Pointer ke node yang bermasalah.
                 Ini disediakan sebagai JSON Schema normatif sehingga klien Anda dapat memvalidasi

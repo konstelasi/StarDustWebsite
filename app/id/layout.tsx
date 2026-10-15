@@ -6,7 +6,7 @@ import '../globals.css';
 
 const locale: Locale = 'id';
 
-// Mirrors app/(en)/layout.tsx exactly — each locale root layout loads its
+// Mirrors app/(en)/layout.tsx exactly. Each locale root layout loads its
 // own copy since Next.js requires font loaders to run in the file that
 // renders the <html> tag they apply to.
 const poppins = Poppins({
