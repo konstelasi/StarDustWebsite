@@ -6,7 +6,21 @@
     "copy": "copy",
     "copied": "copied",
     "readSource": "Read the source",
-    "codeTitle": "filtering a user-defined field"
+    "filtersLabel": "Try a filter",
+    "stageLabel": "{total} sample companies plotted by employee count. The selected filter lights the entries it matches.",
+    "axisLabel": "employees, log scale",
+    "youWrite": "you write",
+    "mysqlRuns": "MySQL runs",
+    "bindings": "bindings",
+    "refusedTag": "refused at pre-flight",
+    "refusedTitle": "Refused at pre-flight",
+    "refusedBody": "{field} is not filterable, so no SQL is built and nothing falls back to scanning JSON.",
+    "noSql": "no SQL built",
+    "strategyFact": "strategy {strategy}",
+    "joinsOne": "1 join",
+    "joinsMany": "{count} joins",
+    "matches": "{matched} of {total} entries match",
+    "simNote": "Run in your browser by the playground's simulator, on {total} invented companies. The SQL is what its compiler emits."
   },
   "sections": {
     "mirror": {

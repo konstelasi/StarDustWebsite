@@ -8,6 +8,7 @@ import JoinSwamp from '@/components/JoinSwamp';
 import Nav from '@/components/Nav';
 import Section from '@/components/Section';
 import Term from '@/components/Term';
+import { buildHeroStage } from '@/lib/hero/stage';
 import { DOCS } from '@/lib/links';
 import SlotMirror from '@/components/SlotMirror';
 import styles from './page.module.css';
@@ -39,12 +40,16 @@ $model = $engine->schemaBuilder()->createModel(1, 'company', [
     new FieldDefinition('city',      'string'),
 ]);`;
 
+// Built once, while the site is built. The simulator stays on the server and the
+// hero gets plain data.
+const HERO_STAGE = buildHeroStage();
+
 export default function IdHome() {
   return (
     <>
       <Nav />
       <main id="main">
-        <Hero />
+        <Hero stage={HERO_STAGE} />
 
         <Section
           id="mirror"

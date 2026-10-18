@@ -1,0 +1,14 @@
+/* Full width on purpose. Everything else on the page sits in the 1160px shell,
+   so this is the one thing that touches both edges of the window. */
+.stage {
+  margin: clamp(40px, 5vw, 72px) 0 0;
+  background: var(--bg-raised);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: clamp(250px, 26vw, 340px);
+}

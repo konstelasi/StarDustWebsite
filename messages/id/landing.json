@@ -6,7 +6,21 @@
     "copy": "salin",
     "copied": "disalin",
     "readSource": "Baca kode sumber",
-    "codeTitle": "memfilter field yang ditentukan pengguna"
+    "filtersLabel": "Coba sebuah filter",
+    "stageLabel": "{total} perusahaan contoh, digambar menurut jumlah karyawan. Filter yang dipilih menyalakan entry yang cocok.",
+    "axisLabel": "employees, skala log",
+    "youWrite": "yang Anda tulis",
+    "mysqlRuns": "yang dijalankan MySQL",
+    "bindings": "binding",
+    "refusedTag": "ditolak di pre-flight",
+    "refusedTitle": "Ditolak di pre-flight",
+    "refusedBody": "{field} tidak filterable, jadi tidak ada SQL yang dibuat dan tidak ada yang diam-diam memindai JSON.",
+    "noSql": "tidak ada SQL yang dibuat",
+    "strategyFact": "strategi {strategy}",
+    "joinsOne": "1 join",
+    "joinsMany": "{count} join",
+    "matches": "{matched} dari {total} entry cocok",
+    "simNote": "Dijalankan di browser oleh simulator playground, atas {total} perusahaan rekaan. SQL-nya adalah keluaran compiler simulator itu."
   },
   "sections": {
     "mirror": {

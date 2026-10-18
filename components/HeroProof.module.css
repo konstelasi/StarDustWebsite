@@ -1,0 +1,96 @@
+.proof {
+  padding-top: 40px;
+  padding-bottom: clamp(48px, 6vw, 80px);
+}
+
+/* All four pairs share one grid cell and only the selected one is visible, so
+   the block is as tall as the tallest and nothing below it moves when the
+   selection changes. */
+.panes { display: grid; }
+
+.pair {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) auto minmax(0, 7fr);
+  gap: 0 clamp(14px, 2.4vw, 28px);
+  align-items: start;
+  visibility: hidden;
+  pointer-events: none;
+}
+.pairOn {
+  visibility: visible;
+  pointer-events: auto;
+}
+@media (max-width: 860px) {
+  .pair { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .arrow { display: none; }
+}
+
+.pane { min-width: 0; }
+
+.paneLabel {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.arrow {
+  margin-top: 40px;
+  font-family: var(--mono);
+  font-size: 18px;
+  color: var(--text-faint);
+}
+
+.pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  background: var(--well);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  tab-size: 4;
+  white-space: pre;
+}
+.pre:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.slot { color: var(--indexed); font-weight: 600; }
+.type { color: #e6e6e6; }
+.string { color: #bdbdbd; }
+.bindings { color: var(--text-faint); }
+
+.refusal { white-space: normal; border-color: #ff6b8144; }
+.refusalTitle { margin: 0; color: var(--danger); font-size: 13px; }
+.refusalCode {
+  display: inline-block;
+  margin: 6px 0 12px;
+  color: var(--text);
+  font-size: 12.5px;
+}
+.refusalBody { margin: 0; max-width: 46ch; color: var(--text-dim); font-family: var(--sans); font-size: 14px; line-height: 1.6; }
+
+.facts {
+  margin: 20px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 28px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.facts code { color: var(--text); }
+.refused { color: var(--danger); }
+
+.note {
+  margin: 10px 0 0;
+  max-width: 78ch;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-faint);
+}
