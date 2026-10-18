@@ -48,7 +48,6 @@ export default function IdHome() {
 
         <Section
           id="mirror"
-          eyebrow="01 · tempat data berada"
           title="Satu baris sumber utama, dicerminkan ke dalam indeks."
           lede={
             <>
@@ -66,7 +65,7 @@ export default function IdHome() {
 
         <Section
           id="joins"
-          eyebrow="02 · mengapa bukan EAV"
+          layout="split"
           title="Setiap kondisi EAV adalah self-join lain."
           lede={
             <>
@@ -83,7 +82,7 @@ export default function IdHome() {
 
         <Section
           id="lifecycle"
-          eyebrow="03 · catatan jujur"
+          tone="raised"
           title="Dapat difilter adalah janji yang daemon jaga, bukan instan."
           lede={
             <>
@@ -101,7 +100,6 @@ export default function IdHome() {
 
         <Section
           id="daemons"
-          eyebrow="04 · bagian yang bergerak"
           title="Empat daemon. Tidak ada broker di antara mereka."
           lede={
             <>
@@ -120,7 +118,7 @@ export default function IdHome() {
 
         <Section
           id="status"
-          eyebrow="05 · jawaban langsung"
+          layout="split"
           title="Apakah Anda sebaiknya benar-benar menggunakan ini."
           lede={
             <>
@@ -160,7 +158,6 @@ export default function IdHome() {
 
         <Section
           id="start"
-          eyebrow="06 · mulai sekarang"
           title="Lima menit, satu perintah."
           lede={
             <>

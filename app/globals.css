@@ -183,6 +183,8 @@ code, pre, kbd { font-family: var(--mono); }
   border-top: 1px solid var(--border);
 }
 
+.section-raised { background: var(--bg-raised); }
+
 .eyebrow {
   font-family: var(--mono);
   font-size: 12px;
@@ -202,6 +204,26 @@ code, pre, kbd { font-family: var(--mono); }
   max-width: 68ch;
   color: var(--text-dim);
   font-size: 17px;
+}
+
+/* Title left, lede right. The demo below still takes the full width, so only
+   the heading block changes shape. Below 860px it reads as the stacked form. */
+.section-head--split {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 16px clamp(32px, 5vw, 64px);
+  align-items: start;
+}
+.section-head--split .section-title { max-width: 18ch; }
+.section-head--split .section-lede {
+  margin-top: 0;
+  max-width: none;
+  padding-top: 6px;
+}
+@media (max-width: 860px) {
+  .section-head--split { grid-template-columns: minmax(0, 1fr); }
+  .section-head--split .section-title { max-width: 22ch; }
+  .section-head--split .section-lede { padding-top: 0; max-width: 68ch; }
 }
 
 /* ---------- panels ---------- */

@@ -48,7 +48,6 @@ export default function Home() {
 
         <Section
           id="mirror"
-          eyebrow="01 · where the data lives"
           title="One row of truth, mirrored into an index."
           lede={
             <>
@@ -66,7 +65,7 @@ export default function Home() {
 
         <Section
           id="joins"
-          eyebrow="02 · why not EAV"
+          layout="split"
           title="Every EAV condition is another self-join."
           lede={
             <>
@@ -83,7 +82,7 @@ export default function Home() {
 
         <Section
           id="lifecycle"
-          eyebrow="03 · the honest caveat"
+          tone="raised"
           title="Filterable is a promise the daemons keep, not an instant."
           lede={
             <>
@@ -100,7 +99,6 @@ export default function Home() {
 
         <Section
           id="daemons"
-          eyebrow="04 · the moving parts"
           title="Four daemons. No broker between them."
           lede={
             <>
@@ -119,7 +117,7 @@ export default function Home() {
 
         <Section
           id="status"
-          eyebrow="05 · straight answers"
+          layout="split"
           title="Whether you should actually use this."
           lede={
             <>
@@ -159,7 +157,6 @@ export default function Home() {
 
         <Section
           id="start"
-          eyebrow="06 · get started"
           title="Five minutes, one command."
           lede={
             <>
