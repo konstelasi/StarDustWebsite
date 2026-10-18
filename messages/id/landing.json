@@ -1,14 +1,12 @@
 {
   "hero": {
-    "badge": "v0.3.0-alpha.1 · Vertical Schema Partitioning",
     "titleLine1": "Field dinamis tanpa skema,",
     "titleLine2": "bisa difilter lewat indeks SQL asli.",
     "lede": "Berikan setiap tenant field mereka sendiri, lalu filter seperti kolom native. Tidak ada cluster pencarian terpisah. Tidak ada rawa join EAV. Hanya MySQL atau MariaDB, melakukan scan indeks pada data yang tidak pernah Anda deklarasikan saat migrasi.",
     "copy": "salin",
     "copied": "disalin",
     "readSource": "Baca kode sumber",
-    "codeTitle": "memfilter field yang ditentukan pengguna",
-    "scroll": "Lihat apa yang terjadi di balik layar"
+    "codeTitle": "memfilter field yang ditentukan pengguna"
   },
   "sections": {
     "mirror": {

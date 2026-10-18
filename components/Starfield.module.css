@@ -16,19 +16,3 @@
   mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
   -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
 }
-
-.glow {
-  position: absolute;
-  top: -30%;
-  left: 50%;
-  width: min(1100px, 120vw);
-  height: 780px;
-  transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse at center,
-    rgba(var(--accent-rgb), 0.16) 0%,
-    rgba(var(--indexed-rgb), 0.06) 38%,
-    transparent 68%
-  );
-  filter: blur(6px);
-}

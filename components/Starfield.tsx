@@ -89,7 +89,6 @@ export default function Starfield() {
   return (
     <div className={styles.wrap} aria-hidden="true">
       <canvas ref={canvasRef} className={styles.canvas} />
-      <div className={styles.glow} />
     </div>
   );
 }
