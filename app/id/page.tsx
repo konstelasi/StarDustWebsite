@@ -132,28 +132,36 @@ export default function IdHome() {
         >
           <Fit />
 
-          <div className={styles.reqs}>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>PHP</span>
-              <strong>8.1+</strong>
-              <em>diuji pada 8.1 sampai 8.4</em>
+          <dl className={styles.specs}>
+            <div className={styles.spec}>
+              <dt>PHP</dt>
+              <dd>
+                <strong>8.1+</strong>
+                <em>diuji pada 8.1 sampai 8.4</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Database</span>
-              <strong>MySQL 8.0.13+ · MariaDB 10.11+</strong>
-              <em>atau Percona Server 8.0.13+</em>
+            <div className={styles.spec}>
+              <dt>Database</dt>
+              <dd>
+                <strong>MySQL 8.0.13+ · MariaDB 10.11+</strong>
+                <em>atau Percona Server 8.0.13+</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Dependensi runtime</span>
-              <strong>psr/log · psr/clock</strong>
-              <em>hanya interface, tanpa framework dan tanpa ORM</em>
+            <div className={styles.spec}>
+              <dt>Dependensi runtime</dt>
+              <dd>
+                <strong>psr/log · psr/clock</strong>
+                <em>hanya interface, tanpa framework dan tanpa ORM</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Ditolak</span>
-              <strong className={styles.no}>MariaDB ≤ 10.6 · MySQL ≤ 5.7</strong>
-              <em>menolak untuk memulai daripada merusak registry</em>
+            <div className={styles.spec}>
+              <dt>Ditolak</dt>
+              <dd>
+                <strong className={styles.no}>MariaDB ≤ 10.6 · MySQL ≤ 5.7</strong>
+                <em>menolak untuk memulai daripada merusak registry</em>
+              </dd>
             </div>
-          </div>
+          </dl>
         </Section>
 
         <Section

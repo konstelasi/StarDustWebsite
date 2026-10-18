@@ -131,28 +131,36 @@ export default function Home() {
         >
           <Fit />
 
-          <div className={styles.reqs}>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>PHP</span>
-              <strong>8.1+</strong>
-              <em>tested on 8.1 to 8.4</em>
+          <dl className={styles.specs}>
+            <div className={styles.spec}>
+              <dt>PHP</dt>
+              <dd>
+                <strong>8.1+</strong>
+                <em>tested on 8.1 to 8.4</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Database</span>
-              <strong>MySQL 8.0.13+ · MariaDB 10.11+</strong>
-              <em>or Percona Server 8.0.13+</em>
+            <div className={styles.spec}>
+              <dt>Database</dt>
+              <dd>
+                <strong>MySQL 8.0.13+ · MariaDB 10.11+</strong>
+                <em>or Percona Server 8.0.13+</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Runtime deps</span>
-              <strong>psr/log · psr/clock</strong>
-              <em>interfaces only, with no framework and no ORM</em>
+            <div className={styles.spec}>
+              <dt>Runtime deps</dt>
+              <dd>
+                <strong>psr/log · psr/clock</strong>
+                <em>interfaces only, with no framework and no ORM</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Rejected</span>
-              <strong className={styles.no}>MariaDB ≤ 10.6 · MySQL ≤ 5.7</strong>
-              <em>refuses to start rather than corrupt the registry</em>
+            <div className={styles.spec}>
+              <dt>Rejected</dt>
+              <dd>
+                <strong className={styles.no}>MariaDB ≤ 10.6 · MySQL ≤ 5.7</strong>
+                <em>refuses to start rather than corrupt the registry</em>
+              </dd>
             </div>
-          </div>
+          </dl>
         </Section>
 
         <Section
