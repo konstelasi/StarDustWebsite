@@ -1,7 +1,10 @@
+/* Two plain columns under a coloured rule, not two bordered panels. The
+   cards the rest of the site uses are for things you operate (a table, a
+   daemon). These are text, so they stay text. */
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 20px;
+  gap: 32px clamp(32px, 5vw, 72px);
   margin-top: 40px;
   align-items: start;
 }
@@ -9,17 +12,29 @@
   .grid { grid-template-columns: minmax(0, 1fr); }
 }
 
-.card { overflow: hidden; }
-.good { border-color: #2fd4bd2e; }
-.bad  { border-color: #ff6b812e; }
+.column { border-top: 2px solid var(--border-bright); padding-top: 14px; }
+.good { border-top-color: #2fd4bd88; }
+.bad  { border-top-color: #ff6b8188; }
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+  flex-wrap: wrap;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--text-dim);
+}
 
 .list {
-  margin: 0;
-  padding: 16px 18px 18px 34px;
+  margin: 18px 0 0;
+  padding: 0 0 0 18px;
   display: flex;
   flex-direction: column;
   gap: 13px;
-  font-size: 14px;
+  font-size: 14.5px;
   line-height: 1.62;
   color: var(--text-dim);
 }
