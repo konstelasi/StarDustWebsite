@@ -51,19 +51,20 @@
   .startGrid { grid-template-columns: minmax(0, 1fr); }
 }
 
+/* The JSON wire format is a second topic under the quick start, so it sits
+   under a rule with a narrow text column and a wide code block, not in a
+   third bordered box under two code blocks. */
 .wire {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 30px;
-  align-items: center;
-  margin-top: 22px;
-  padding: 24px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--panel);
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  gap: 48px;
+  align-items: start;
+  margin-top: 56px;
+  padding-top: 36px;
+  border-top: 1px solid var(--border);
 }
 @media (max-width: 860px) {
-  .wire { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .wire { grid-template-columns: minmax(0, 1fr); gap: 22px; margin-top: 44px; padding-top: 28px; }
 }
 
 .wireText h3 { font-size: 20px; margin-bottom: 12px; }
