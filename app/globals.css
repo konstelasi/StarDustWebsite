@@ -275,7 +275,7 @@ code, pre, kbd { font-family: var(--mono); }
   transition: background 140ms var(--ease), border-color 140ms var(--ease),
               transform 140ms var(--ease);
 }
-.btn:hover:not(:disabled) { background: #201c34; border-color: var(--border-hover); }
+.btn:hover:not(:disabled) { background: #272727; border-color: var(--border-hover); }
 .btn:active:not(:disabled) { transform: translateY(1px); }
 .btn:disabled { opacity: 0.42; cursor: not-allowed; }
 
@@ -346,4 +346,4 @@ code, pre, kbd { font-family: var(--mono); }
 .flyGhost--danger  { border-color: #ff6b8188; color: #ffa9b8; background: #2c1620; }
 /* Neutral, and deliberately not rose: a JSON-only value is at its steady
    state, not rejected. Slate is the ramp's colour for unindexed. */
-.flyGhost--json    { border-color: var(--border-hover); color: var(--text-dim); background: #14111f; }
+.flyGhost--json    { border-color: var(--border-hover); color: var(--text-dim); background: var(--panel-2); }
