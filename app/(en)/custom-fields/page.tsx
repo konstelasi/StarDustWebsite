@@ -205,8 +205,8 @@ export default function CustomFields() {
         <Section
           id="limits"
           layout="split"
-          title="The honest list, not the highlight reel."
-          lede="Eight things StarDust deliberately does not do. None of them are bugs, so design around them, the way a real integration would have to."
+          title="What StarDust leaves out."
+          lede="Eight things it deliberately does not do. None of them are bugs, so design around them, as a real integration would have to."
         >
           <LimitsTable
             items={[

@@ -76,9 +76,10 @@ export default function IdHome() {
             <>
               Tabel atribut klasik membuat pertanyaan yang lebih spesifik menjadi lebih mahal, karena
               setiap atribut yang difilter memerlukan join-nya sendiri dan hasil antaranya harus
-              dibawa melalui semuanya. StarDust cukup join satu{' '}
-              <Term id="extension-page">page</Term>, sekali, tidak peduli berapa banyak kondisi
-              yang Anda tumpuk di atasnya.
+              dibawa melalui semuanya. StarDust melakukan join sekali untuk setiap{' '}
+              <Term id="extension-page">page</Term> terindeks yang ditempati field model, bukan
+              sekali untuk setiap kondisi. Selama field-field itu berada di page yang sama,
+              hasilnya satu join, berapa pun kondisi yang Anda tumpuk.
             </>
           }
         >
@@ -91,12 +92,11 @@ export default function IdHome() {
           title="Dapat difilter adalah janji yang daemon jaga, bukan instan."
           lede={
             <>
-              Ini adalah perilaku yang membingungkan hampir semua orang, jadi mendapat bagiannya
-              sendiri, bukan sekadar catatan kaki. Menandai field sebagai{' '}
-              <Term id="filterable">dapat difilter</Term> itu instan. Ia cuma mencatat permintaan
-              itu dan langsung kembali. Pekerjaan yang sebenarnya, yang membuat penyaringan itu
-              benar-benar berfungsi, dikerjakan setelahnya oleh dua{' '}
-              <Term id="daemon">daemon</Term> latar belakang.
+              Menandai field sebagai <Term id="filterable">dapat difilter</Term> hanya mencatat
+              permintaan, lalu langsung kembali. Dua <Term id="daemon">daemon</Term> latar
+              belakang kemudian mengerjakan hal yang membuat penyaringan bisa dipakai. Sampai
+              keduanya selesai, filter pada field itu ditolak, bukan dijalankan, dan jeda itulah
+              yang perlu Anda rancang.
             </>
           }
         >
@@ -171,7 +171,7 @@ export default function IdHome() {
 
         <Section
           id="start"
-          title="Lima menit, satu perintah."
+          title="Coba dengan satu perintah."
           lede={
             <>
               Menyalakan MySQL, mem-bootstrap skema, menyemai <Term id="model">model</Term>{' '}

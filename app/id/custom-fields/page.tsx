@@ -199,8 +199,8 @@ export default function IdCustomFields() {
         <Section
           id="limits"
           layout="split"
-          title="Daftar jujur, bukan sorotan yang bagus-bagus saja."
-          lede="Delapan hal yang memang sengaja tidak dilakukan StarDust. Tidak satu pun ini bug, jadi rancang di sekitarnya, sebagaimana integrasi sungguhan harus melakukannya."
+          title="Hal yang sengaja tidak dilakukan StarDust."
+          lede="Delapan hal ini memang disengaja. Tidak satu pun bug, jadi rancang di sekitarnya, seperti yang akan dilakukan integrasi sungguhan."
         >
           <LimitsTable
             items={[
