@@ -7,7 +7,7 @@ export interface GlossaryTermEntry {
 }
 
 export interface GlossaryMessages {
-  hero: { eyebrow: string; title: string; lede: string };
+  hero: { title: string; lede: string };
   orientationHeading: string;
   orientation: string[];
   termsHeading: string;
@@ -27,7 +27,6 @@ export default function Glossary({ locale, messages }: { locale: Locale; message
     <>
       <section className="section" id="top">
         <div className="shell">
-          <p className="eyebrow">{messages.hero.eyebrow}</p>
           <h1 className="section-title">{messages.hero.title}</h1>
           <p className="section-lede">{messages.hero.lede}</p>
         </div>
