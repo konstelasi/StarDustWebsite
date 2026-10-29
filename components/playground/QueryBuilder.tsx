@@ -47,7 +47,6 @@ export default function QueryBuilder() {
 
   return (
     <section className={styles.section} id="query" aria-labelledby="query-title" tabIndex={-1}>
-      <p className="eyebrow">{t('queryBuilder.eyebrow')}</p>
       <h2 id="query-title" className={styles.title}>
         {t('queryBuilder.heading')}
       </h2>

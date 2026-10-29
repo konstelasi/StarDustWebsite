@@ -34,7 +34,6 @@ export default function DaemonRoom() {
 
   return (
     <section className={styles.section} id="daemons" aria-labelledby="daemons-title" tabIndex={-1}>
-      <p className="eyebrow">{t('daemonRoom.eyebrow')}</p>
       <h2 id="daemons-title" className={styles.title}>
         {t('daemonRoom.heading')}
       </h2>

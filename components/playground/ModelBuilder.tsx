@@ -130,7 +130,6 @@ export default function ModelBuilder() {
 
   return (
     <section className={styles.section} id="define" aria-labelledby="define-title" tabIndex={-1}>
-      <p className="eyebrow">{t('modelBuilder.eyebrow')}</p>
       <h2 id="define-title" className={styles.title}>
         {t('modelBuilder.title')}
       </h2>

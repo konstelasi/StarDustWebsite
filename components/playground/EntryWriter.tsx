@@ -303,7 +303,6 @@ export default function EntryWriter() {
 
   return (
     <section className={styles.section} id="write" aria-labelledby="write-title" tabIndex={-1}>
-      <p className="eyebrow">{t('entryWriter.eyebrow')}</p>
       <h2 id="write-title" className={styles.title}>
         {t('entryWriter.title')}
       </h2>

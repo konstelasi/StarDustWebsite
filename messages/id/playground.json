@@ -1,6 +1,5 @@
 {
   "header": {
-    "eyebrow": "playground",
     "title": "Bangun skema, lalu lihat ia menjadi MySQL.",
     "lede1": "Satu world yang berkelanjutan. Definisikan model, tulis baris ke dalamnya, hentikan ",
     "lede2": " di tengah jalan dan lihat sistem yang jujur belum lengkap. Lalu biarkan mereka selesai dan lihat query yang identik mulai mengembalikan baris.",
@@ -23,7 +22,6 @@
     "evolve": "pengubah skema"
   },
   "modelBuilder": {
-    "eyebrow": "bagian a",
     "title": "Definisikan model Anda",
     "lede1": "Tambahkan field, beri nama, tentukan mana yang ingin Anda filter. Tenant Anda melakukan ini saat runtime dan itu tidak pernah menjalankan ",
     "lede2a": ", karena ",
@@ -78,7 +76,6 @@
     }
   },
   "tableInspector": {
-    "eyebrow": "bagian b",
     "title": "Apa itu di MySQL",
     "lede1": "Nama yang sama, kolom yang sama, nullability yang sama seperti skema yang dibuat ",
     "lede2": ". Buka ",
@@ -199,7 +196,6 @@
     "truncatedNote": "{count} baris lebih lama ada di tabel dan tidak dirender. Itu batas halaman ini, bukan batas database. Browser tidak akan merender puluhan ribu sel, dan MySQL tidak peduli."
   },
   "entryWriter": {
-    "eyebrow": "bagian c",
     "title": "Tulis entry",
     "lede1a": "",
     "lede1b": " mendarat di ",
@@ -293,7 +289,6 @@
     }
   },
   "daemonRoom": {
-    "eyebrow": "bagian d",
     "title": "empat daemon, satu aliran",
     "heading": "Ruang kendali daemon",
     "lede1": "Empat proses pada empat periode poll yang berbeda, tidak satu pun pernah tahu tentang yang lain. Hentikan satu dan lihat apa yang ikut berhenti. Lalu promosikan sebuah field dengan ",
@@ -444,7 +439,6 @@
     "loadButton": "muat dan ganti world Anda"
   },
   "queryBuilder": {
-    "eyebrow": "bagian e",
     "heading": "Query itu",
     "lede1": "Bangun sebuah filter terhadap skema yang Anda definisikan, di atas baris yang Anda tulis, memakai indeks yang dibangun para ",
     "lede2": ". Lalu dengan sengaja rusakkan itu: filter field yang tidak pernah ",
@@ -644,7 +638,6 @@
     "regionLabel": "Aliran peristiwa engine yang disimulasikan"
   },
   "schemaEvolver": {
-    "eyebrow": "bagian f",
     "heading": "Ubah skema selagi live",
     "lede1": "Me-rename sebuah field bukan pembaruan registry. Itu adalah penulisan ulang setiap baris di model, karena ",
     "lede2": " dikunci dengan nama. Hentikan ",
