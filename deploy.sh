@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# Manual deploy: build the static export and push it to the live cPanel host.
+# Build the static export and push it to the live cPanel host.
 #
-# Deliberately not run from CI (see README.md "Build") — this script assumes
-# an `stardustwebsite` entry already exists in the operator's ~/.ssh/config
-# (host/port/user/key), so no credential of any kind lives in this repo.
+# A push to main runs this from the Deploy workflow, and `bash deploy.sh` runs
+# it by hand. Both assume a `stardustwebsite` entry in ~/.ssh/config
+# (host/port/user/key). The workflow writes that entry from repository secrets
+# and a laptop has its own, so no credential of any kind lives in this repo.
+# The workflow builds before it writes the key and sets SKIP_BUILD, so this
+# script then only packages and uploads `out/`.
 set -euo pipefail
 
 REMOTE_HOST="stardustwebsite"
@@ -18,9 +21,11 @@ cleanup() {
 }
 trap cleanup EXIT
 
-echo "==> Building static export..."
-npm ci
-npm run build
+if [ -z "${SKIP_BUILD:-}" ]; then
+  echo "==> Building static export..."
+  npm ci
+  npm run build
+fi
 
 if [ ! -d out ]; then
   echo "Error: out/ not found after build." >&2

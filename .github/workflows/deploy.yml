@@ -1,0 +1,80 @@
+name: Deploy
+
+# Builds the site and uploads it to production, the same as running
+# `bash deploy.sh` on a laptop. A push to main deploys, so merging is the one
+# press. It can also be started by hand from the Actions tab.
+on:
+  push:
+    branches: [main]
+    # A change to documentation alone changes nothing on the site, so it does
+    # not deploy. A push that also touches code still does.
+    paths-ignore:
+      - '**.md'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+# A run in progress finishes. Requests that arrive meanwhile collapse into one
+# more run.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # Run workflow lets a person pick any branch. Only main may reach the key.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # The build runs dependency install scripts, so it runs before the key
+      # is written to disk.
+      - name: Build
+        run: |
+          npm ci
+          npm run build
+
+      # The same `stardustwebsite` alias deploy.sh expects on a laptop. Every
+      # value is a repository secret, because the logs of a public repository
+      # are public and GitHub hides secret values in them.
+      - name: Set up ssh
+        env:
+          SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+          SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          for name in SSH_HOST SSH_PORT SSH_USER SSH_KEY SSH_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then
+              echo "The repository secret for $name is missing." >&2
+              exit 1
+            fi
+          done
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          {
+            echo "Host stardustwebsite"
+            echo "  HostName $SSH_HOST"
+            echo "  Port $SSH_PORT"
+            echo "  User $SSH_USER"
+            echo "  IdentityFile ~/.ssh/deploy_key"
+            echo "  IdentitiesOnly yes"
+            echo "  StrictHostKeyChecking yes"
+          } > ~/.ssh/config
+
+      - name: Deploy
+        run: bash deploy.sh
+        env:
+          SKIP_BUILD: '1'
