@@ -18,8 +18,8 @@ export default function Fit() {
 
   return (
     <div className={styles.grid}>
-      <div className={`panel ${styles.card} ${styles.good}`}>
-        <div className="panel-head">
+      <div className={`${styles.column} ${styles.good}`}>
+        <div className={styles.head}>
           <span>{landing.fit?.good?.heading}</span>
           <span className="tag tag-indexed">
             <span className="dot" />
@@ -33,8 +33,8 @@ export default function Fit() {
         </ul>
       </div>
 
-      <div className={`panel ${styles.card} ${styles.bad}`}>
-        <div className="panel-head">
+      <div className={`${styles.column} ${styles.bad}`}>
+        <div className={styles.head}>
           <span>{landing.fit?.bad?.heading}</span>
           <span className="tag tag-error">
             <span className="dot" />

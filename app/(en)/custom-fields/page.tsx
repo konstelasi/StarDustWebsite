@@ -100,7 +100,6 @@ export default function CustomFields() {
       <main id="main">
         <Section
           id="problem"
-          eyebrow="01 · the problem"
           title="Two tenants, one record, two different shapes."
           titleAs="h1"
           lede={
@@ -119,7 +118,7 @@ export default function CustomFields() {
 
         <Section
           id="define"
-          eyebrow="02 · define the fields"
+          layout="split"
           title="Registering a shape a customer just asked for."
           lede={
             <>
@@ -142,7 +141,6 @@ export default function CustomFields() {
 
         <Section
           id="store"
-          eyebrow="03 · store a contact"
           title="One write, one row, two kinds of storage."
           lede={
             <>
@@ -162,7 +160,6 @@ export default function CustomFields() {
 
         <Section
           id="query"
-          eyebrow="04 · browse the contacts"
           title="Filtered, sorted, and paged, but never all at once."
           lede={
             <>
@@ -185,7 +182,7 @@ export default function CustomFields() {
 
         <Section
           id="evolve"
-          eyebrow="05 · a customer asks for more"
+          tone="raised"
           title="It's 3pm on a Tuesday, and Acme wants to filter by plan."
           lede={
             <>
@@ -207,9 +204,9 @@ export default function CustomFields() {
 
         <Section
           id="limits"
-          eyebrow="06 · what you would hit"
-          title="The honest list, not the highlight reel."
-          lede="Eight things StarDust deliberately does not do. None of them are bugs, so design around them, the way a real integration would have to."
+          layout="split"
+          title="What StarDust leaves out."
+          lede="Eight things it deliberately does not do. None of them are bugs, so design around them, as a real integration would have to."
         >
           <LimitsTable
             items={[
@@ -286,7 +283,6 @@ export default function CustomFields() {
 
         <Section
           id="next"
-          eyebrow="07 · go deeper"
           title="Two ways to keep going."
           lede="This page is a fixed story. The playground is the same engine with every control unlocked, and the glossary is the vocabulary behind both."
         >

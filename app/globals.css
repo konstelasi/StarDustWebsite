@@ -183,6 +183,8 @@ code, pre, kbd { font-family: var(--mono); }
   border-top: 1px solid var(--border);
 }
 
+.section-raised { background: var(--bg-raised); }
+
 .eyebrow {
   font-family: var(--mono);
   font-size: 12px;
@@ -202,6 +204,26 @@ code, pre, kbd { font-family: var(--mono); }
   max-width: 68ch;
   color: var(--text-dim);
   font-size: 17px;
+}
+
+/* Title left, lede right. The demo below still takes the full width, so only
+   the heading block changes shape. Below 860px it reads as the stacked form. */
+.section-head--split {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 16px clamp(32px, 5vw, 64px);
+  align-items: start;
+}
+.section-head--split .section-title { max-width: 18ch; }
+.section-head--split .section-lede {
+  margin-top: 0;
+  max-width: none;
+  padding-top: 6px;
+}
+@media (max-width: 860px) {
+  .section-head--split { grid-template-columns: minmax(0, 1fr); }
+  .section-head--split .section-title { max-width: 22ch; }
+  .section-head--split .section-lede { padding-top: 0; max-width: 68ch; }
 }
 
 /* ---------- panels ---------- */
@@ -253,7 +275,7 @@ code, pre, kbd { font-family: var(--mono); }
   transition: background 140ms var(--ease), border-color 140ms var(--ease),
               transform 140ms var(--ease);
 }
-.btn:hover:not(:disabled) { background: #201c34; border-color: var(--border-hover); }
+.btn:hover:not(:disabled) { background: #272727; border-color: var(--border-hover); }
 .btn:active:not(:disabled) { transform: translateY(1px); }
 .btn:disabled { opacity: 0.42; cursor: not-allowed; }
 
@@ -324,4 +346,4 @@ code, pre, kbd { font-family: var(--mono); }
 .flyGhost--danger  { border-color: #ff6b8188; color: #ffa9b8; background: #2c1620; }
 /* Neutral, and deliberately not rose: a JSON-only value is at its steady
    state, not rejected. Slate is the ramp's colour for unindexed. */
-.flyGhost--json    { border-color: var(--border-hover); color: var(--text-dim); background: #14111f; }
+.flyGhost--json    { border-color: var(--border-hover); color: var(--text-dim); background: var(--panel-2); }

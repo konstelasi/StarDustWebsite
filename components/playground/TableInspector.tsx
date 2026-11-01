@@ -26,7 +26,6 @@ export default function TableInspector() {
 
   return (
     <section className={styles.section} id="tables" aria-labelledby="tables-title" tabIndex={-1}>
-      <p className="eyebrow">{t('tableInspector.eyebrow')}</p>
       <h2 id="tables-title" className={styles.title}>
         {t('tableInspector.title')}
       </h2>

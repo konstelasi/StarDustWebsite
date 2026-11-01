@@ -1,6 +1,5 @@
 {
   "header": {
-    "eyebrow": "playground",
     "title": "Build a schema, then watch it become MySQL.",
     "lede1": "One continuous world. Define a model, write rows into it, stop the ",
     "lede2": " mid-flight and see the system be honestly incomplete. Then let them finish and watch the identical query start returning rows.",
@@ -23,7 +22,6 @@
     "evolve": "the schema changer"
   },
   "modelBuilder": {
-    "eyebrow": "section a",
     "title": "Define your models",
     "lede1": "Add fields, name them, decide which ones you will want to filter on. Your tenants do this at runtime and it never runs an ",
     "lede2a": ". A ",
@@ -78,7 +76,6 @@
     }
   },
   "tableInspector": {
-    "eyebrow": "section b",
     "title": "What that became in MySQL",
     "lede1": "Same names, same columns, same nullability as the schema ",
     "lede2": " creates. Open the ",
@@ -199,7 +196,6 @@
     "truncatedNote": "{count} older rows are in the table and not drawn. That is this page's limit, not the database's. A browser will not render tens of thousands of cells, and MySQL does not care."
   },
   "entryWriter": {
-    "eyebrow": "section c",
     "title": "Write entries",
     "lede1a": "The ",
     "lede1b": " lands in ",
@@ -293,7 +289,6 @@
     }
   },
   "daemonRoom": {
-    "eyebrow": "section d",
     "title": "four daemons, one stream",
     "heading": "The daemon control room",
     "lede1": "Four processes on four different poll periods, none of which has ever heard of the others. Stop one and watch what stops with it. Then promote a field with the ",
@@ -444,7 +439,6 @@
     "loadButton": "load it and replace your world"
   },
   "queryBuilder": {
-    "eyebrow": "section e",
     "heading": "Query it",
     "lede1": "Build a filter against the schema you defined, over the rows you wrote, using the index the ",
     "lede2": " built. Then break it on purpose: filter a field nobody ",
@@ -644,7 +638,6 @@
     "regionLabel": "Simulated engine event stream"
   },
   "schemaEvolver": {
-    "eyebrow": "section f",
     "heading": "Change the schema while it is live",
     "lede1": "Renaming a field is not a registry update. It is a rewrite of every row in the model, because the ",
     "lede2": " is keyed by name. Stop the ",

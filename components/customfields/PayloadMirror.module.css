@@ -1,15 +1,8 @@
-.grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 16px;
-  /* Lede-to-first-child spacing — see FieldRequestDemo.module.css. */
-  margin-top: 40px;
-}
-
-@media (max-width: 860px) {
-  .grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+/* One block, capped at the width where a line and its tag still read as a
+   pair. Stretched across the stack, the tags would sit a screen away from
+   the field they belong to. */
+.mirror {
+  max-width: 560px;
 }
 
 .rows {
@@ -20,18 +13,22 @@
 .row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  min-height: 40px;
+  padding: 8px 16px;
   border-top: 1px solid var(--border);
   font-family: var(--mono);
   font-size: 13px;
 }
+.row:first-child { border-top: 0; }
 
-.field {
-  color: var(--text);
-  min-width: 70px;
+.row code {
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
-.arrow {
-  color: var(--text-faint);
-}
+.brace  { color: var(--text-faint); }
+.indent { padding-left: 18px; color: var(--text); }

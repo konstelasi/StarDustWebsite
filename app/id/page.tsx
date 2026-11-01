@@ -8,6 +8,7 @@ import JoinSwamp from '@/components/JoinSwamp';
 import Nav from '@/components/Nav';
 import Section from '@/components/Section';
 import Term from '@/components/Term';
+import { buildHeroStage } from '@/lib/hero/stage';
 import { DOCS } from '@/lib/links';
 import SlotMirror from '@/components/SlotMirror';
 import styles from './page.module.css';
@@ -39,16 +40,19 @@ $model = $engine->schemaBuilder()->createModel(1, 'company', [
     new FieldDefinition('city',      'string'),
 ]);`;
 
+// Built once, while the site is built. The simulator stays on the server and the
+// hero gets plain data.
+const HERO_STAGE = buildHeroStage();
+
 export default function IdHome() {
   return (
     <>
       <Nav />
       <main id="main">
-        <Hero />
+        <Hero stage={HERO_STAGE} />
 
         <Section
           id="mirror"
-          eyebrow="01 · tempat data berada"
           title="Satu baris sumber utama, dicerminkan ke dalam indeks."
           lede={
             <>
@@ -66,15 +70,16 @@ export default function IdHome() {
 
         <Section
           id="joins"
-          eyebrow="02 · mengapa bukan EAV"
+          layout="split"
           title="Setiap kondisi EAV adalah self-join lain."
           lede={
             <>
               Tabel atribut klasik membuat pertanyaan yang lebih spesifik menjadi lebih mahal, karena
               setiap atribut yang difilter memerlukan join-nya sendiri dan hasil antaranya harus
-              dibawa melalui semuanya. StarDust cukup join satu{' '}
-              <Term id="extension-page">page</Term>, sekali, tidak peduli berapa banyak kondisi
-              yang Anda tumpuk di atasnya.
+              dibawa melalui semuanya. StarDust melakukan join sekali untuk setiap{' '}
+              <Term id="extension-page">page</Term> terindeks yang ditempati field model, bukan
+              sekali untuk setiap kondisi. Selama field-field itu berada di page yang sama,
+              hasilnya satu join, berapa pun kondisi yang Anda tumpuk.
             </>
           }
         >
@@ -83,16 +88,15 @@ export default function IdHome() {
 
         <Section
           id="lifecycle"
-          eyebrow="03 · catatan jujur"
+          tone="raised"
           title="Dapat difilter adalah janji yang daemon jaga, bukan instan."
           lede={
             <>
-              Ini adalah perilaku yang membingungkan hampir semua orang, jadi mendapat bagiannya
-              sendiri, bukan sekadar catatan kaki. Menandai field sebagai{' '}
-              <Term id="filterable">dapat difilter</Term> itu instan. Ia cuma mencatat permintaan
-              itu dan langsung kembali. Pekerjaan yang sebenarnya, yang membuat penyaringan itu
-              benar-benar berfungsi, dikerjakan setelahnya oleh dua{' '}
-              <Term id="daemon">daemon</Term> latar belakang.
+              Menandai field sebagai <Term id="filterable">dapat difilter</Term> hanya mencatat
+              permintaan, lalu langsung kembali. Dua <Term id="daemon">daemon</Term> latar
+              belakang kemudian mengerjakan hal yang membuat penyaringan bisa dipakai. Sampai
+              keduanya selesai, filter pada field itu ditolak, bukan dijalankan, dan jeda itulah
+              yang perlu Anda rancang.
             </>
           }
         >
@@ -101,7 +105,6 @@ export default function IdHome() {
 
         <Section
           id="daemons"
-          eyebrow="04 · bagian yang bergerak"
           title="Empat daemon. Tidak ada broker di antara mereka."
           lede={
             <>
@@ -120,7 +123,7 @@ export default function IdHome() {
 
         <Section
           id="status"
-          eyebrow="05 · jawaban langsung"
+          layout="split"
           title="Apakah Anda sebaiknya benar-benar menggunakan ini."
           lede={
             <>
@@ -134,34 +137,41 @@ export default function IdHome() {
         >
           <Fit />
 
-          <div className={styles.reqs}>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>PHP</span>
-              <strong>8.1+</strong>
-              <em>diuji pada 8.1 sampai 8.4</em>
+          <dl className={styles.specs}>
+            <div className={styles.spec}>
+              <dt>PHP</dt>
+              <dd>
+                <strong>8.1+</strong>
+                <em>diuji pada 8.1 sampai 8.4</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Database</span>
-              <strong>MySQL 8.0.13+ · MariaDB 10.11+</strong>
-              <em>atau Percona Server 8.0.13+</em>
+            <div className={styles.spec}>
+              <dt>Database</dt>
+              <dd>
+                <strong>MySQL 8.0.13+ · MariaDB 10.11+</strong>
+                <em>atau Percona Server 8.0.13+</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Dependensi runtime</span>
-              <strong>psr/log · psr/clock</strong>
-              <em>hanya interface, tanpa framework dan tanpa ORM</em>
+            <div className={styles.spec}>
+              <dt>Dependensi runtime</dt>
+              <dd>
+                <strong>psr/log · psr/clock</strong>
+                <em>hanya interface, tanpa framework dan tanpa ORM</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Ditolak</span>
-              <strong className={styles.no}>MariaDB ≤ 10.6 · MySQL ≤ 5.7</strong>
-              <em>menolak untuk memulai daripada merusak registry</em>
+            <div className={styles.spec}>
+              <dt>Ditolak</dt>
+              <dd>
+                <strong className={styles.no}>MariaDB ≤ 10.6 · MySQL ≤ 5.7</strong>
+                <em>menolak untuk memulai daripada merusak registry</em>
+              </dd>
             </div>
-          </div>
+          </dl>
         </Section>
 
         <Section
           id="start"
-          eyebrow="06 · mulai sekarang"
-          title="Lima menit, satu perintah."
+          title="Coba dengan satu perintah."
           lede={
             <>
               Menyalakan MySQL, mem-bootstrap skema, menyemai <Term id="model">model</Term>{' '}

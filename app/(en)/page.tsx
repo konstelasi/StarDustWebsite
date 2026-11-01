@@ -8,6 +8,7 @@ import JoinSwamp from '@/components/JoinSwamp';
 import Nav from '@/components/Nav';
 import Section from '@/components/Section';
 import Term from '@/components/Term';
+import { buildHeroStage } from '@/lib/hero/stage';
 import { DOCS } from '@/lib/links';
 import SlotMirror from '@/components/SlotMirror';
 import styles from './page.module.css';
@@ -39,16 +40,19 @@ $model = $engine->schemaBuilder()->createModel(1, 'company', [
     new FieldDefinition('city',      'string'),
 ]);`;
 
+// Built once, while the site is built. The simulator stays on the server and the
+// hero gets plain data.
+const HERO_STAGE = buildHeroStage();
+
 export default function Home() {
   return (
     <>
       <Nav />
       <main id="main">
-        <Hero />
+        <Hero stage={HERO_STAGE} />
 
         <Section
           id="mirror"
-          eyebrow="01 · where the data lives"
           title="One row of truth, mirrored into an index."
           lede={
             <>
@@ -66,15 +70,16 @@ export default function Home() {
 
         <Section
           id="joins"
-          eyebrow="02 · why not EAV"
+          layout="split"
           title="Every EAV condition is another self-join."
           lede={
             <>
               The classic attribute table makes a narrower question cost more, because each
               filtered attribute needs its own join and the intermediate result has to be
-              carried through all of them. StarDust joins one{' '}
-              <Term id="extension-page">page</Term>, once, no matter how many conditions you
-              stack on it.
+              carried through all of them. StarDust joins once per indexed{' '}
+              <Term id="extension-page">page</Term> the model&apos;s fields occupy, not once per
+              condition. When those fields share a page, that is one join however many
+              conditions you stack on it.
             </>
           }
         >
@@ -83,15 +88,14 @@ export default function Home() {
 
         <Section
           id="lifecycle"
-          eyebrow="03 · the honest caveat"
+          tone="raised"
           title="Filterable is a promise the daemons keep, not an instant."
           lede={
             <>
-              This is the behaviour that trips up nearly everyone, so it gets its own section
-              rather than a footnote. Marking a field <Term id="filterable">filterable</Term>{' '}
-              records an intention and returns immediately. Two background{' '}
-              <Term id="daemon">daemons</Term> then do the work that makes filtering actually
-              possible.
+              Marking a field <Term id="filterable">filterable</Term> records an intention and
+              returns immediately. Two background <Term id="daemon">daemons</Term> then do the
+              work that makes filtering possible. Until they finish, a filter on that field is
+              refused, not answered, and that gap is the behaviour to design around.
             </>
           }
         >
@@ -100,7 +104,6 @@ export default function Home() {
 
         <Section
           id="daemons"
-          eyebrow="04 · the moving parts"
           title="Four daemons. No broker between them."
           lede={
             <>
@@ -119,7 +122,7 @@ export default function Home() {
 
         <Section
           id="status"
-          eyebrow="05 · straight answers"
+          layout="split"
           title="Whether you should actually use this."
           lede={
             <>
@@ -133,34 +136,41 @@ export default function Home() {
         >
           <Fit />
 
-          <div className={styles.reqs}>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>PHP</span>
-              <strong>8.1+</strong>
-              <em>tested on 8.1 to 8.4</em>
+          <dl className={styles.specs}>
+            <div className={styles.spec}>
+              <dt>PHP</dt>
+              <dd>
+                <strong>8.1+</strong>
+                <em>tested on 8.1 to 8.4</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Database</span>
-              <strong>MySQL 8.0.13+ · MariaDB 10.11+</strong>
-              <em>or Percona Server 8.0.13+</em>
+            <div className={styles.spec}>
+              <dt>Database</dt>
+              <dd>
+                <strong>MySQL 8.0.13+ · MariaDB 10.11+</strong>
+                <em>or Percona Server 8.0.13+</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Runtime deps</span>
-              <strong>psr/log · psr/clock</strong>
-              <em>interfaces only, with no framework and no ORM</em>
+            <div className={styles.spec}>
+              <dt>Runtime deps</dt>
+              <dd>
+                <strong>psr/log · psr/clock</strong>
+                <em>interfaces only, with no framework and no ORM</em>
+              </dd>
             </div>
-            <div className={styles.req}>
-              <span className={styles.reqLabel}>Rejected</span>
-              <strong className={styles.no}>MariaDB ≤ 10.6 · MySQL ≤ 5.7</strong>
-              <em>refuses to start rather than corrupt the registry</em>
+            <div className={styles.spec}>
+              <dt>Rejected</dt>
+              <dd>
+                <strong className={styles.no}>MariaDB ≤ 10.6 · MySQL ≤ 5.7</strong>
+                <em>refuses to start rather than corrupt the registry</em>
+              </dd>
             </div>
-          </div>
+          </dl>
         </Section>
 
         <Section
           id="start"
-          eyebrow="06 · get started"
-          title="Five minutes, one command."
+          title="Try it with one command."
           lede={
             <>
               Brings up MySQL, bootstraps the schema, seeds a sample{' '}

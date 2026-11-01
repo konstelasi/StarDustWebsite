@@ -275,7 +275,6 @@ export default function Playground() {
       <main id="main" className={styles.main}>
         <div className="shell">
           <header className={styles.head}>
-            <p className="eyebrow">{t('header.eyebrow')}</p>
             <h1 className={styles.title}>{t('header.title')}</h1>
             <p className="section-lede">
               {t('header.lede1')}

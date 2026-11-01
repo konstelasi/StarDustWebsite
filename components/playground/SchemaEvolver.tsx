@@ -63,7 +63,6 @@ export default function SchemaEvolver() {
 
   return (
     <section className={styles.section} id="evolve" aria-labelledby="evolve-title" tabIndex={-1}>
-      <p className="eyebrow">{t('schemaEvolver.eyebrow')}</p>
       <h2 id="evolve-title" className={styles.title}>
         {t('schemaEvolver.heading')}
       </h2>

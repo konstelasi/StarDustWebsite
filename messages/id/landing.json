@@ -1,46 +1,26 @@
 {
   "hero": {
-    "badge": "v0.3.0-alpha.1 · Vertical Schema Partitioning",
     "titleLine1": "Field dinamis tanpa skema,",
     "titleLine2": "bisa difilter lewat indeks SQL asli.",
     "lede": "Berikan setiap tenant field mereka sendiri, lalu filter seperti kolom native. Tidak ada cluster pencarian terpisah. Tidak ada rawa join EAV. Hanya MySQL atau MariaDB, melakukan scan indeks pada data yang tidak pernah Anda deklarasikan saat migrasi.",
     "copy": "salin",
     "copied": "disalin",
     "readSource": "Baca kode sumber",
-    "codeTitle": "memfilter field yang ditentukan pengguna",
-    "scroll": "Lihat apa yang terjadi di balik layar"
-  },
-  "sections": {
-    "mirror": {
-      "eyebrow": "01 · tempat data berada",
-      "title": "Satu baris sumber utama, dicerminkan ke dalam indeks.",
-      "lede": "Payload JSON lengkap selalu merupakan sistem catatan sumber. Field yang Anda tandai sebagai dapat difilter secara tambahan dicerminkan ke kolom slot bertipe dan terindeks pada extension page 1:1, jadi filter membaca indeks asli, bukan memindai JSON. Edit payload di bawah, lalu write."
-    },
-    "joins": {
-      "eyebrow": "02 · mengapa bukan EAV",
-      "title": "Setiap kondisi EAV adalah self-join lain.",
-      "lede": "Tabel atribut klasik membuat pertanyaan yang lebih spesifik menjadi lebih mahal, karena setiap atribut yang difilter memerlukan join-nya sendiri dan hasil antaranya harus dibawa melalui semuanya. StarDust melakukan join sekali untuk setiap page terindeks yang ditempati field model, bukan sekali untuk setiap kondisi, jadi selama field-field itu berada di page yang sama, cukup satu join, berapa pun kondisi yang Anda tumpuk."
-    },
-    "lifecycle": {
-      "eyebrow": "03 · catatan jujur",
-      "title": "Dapat difilter adalah janji yang daemon jaga, bukan instan.",
-      "lede": "Ini adalah perilaku yang membingungkan hampir semua orang, jadi mendapat bagiannya sendiri, bukan sekadar catatan kaki. Menandai field sebagai dapat difilter itu instan. Ia cuma mencatat permintaan itu dan langsung kembali. Pekerjaan yang sebenarnya, yang membuat penyaringan itu benar-benar berfungsi, dikerjakan setelahnya oleh dua daemon latar belakang."
-    },
-    "daemons": {
-      "eyebrow": "04 · bagian yang bergerak",
-      "title": "Empat daemon. Tidak ada broker di antara mereka.",
-      "lede": "Mereka tidak pernah berbicara langsung satu sama lain. Database adalah satu-satunya titik koordinasi, dengan klaim diambil melalui FOR UPDATE SKIP LOCKED dan singleton Watcher dipegang oleh advisory lock. Jalankan lebih banyak Reconciler, Liberator, dan Chronicler untuk throughput. Hanya Watcher yang tetap satu-satunya."
-    },
-    "status": {
-      "eyebrow": "05 · jawaban langsung",
-      "title": "Apakah Anda sebaiknya benar-benar menggunakan ini.",
-      "lede": "Rilis saat ini adalah 0.3.0-alpha.1, penulisan ulang total (Vertical Schema Partitioning) dari lini 0.2.x lama, tanpa API yang sama dengannya. Belum mencapai 1.0, dan API publik masih bisa berubah sebelum 0.3.0. Semua yang ada di bawah ini sudah diimplementasikan dan tercakup oleh test suite."
-    },
-    "start": {
-      "eyebrow": "06 · mulai sekarang",
-      "title": "Lima menit, satu perintah.",
-      "lede": "Menyalakan MySQL, mem-bootstrap skema, menyemai model contoh, menjalankan query yang difilter, dan memulai keempat daemon."
-    }
+    "filtersLabel": "Coba sebuah filter",
+    "stageLabel": "{total} perusahaan contoh, digambar menurut jumlah karyawan. Filter yang dipilih menyalakan entry yang cocok.",
+    "axisLabel": "employees, skala log",
+    "youWrite": "yang Anda tulis",
+    "mysqlRuns": "yang dijalankan MySQL",
+    "bindings": "binding",
+    "refusedTag": "ditolak di pre-flight",
+    "refusedTitle": "Ditolak di pre-flight",
+    "refusedBody": "{field} tidak filterable, jadi tidak ada SQL yang dibuat dan tidak ada yang diam-diam memindai JSON.",
+    "noSql": "tidak ada SQL yang dibuat",
+    "strategyFact": "strategi {strategy}",
+    "joinsOne": "1 join",
+    "joinsMany": "{count} join",
+    "matches": "{matched} dari {total} entry cocok",
+    "simNote": "Dijalankan di browser oleh simulator playground, atas {total} perusahaan rekaan. SQL-nya adalah keluaran compiler simulator itu."
   },
   "fit": {
     "good": {

@@ -94,7 +94,6 @@ export default function IdCustomFields() {
       <main id="main">
         <Section
           id="problem"
-          eyebrow="01 · masalahnya"
           title="Dua tenant, satu jenis record, dua bentuk berbeda."
           titleAs="h1"
           lede={
@@ -114,7 +113,7 @@ export default function IdCustomFields() {
 
         <Section
           id="define"
-          eyebrow="02 · mendefinisikan field"
+          layout="split"
           title="Mencatat bentuk yang baru saja diminta pelanggan."
           lede={
             <>
@@ -137,7 +136,6 @@ export default function IdCustomFields() {
 
         <Section
           id="store"
-          eyebrow="03 · menyimpan satu kontak"
           title="Satu penulisan, satu baris, dua cara penyimpanan."
           lede={
             <>
@@ -157,7 +155,6 @@ export default function IdCustomFields() {
 
         <Section
           id="query"
-          eyebrow="04 · menelusuri kontak"
           title="Difilter, diurutkan, dan dipaginasi, tapi tidak pernah sekaligus semua."
           lede={
             <>
@@ -180,7 +177,7 @@ export default function IdCustomFields() {
 
         <Section
           id="evolve"
-          eyebrow="05 · pelanggan meminta lebih"
+          tone="raised"
           title="Jam 3 sore hari Selasa, dan Acme ingin memfilter berdasarkan plan."
           lede={
             <>
@@ -201,9 +198,9 @@ export default function IdCustomFields() {
 
         <Section
           id="limits"
-          eyebrow="06 · yang akan Anda temui"
-          title="Daftar jujur, bukan sorotan yang bagus-bagus saja."
-          lede="Delapan hal yang memang sengaja tidak dilakukan StarDust. Tidak satu pun ini bug, jadi rancang di sekitarnya, sebagaimana integrasi sungguhan harus melakukannya."
+          layout="split"
+          title="Hal yang sengaja tidak dilakukan StarDust."
+          lede="Delapan hal ini memang disengaja. Tidak satu pun bug, jadi rancang di sekitarnya, seperti yang akan dilakukan integrasi sungguhan."
         >
           <LimitsTable
             items={[
@@ -281,7 +278,6 @@ export default function IdCustomFields() {
 
         <Section
           id="next"
-          eyebrow="07 · lanjut ke mana"
           title="Dua cara untuk melangkah lebih jauh."
           lede="Halaman ini adalah satu cerita tetap. Playground adalah mesin yang sama dengan semua kontrol terbuka, dan glosarium adalah kosakata di balik keduanya."
         >
