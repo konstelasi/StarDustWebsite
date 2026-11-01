@@ -192,11 +192,14 @@ A push to `main` deploys. The [`Deploy`](.github/workflows/deploy.yml) workflow
 builds the site, then runs [`deploy.sh`](deploy.sh) to push `out/` over SSH to
 the live host. The build runs in a separate job that has no secrets, and the job
 that holds the SSH key installs nothing, so dependency install scripts never run
-beside the key. The upload only runs on `main`, a push that changes only
-Markdown files deploys nothing, and neither does a change to a workflow alone. The workflow needs five repository secrets
-(`DEPLOY_SSH_HOST`, `DEPLOY_SSH_PORT`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_KEY` and
-`DEPLOY_KNOWN_HOSTS`) that belong only to this repository. The key is a separate
-one used only by GitHub, listed in the host's `authorized_keys` with
+beside the key. A push that changes only Markdown files deploys nothing, and
+neither does a change to a workflow alone.
+
+The deploy job needs five secrets (`DEPLOY_SSH_HOST`, `DEPLOY_SSH_PORT`,
+`DEPLOY_SSH_USER`, `DEPLOY_SSH_KEY` and `DEPLOY_KNOWN_HOSTS`). They live in a
+`production` environment that only the `main` branch may use, so a workflow on
+any other branch cannot read them. The key is a separate one used only by
+GitHub, listed in the host's `authorized_keys` with
 `no-agent-forwarding,no-port-forwarding,no-X11-forwarding,no-pty`.
 
 You can still deploy by hand with `npm run deploy`, or press Run workflow on

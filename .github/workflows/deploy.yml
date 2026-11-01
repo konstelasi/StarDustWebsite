@@ -53,7 +53,10 @@ jobs:
 
   deploy:
     needs: build
-    # Run workflow lets a person pick any branch. Only main may reach the key.
+    # Run workflow lets a person pick any branch. The secrets live in the
+    # production environment, which only main may use, so no other branch can
+    # read the key.
+    environment: production
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
