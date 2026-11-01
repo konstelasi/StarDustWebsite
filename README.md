@@ -190,10 +190,10 @@ release never requires building locally.
 
 A push to `main` deploys. The [`Deploy`](.github/workflows/deploy.yml) workflow
 builds the site, then runs [`deploy.sh`](deploy.sh) to push `out/` over SSH to
-the live host. The build comes first so that dependency install scripts never
-run while the SSH key is on disk. The workflow only runs on `main`, a push that
-changes only Markdown files deploys nothing, and neither does a change to a
-workflow alone. The workflow needs five repository secrets
+the live host. The build runs in a separate job that has no secrets, and the job
+that holds the SSH key installs nothing, so dependency install scripts never run
+beside the key. The upload only runs on `main`, a push that changes only
+Markdown files deploys nothing, and neither does a change to a workflow alone. The workflow needs five repository secrets
 (`DEPLOY_SSH_HOST`, `DEPLOY_SSH_PORT`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_KEY` and
 `DEPLOY_KNOWN_HOSTS`) that belong only to this repository. The key is a separate
 one used only by GitHub, listed in the host's `authorized_keys` with

@@ -3,6 +3,9 @@ name: Deploy
 # Builds the site and uploads it to production, the same as running
 # `bash deploy.sh` on a laptop. A push to main deploys, so merging is the one
 # press. It can also be started by hand from the Actions tab.
+#
+# The work is split in two jobs. The build runs dependency install scripts, so
+# it gets no secrets. The deploy job holds the SSH key and installs nothing.
 on:
   push:
     branches: [main]
@@ -23,9 +26,7 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
-    # Run workflow lets a person pick any branch. Only main may reach the key.
-    if: github.ref == 'refs/heads/main'
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -36,12 +37,37 @@ jobs:
           node-version: 22
           cache: npm
 
-      # The build runs dependency install scripts, so it runs before the key
-      # is written to disk.
-      - name: Build
-        run: |
-          npm ci
-          npm run build
+      - run: npm ci
+
+      - run: npm run build
+
+      # public/.htaccess ships in the build, and the upload skips hidden files
+      # unless told otherwise.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: out/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    needs: build
+    # Run workflow lets a person pick any branch. Only main may reach the key.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # Only the script is needed, and nothing from node_modules ever runs here.
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: deploy.sh
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: out
 
       # The same `stardustwebsite` alias deploy.sh expects on a laptop. Every
       # value is a repository secret, because the logs of a public repository

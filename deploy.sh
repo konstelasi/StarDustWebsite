@@ -5,8 +5,8 @@
 # it by hand. Both assume a `stardustwebsite` entry in ~/.ssh/config
 # (host/port/user/key). The workflow writes that entry from repository secrets
 # and a laptop has its own, so no credential of any kind lives in this repo.
-# The workflow builds before it writes the key and sets SKIP_BUILD, so this
-# script then only packages and uploads `out/`.
+# The workflow builds in a separate job that has no key and sets SKIP_BUILD, so
+# this script then only packages and uploads `out/`.
 set -euo pipefail
 
 REMOTE_HOST="stardustwebsite"
