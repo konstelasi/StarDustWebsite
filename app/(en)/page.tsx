@@ -126,7 +126,7 @@ export default function Home() {
           title="Whether you should actually use this."
           lede={
             <>
-              The current release is <strong><code>0.3.0-alpha.1</code></strong>, a ground-up
+              The current release is <strong><code>0.3.0-alpha.2</code></strong>, a ground-up
               rewrite (<Term id="vertical-schema-partitioning">Vertical Schema Partitioning</Term>)
               of the legacy 0.2.x line, sharing no API with it. <strong>It hasn&apos;t reached
               1.0</strong>, and the public API may still change before 0.3.0. Everything below is

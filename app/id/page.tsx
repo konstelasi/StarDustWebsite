@@ -127,7 +127,7 @@ export default function IdHome() {
           title="Apakah Anda sebaiknya benar-benar menggunakan ini."
           lede={
             <>
-              Rilis saat ini adalah <strong><code>0.3.0-alpha.1</code></strong>, penulisan ulang
+              Rilis saat ini adalah <strong><code>0.3.0-alpha.2</code></strong>, penulisan ulang
               total (<Term id="vertical-schema-partitioning">Vertical Schema Partitioning</Term>)
               dari lini 0.2.x lama, tanpa API yang sama dengannya.{' '}
               <strong>Belum mencapai 1.0</strong>, dan API publik masih bisa berubah sebelum 0.3.0.
