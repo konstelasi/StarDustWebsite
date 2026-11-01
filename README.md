@@ -186,14 +186,26 @@ Publishing is putting the **contents** of `out/` at the web root.
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) typechecks and builds on
 every push and attaches `out/` as a downloadable **`site`** artifact, so a
-release never requires building locally. It deliberately does not deploy, because
-that would mean putting host credentials in repository secrets, which is a
-decision to make on purpose rather than inherit from a template.
+release never requires building locally.
 
-Deploying is instead a manual, local step: [`deploy.sh`](deploy.sh) (`npm run
-deploy`) builds `out/` and pushes it over SSH to the live host. It relies on
-an `stardustwebsite` entry already present in the operator's own
-`~/.ssh/config`, so no host, user, or key ever lives in this repo.
+A push to `main` deploys. The [`Deploy`](.github/workflows/deploy.yml) workflow
+builds the site, then runs [`deploy.sh`](deploy.sh) to push `out/` over SSH to
+the live host. The build runs in a separate job that has no secrets, and the job
+that holds the SSH key installs nothing, so dependency install scripts never run
+beside the key. A push that changes only Markdown files deploys nothing, and
+neither does a change to a workflow alone.
+
+The deploy job needs five secrets (`DEPLOY_SSH_HOST`, `DEPLOY_SSH_PORT`,
+`DEPLOY_SSH_USER`, `DEPLOY_SSH_KEY` and `DEPLOY_KNOWN_HOSTS`). They live in a
+`production` environment that only the `main` branch may use, so a workflow on
+any other branch cannot read them. The key is a separate one used only by
+GitHub, listed in the host's `authorized_keys` with
+`no-agent-forwarding,no-port-forwarding,no-X11-forwarding,no-pty`.
+
+You can still deploy by hand with `npm run deploy`, or press Run workflow on
+the Deploy workflow in the Actions tab. By hand, `deploy.sh` relies on a
+`stardustwebsite` entry in your own `~/.ssh/config`, so no host, user, or key
+ever lives in this repo.
 
 On Windows, run `bash deploy.sh` from Git Bash. From PowerShell or cmd,
 `npm run deploy` picks up Windows' WSL `bash` stub first and fails before the

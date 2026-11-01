@@ -1,0 +1,109 @@
+name: Deploy
+
+# Builds the site and uploads it to production, the same as running
+# `bash deploy.sh` on a laptop. A push to main deploys, so merging is the one
+# press. It can also be started by hand from the Actions tab.
+#
+# The work is split in two jobs. The build runs dependency install scripts, so
+# it gets no secrets. The deploy job holds the SSH key and installs nothing.
+on:
+  push:
+    branches: [main]
+    # A change to documentation alone changes nothing on the site, so it does
+    # not deploy. A push that also touches code still does.
+    paths-ignore:
+      - '**.md'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+# A run in progress finishes. Requests that arrive meanwhile collapse into one
+# more run.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      # public/.htaccess ships in the build, and the upload skips hidden files
+      # unless told otherwise.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: out/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    needs: build
+    # Run workflow lets a person pick any branch. The secrets live in the
+    # production environment, which only main may use, so no other branch can
+    # read the key.
+    environment: production
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # Only the script is needed, and nothing from node_modules ever runs here.
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: deploy.sh
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: out
+
+      # The same `stardustwebsite` alias deploy.sh expects on a laptop. Every
+      # value is a repository secret, because the logs of a public repository
+      # are public and GitHub hides secret values in them.
+      - name: Set up ssh
+        env:
+          SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+          SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          for name in SSH_HOST SSH_PORT SSH_USER SSH_KEY SSH_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then
+              echo "The repository secret for $name is missing." >&2
+              exit 1
+            fi
+          done
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          {
+            echo "Host stardustwebsite"
+            echo "  HostName $SSH_HOST"
+            echo "  Port $SSH_PORT"
+            echo "  User $SSH_USER"
+            echo "  IdentityFile ~/.ssh/deploy_key"
+            echo "  IdentitiesOnly yes"
+            echo "  StrictHostKeyChecking yes"
+          } > ~/.ssh/config
+
+      - name: Deploy
+        run: bash deploy.sh
+        env:
+          SKIP_BUILD: '1'

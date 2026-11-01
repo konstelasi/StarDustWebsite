@@ -6,8 +6,8 @@ on:
   pull_request:
   workflow_dispatch:
 
-# This workflow does NOT deploy. Its job is to prove the build is sound and to
-# hand you the exact folder that gets published.
+# This workflow does not deploy, the Deploy workflow does. It proves the build
+# is sound and hands you the exact folder that gets published.
 jobs:
   build:
     runs-on: ubuntu-latest
